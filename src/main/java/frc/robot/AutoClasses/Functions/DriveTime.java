@@ -9,19 +9,28 @@ public class DriveTime extends RobotFunction {
     private boolean setStartTime, isFinished;
     private double startTime, speed, time;
 
-    public DriveTime(){
+    /**
+     * Initializes all necessary variables
+     */
+    public DriveTime() {
         setStartTime = false; isFinished = false;
         startTime = 0; speed = 0; time = 0;
     }
 
+    /**
+     * Collects the speed and length of time the robot should move for
+     */
     @Override
-    public void collectInputs(double speedStraight, double howMuchTime){
+    public void collectInputs(double speedStraight, double howMuchTime) {
         speed = speedStraight;
         time = howMuchTime;
     }
 
+    /**
+     * Runs the drivetrain at the desired speed for the entered amount of time
+     */
     @Override
-    public void run(){
+    public void run() {
         if (!setStartTime) {
 			startTime = Timer.getFPGATimestamp();
 			setStartTime = true;
@@ -36,13 +45,19 @@ public class DriveTime extends RobotFunction {
 		}
     }
 
+    /**
+     * @return: returns true if the drivetrain is done moving
+     */
     @Override
     public boolean finished() {
         return isFinished;
     }
 
+    /**
+     * Stops the drivetrain
+     */
     @Override
-    public void stop(){
+    public void stop() {
         Drivetrain.drive(0.0, 0.0, 0.0);
     }
 

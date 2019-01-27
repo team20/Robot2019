@@ -23,7 +23,10 @@ public class Elevator {
     public static final int CARGO_SHIP_POSITION = 0;
 
 	
-	public Elevator(){
+    /**
+     * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
+     */
+    public Elevator() {
         elevator = new TalonSRX(0);
         elevator.setInverted(false);
         elevator.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 1000);
@@ -35,7 +38,7 @@ public class Elevator {
     /**
      * Prevents the user from going past the maximum position of the elevator
      */
-    public static void limitPosition(){
+    public static void limitPosition() {
 		if(setPosition < MAX_POSITION){
 			setPosition = MAX_POSITION;
 			elevator.set(ControlMode.Position, setPosition);
@@ -123,7 +126,7 @@ public class Elevator {
     /**
      * 
      */
-    public static void setPosition(int pos){
+    public static void setPosition(int pos) {
         setPosition = pos;
         elevator.set(ControlMode.Position, setPosition);
     }
@@ -131,7 +134,7 @@ public class Elevator {
     /**
 	 * sets the elevator set position to its current position
 	 */
-	public static void stop(){
+	public static void stop() {
 		setPosition = elevator.getSelectedSensorPosition(0);
         setPosition(setPosition);
 	}
@@ -139,7 +142,7 @@ public class Elevator {
 	/**
 	 * brings the elevator up six inches
 	 */
-	public static void upIncrement(){
+	public static void upIncrement() {
 		setPosition = elevator.getSelectedSensorPosition(0) - (int)6*TICKS_PER_INCH;
         setPosition(setPosition);
 	}
@@ -147,7 +150,7 @@ public class Elevator {
 	/**
 	 * brings the elevator down six inches
 	 */
-	public static void downIncrement(){
+	public static void downIncrement() {
 		setPosition = elevator.getSelectedSensorPosition(0) + (int)6*TICKS_PER_INCH;
 		if (setPosition > 0)
 			setPosition = 0;
@@ -157,14 +160,14 @@ public class Elevator {
 	/**
 	 * @return the set point of the elevator
 	 */
-	public static int getSetPosition(){
+	public static int getSetPosition() {
 		return setPosition;
 	}
 	
 	/**
 	 * @return true if the elevator is within deadband of its set position
 	 */
-	public static boolean elevatorMoving(){
+	public static boolean elevatorDoneMoving() {
 		if(Math.abs(elevator.getSelectedSensorPosition(0) - prevPosition) > DEADBAND){
 			prevPosition = elevator.getSelectedSensorPosition(0);
 			return true;
@@ -177,14 +180,14 @@ public class Elevator {
 	 * moves the elevator at a speed (percent output)
 	 * @param speed: speed of the elevator (-1.0 to 1.0)
 	 */
-	public static void moveSpeed(double speed){
+	public static void moveSpeed(double speed) {
 		elevator.set(ControlMode.PercentOutput, speed);
 	}
 
     /**
      * Resets the elevator encoder to zero
      */
-    public static void reset(){
+    public static void reset() {
 		elevator.setSelectedSensorPosition(0, 0, 1000);
 	}	 
 }
