@@ -2,24 +2,30 @@ package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 public class Drivetrain {
 
-    static TalonSRX frontRight, backRight, frontLeft, backLeft;
+    private static TalonSRX frontRight, frontLeft;
+    private static VictorSPX backRight, backLeft;
 
-
-    public Drivetrain(){
+    /**
+     * Initializes and sets up all motors for the drivetrain
+     */
+    public Drivetrain() {
         frontRight = new TalonSRX(25);
-        backRight = new TalonSRX(15);
         frontLeft = new TalonSRX(20);
-        backLeft = new TalonSRX(10);
+
+        backRight = new VictorSPX(15);
+        backLeft = new VictorSPX(10);
 
         backRight.follow(frontRight);
         backLeft.follow(backLeft);
 
         frontRight.setInverted(false);
-        backRight.setInverted(false);
         frontLeft.setInverted(false);
+
+        backRight.setInverted(false);
         backLeft.setInverted(false);
     }
 

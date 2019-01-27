@@ -8,50 +8,81 @@ public class RocketScript {
     private int autoSteps;
     private boolean lastCommand;
 
-    public RocketScript(){
+    /**
+     * Initializes necessary ArrayLists and variables
+     */
+    public RocketScript() {
         auto = new ArrayList<RobotFunction>();
         inParallel = new ArrayList<Boolean>();
         autoSteps = 0;
         lastCommand = false;
     }
 
-    public void runFunction(RobotFunction fxn, int one){
+    /**
+     * Adds a subsequent function to the ArrayList
+     * Stores the integer for the function
+     */
+    public void runFunction(RobotFunction fxn, int one) {
         auto.add(fxn);
         inParallel.add(false);
         fxn.collectInputs(one);
     }
 
-    public void runFunction(RobotFunction fxn, double one){
+    /**
+     * Adds a subsequent function to the ArrayList
+     * Stores the double for the function
+     */
+    public void runFunction(RobotFunction fxn, double one) {
         auto.add(fxn);
         inParallel.add(false);
         fxn.collectInputs(one);
     }
 
-    public void runFunction(RobotFunction fxn, double one, double two){
+    /**
+     * Adds a subsequent function to the ArrayList
+     * Stores the two doubles for the function
+     */
+    public void runFunction(RobotFunction fxn, double one, double two) {
         auto.add(fxn);
         inParallel.add(false);
         fxn.collectInputs(one, two);
     }
 
-    public void runInParallel(RobotFunction fxn, int one){
+    /**
+     * Adds a function to run parallel to the one added before to the ArrayList
+     * Stores the integer for the function
+     */
+    public void runInParallel(RobotFunction fxn, int one) {
         auto.add(fxn);
         inParallel.add(true);
         fxn.collectInputs(one);
     }
 
-    public void runInParallel(RobotFunction fxn, double one){
+    /**
+     * Adds a function to run parallel to the one added before to the ArrayList
+     * Stores the double for the function
+     */
+    public void runInParallel(RobotFunction fxn, double one) {
         auto.add(fxn);
         inParallel.add(true);
         fxn.collectInputs(one);
     }
 
-    public void runInParallel(RobotFunction fxn, double one, double two){
+    /**
+     * Adds a function to run parallel to the one added before to the ArrayList
+     * Stores the two doubles for the function
+     */
+    public void runInParallel(RobotFunction fxn, double one, double two) {
         auto.add(fxn);
         inParallel.add(true);
         fxn.collectInputs(one, two);
     }
 
-    public void run(){
+    /**
+     * Runs the added functions in order
+     * Parallel functions are run at the same time as the function before it
+     */
+    public void run() {
         System.out.println(auto.size());
         if(autoSteps == auto.size()-1){
             lastCommand = true;

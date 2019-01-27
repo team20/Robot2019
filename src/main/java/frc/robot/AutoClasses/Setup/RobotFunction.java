@@ -2,22 +2,49 @@ package frc.robot.AutoClasses.Setup;
 
 public class RobotFunction {
 
-    public void collectInputs(int one){
+    /**
+     * Stores one integer
+     * @param one: the integer
+     */
+    public void collectInputs(int one) {
         
     }
-    public void collectInputs(double one){
+
+    /**
+     * Stores one double
+     * @param one: the double
+     */
+    public void collectInputs(double one) {
 
     }
-    public void collectInputs(double one, double two){
+
+    /**
+     * Stores two doubles
+     * @param one: the first double
+     * @param two: the second double
+     */
+    public void collectInputs(double one, double two) {
         
     }
-    public void run(){
+
+    /**
+     * Runs the function
+     */
+    public void run() {
 
     }
-    public void stop(){
+
+    /**
+     * Stops the function
+     */
+    public void stop() {
         
     }
-    public boolean finished(){
+
+    /**
+     * @return: true when the function is completed
+     */
+    public boolean finished() {
         return false;
     }
 
