@@ -8,11 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.AutoClasses.AutoModes;
-import frc.robot.Controls.DriverControls;
-import frc.robot.Controls.OperatorControls;
-import frc.robot.Subsystems.Drivetrain;
-import frc.robot.Subsystems.Elevator;
+import frc.robot.auto.AutoModes;
+import frc.robot.controls.DriverControls;
+import frc.robot.controls.OperatorControls;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.utils.PrettyPrint;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,64 +23,68 @@ import frc.robot.Subsystems.Elevator;
  * project.
  */
 public class Robot extends TimedRobot {
-  /**
-   * This function is run when the robot is first started up and should be used
-   * for any initialization code.
-   */
+    AutoModes auto;
 
-  AutoModes auto;
+    Drivetrain drive;
+    Elevator elevator;
 
-  Drivetrain drive;
-  Elevator elevator;
+    DriverControls driver;
+    OperatorControls operator;
 
-  DriverControls driver;
-  OperatorControls operator;
+    boolean autoSet;
 
-  boolean autoSet;
+    @Override
+    public void robotInit() {
+        auto = new AutoModes();
 
-  @Override
-  public void robotInit() {
-    auto = new AutoModes();
+        drive = new Drivetrain();
+        elevator = new Elevator();
 
-    drive = new Drivetrain();
-    elevator = new Elevator();
+        driver = new DriverControls();
+        operator = new OperatorControls();
 
-    driver = new DriverControls();
-    operator = new OperatorControls();
-
-    autoSet = false;
-  }
-
-  @Override
-  public void autonomousInit() {
-
-  }
-
-  @Override
-  public void autonomousPeriodic() {
-    if(!autoSet){
-      auto.crossLine();
-      autoSet = true;
+        autoSet = false;
     }
-    auto.runAuto();
-  }
 
-  @Override
-  public void teleopInit() {
-  }
+    @Override
+    public void autonomousInit() {
 
-  @Override
-  public void teleopPeriodic() {
-    driver.driverControls();
-    operator.operatorControls();
-  }
+    }
 
-  @Override
-  public void testInit() {
-  }
+    @Override
+    public void autonomousPeriodic() {
+        if (!autoSet) {
+            auto.crossLine();
+            autoSet = true;
+        }
+        auto.runAuto();
+    }
 
-  @Override
-  public void testPeriodic() {
-  }
+    @Override
+    public void teleopInit() {
+    }
 
+    @Override
+    public void teleopPeriodic() {
+        driver.driverControls();
+        operator.operatorControls();
+    }
+
+    @Override
+    public void testInit() {
+    }
+
+    @Override
+    public void testPeriodic() {
+    }
+
+    @Override
+    public void disabledInit() {
+        PrettyPrint.removeAll();
+    }
+
+    @Override
+    public void robotPeriodic() {
+        PrettyPrint.print();
+    }
 }

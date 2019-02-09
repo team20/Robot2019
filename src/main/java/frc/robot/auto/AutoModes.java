@@ -1,7 +1,7 @@
-package frc.robot.AutoClasses;
+package frc.robot.auto;
 
-import frc.robot.AutoClasses.Setup.RocketScript;
-import frc.robot.AutoClasses.Functions.DriveTime;
+import frc.robot.auto.functions.DriveTime;
+import frc.robot.auto.setup.RocketScript;
 
 public class AutoModes {
     private RocketScript rocketScript;
@@ -12,7 +12,7 @@ public class AutoModes {
     public AutoModes() {
         rocketScript = new RocketScript();
     }
-    
+
     /**
      * Autonomous: crosses the HAB line
      */

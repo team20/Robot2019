@@ -1,4 +1,4 @@
-package frc.robot.Controls;
+package frc.robot.controls;
 
 public class DriverControls {
 

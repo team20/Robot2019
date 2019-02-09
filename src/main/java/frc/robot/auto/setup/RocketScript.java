@@ -1,4 +1,4 @@
-package frc.robot.AutoClasses.Setup;
+package frc.robot.auto.setup;
 
 import java.util.ArrayList;
 
@@ -84,22 +84,22 @@ public class RocketScript {
      */
     public void run() {
         System.out.println(auto.size());
-        if(autoSteps == auto.size()-1){
+        if (autoSteps == auto.size() - 1) {
             lastCommand = true;
         }
-        if(autoSteps < auto.size()){
+        if (autoSteps < auto.size()) {
             auto.get(autoSteps).run();
-            if(!lastCommand && inParallel.get(autoSteps+1)){
-                auto.get(autoSteps+1).run();
+            if (!lastCommand && inParallel.get(autoSteps + 1)) {
+                auto.get(autoSteps + 1).run();
             }
-            if(!lastCommand && inParallel.get(autoSteps+1) && auto.get(autoSteps).finished() && auto.get(autoSteps+1).finished()){
+            if (!lastCommand && inParallel.get(autoSteps + 1) && auto.get(autoSteps).finished() && auto.get(autoSteps + 1).finished()) {
                 auto.get(autoSteps).stop();
-                auto.get(autoSteps+1).stop();
+                auto.get(autoSteps + 1).stop();
                 autoSteps = autoSteps + 2;
-            } else if(!lastCommand && !inParallel.get(autoSteps+1) && auto.get(autoSteps).finished()){
+            } else if (!lastCommand && !inParallel.get(autoSteps + 1) && auto.get(autoSteps).finished()) {
                 auto.get(autoSteps).stop();
                 autoSteps++;
-            } else if (lastCommand && auto.get(autoSteps).finished()){
+            } else if (lastCommand && auto.get(autoSteps).finished()) {
                 auto.get(autoSteps).stop();
                 autoSteps++;
             }
