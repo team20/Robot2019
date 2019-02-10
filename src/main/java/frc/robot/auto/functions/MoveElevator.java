@@ -1,7 +1,7 @@
-package frc.robot.AutoClasses.Functions;
+package frc.robot.auto.functions;
 
-import frc.robot.AutoClasses.Setup.RobotFunction;
-import frc.robot.Subsystems.Elevator;
+import frc.robot.auto.setup.RobotFunction;
+import frc.robot.subsystems.Elevator;
 
 public class MoveElevator extends RobotFunction {
 

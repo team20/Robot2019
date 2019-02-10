@@ -1,8 +1,8 @@
-package frc.robot.AutoClasses.Functions;
+package frc.robot.auto.functions;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.AutoClasses.Setup.RobotFunction;
-import frc.robot.Subsystems.Drivetrain;
+import frc.robot.auto.setup.RobotFunction;
+import frc.robot.subsystems.Drivetrain;
 
 public class DriveTime extends RobotFunction {
 
@@ -13,8 +13,11 @@ public class DriveTime extends RobotFunction {
      * Initializes all necessary variables
      */
     public DriveTime() {
-        setStartTime = false; isFinished = false;
-        startTime = 0; speed = 0; time = 0;
+        setStartTime = false;
+        isFinished = false;
+        startTime = 0;
+        speed = 0;
+        time = 0;
     }
 
     /**
@@ -32,17 +35,17 @@ public class DriveTime extends RobotFunction {
     @Override
     public void run() {
         if (!setStartTime) {
-			startTime = Timer.getFPGATimestamp();
-			setStartTime = true;
+            startTime = Timer.getFPGATimestamp();
+            setStartTime = true;
         }
         System.out.println("Time Elapsed: " + (Timer.getFPGATimestamp() - startTime));
-		if (Math.abs(Timer.getFPGATimestamp() - startTime) < time) {
-			Drivetrain.drive(speed, 0.0, 0.0);
-		} else {
+        if (Math.abs(Timer.getFPGATimestamp() - startTime) < time) {
+            Drivetrain.drive(speed, 0.0, 0.0);
+        } else {
 
             Drivetrain.drive(0.0, 0.0, 0.0);
-			isFinished = true;
-		}
+            isFinished = true;
+        }
     }
 
     /**

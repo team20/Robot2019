@@ -1,17 +1,19 @@
-package frc.robot.AutoClasses.Setup;
+package frc.robot.auto.setup;
 
 public class RobotFunction {
 
     /**
      * Stores one integer
+     *
      * @param one: the integer
      */
     public void collectInputs(int one) {
-        
+
     }
 
     /**
      * Stores one double
+     *
      * @param one: the double
      */
     public void collectInputs(double one) {
@@ -20,11 +22,12 @@ public class RobotFunction {
 
     /**
      * Stores two doubles
+     *
      * @param one: the first double
      * @param two: the second double
      */
     public void collectInputs(double one, double two) {
-        
+
     }
 
     /**
@@ -38,7 +41,7 @@ public class RobotFunction {
      * Stops the function
      */
     public void stop() {
-        
+
     }
 
     /**

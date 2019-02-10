@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -30,13 +30,14 @@ public class Drivetrain {
     }
 
     /**
-	 * makes the drive train move in arcade drive
-	 * @param speed: straight axis value
-	 * @param rightTurn: right axis value
-	 * @param leftTurn: left axis value
-	 */
-	public static void drive(double speed, double rightTurn, double leftTurn) {
-		frontRight.set(ControlMode.PercentOutput, (speed - rightTurn + leftTurn)*0.75);
-		frontLeft.set(ControlMode.PercentOutput, (-speed + leftTurn - rightTurn));
+     * makes the drive train move in arcade drive
+     *
+     * @param speed:     straight axis value
+     * @param rightTurn: right axis value
+     * @param leftTurn:  left axis value
+     */
+    public static void drive(double speed, double rightTurn, double leftTurn) {
+        frontRight.set(ControlMode.PercentOutput, (speed - rightTurn + leftTurn) * 0.75);
+        frontLeft.set(ControlMode.PercentOutput, (-speed + leftTurn - rightTurn));
     }
 }
