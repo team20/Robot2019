@@ -13,6 +13,7 @@ import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
 
     Drivetrain drive;
     Elevator elevator;
+    Intake intake;
 
     DriverControls driver;
     OperatorControls operator;
@@ -39,6 +41,7 @@ public class Robot extends TimedRobot {
 
         drive = new Drivetrain();
         elevator = new Elevator();
+        intake = new Intake();
 
         driver = new DriverControls();
         operator = new OperatorControls();
