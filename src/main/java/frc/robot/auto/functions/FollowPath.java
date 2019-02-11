@@ -57,6 +57,7 @@ class FollowPath extends RobotFunction {
         new Notifier(() -> rightMaster.processMotionProfileBuffer()).startPeriodic(.01);
     }
 
+    @Override
     public void run() {
         if (started || getLeftStatus().btmBufferCnt >= minPoints) {
             leftMaster.set(ControlMode.MotionProfile, SetValueMotionProfile.Enable.value);
@@ -73,19 +74,20 @@ class FollowPath extends RobotFunction {
         }
     }
 
-    public boolean isFinished() {
+    @Override
+    public boolean finished() {
         return leftMaster.getMotionProfileTopLevelBufferCount() == 0 &&
                 rightMaster.getMotionProfileTopLevelBufferCount() == 0 &&
                 started;
     }
 
-    public MotionProfileStatus getLeftStatus() {
+    private MotionProfileStatus getLeftStatus() {
         var status = new MotionProfileStatus();
         leftMaster.getMotionProfileStatus(status);
         return status;
     }
 
-    public MotionProfileStatus getRightStatus() {
+    private MotionProfileStatus getRightStatus() {
         var status = new MotionProfileStatus();
         rightMaster.getMotionProfileStatus(status);
         return status;

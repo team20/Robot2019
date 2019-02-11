@@ -5,20 +5,20 @@ import frc.robot.subsystems.Elevator;
 
 public class MoveElevator extends RobotFunction {
 
-    private int position;
+    private double position;
 
     /**
      * Initializes all needed variables
      */
     public MoveElevator() {
-        position = 0;
+        position = 0.0;
     }
 
     /**
      * Stores the desired position of the elevator
      */
     @Override
-    public void collectInputs(int pos) {
+    public void collectInputs(double pos) {
         position = pos;
     }
 
