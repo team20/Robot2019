@@ -3,7 +3,9 @@ package frc.robot.auto.functions;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.setup.RobotFunction;
 
-public class Wait extends RobotFunction {
+import java.util.InputMismatchException;
+
+public class Wait extends RobotFunction<Double> {
 
     private boolean setStartTime, isFinished;
     private double startTime, time;
@@ -22,8 +24,10 @@ public class Wait extends RobotFunction {
      * Collects the length of time of the wait
      */
     @Override
-    public void collectInputs(double howMuchTime) {
-        time = howMuchTime;
+    public void collectInputs(Double... values) {
+        if (values.length != 1) throw new InputMismatchException("Wait requires ONE input");
+
+        time = values[0];
     }
 
     /**
@@ -40,11 +44,15 @@ public class Wait extends RobotFunction {
         }
     }
 
+    @Override
+    public void stop() {
+    }
+
     /**
-     * @return: returns true if the drivetrain is done moving
+     * @return returns true if the drivetrain is done moving
      */
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return isFinished;
     }
 }

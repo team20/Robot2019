@@ -3,13 +3,17 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Intake;
 
-public class PlaceHatch extends RobotFunction {
+public class PlaceHatch extends RobotFunction<Void> {
 
     /**
      * Initializes all needed variables
      */
     public PlaceHatch() {
 
+    }
+
+    @Override
+    public void collectInputs(Void... values) {
     }
 
     /**
@@ -20,11 +24,16 @@ public class PlaceHatch extends RobotFunction {
         Intake.openHatch();
     }
 
+    @Override
+    public void stop() {
+        Intake.stopHatchMotor();
+    }
+
     /**
-     * @return: is the Placeor set?
+     * @return is the Placer set?
      */
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return true;
     }
 }

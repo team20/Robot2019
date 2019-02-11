@@ -3,8 +3,11 @@ package frc.robot.auto.functions;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.PrettyPrint;
 
-public class DriveTime extends RobotFunction {
+import java.util.InputMismatchException;
+
+public class DriveTime extends RobotFunction<Double> {
 
     private boolean setStartTime, isFinished;
     private double startTime, speed, time;
@@ -22,11 +25,15 @@ public class DriveTime extends RobotFunction {
 
     /**
      * Collects the speed and length of time the robot should move for
+     *
+     * @param values nums[0] is speed, nums[1] is time
      */
     @Override
-    public void collectInputs(double speedStraight, double howMuchTime) {
-        speed = speedStraight;
-        time = howMuchTime;
+    public void collectInputs(Double... values) {
+        if (values.length != 2) throw new InputMismatchException("DriveTime requires TWO inputs");
+
+        speed = values[0];
+        time = values[1];
     }
 
     /**
@@ -38,21 +45,20 @@ public class DriveTime extends RobotFunction {
             startTime = Timer.getFPGATimestamp();
             setStartTime = true;
         }
-        System.out.println("Time Elapsed: " + (Timer.getFPGATimestamp() - startTime));
+        PrettyPrint.put("Drivetrain Time Elapsed", Timer.getFPGATimestamp() - startTime);
         if (Math.abs(Timer.getFPGATimestamp() - startTime) < time) {
             Drivetrain.drive(speed, 0.0, 0.0);
         } else {
-
             Drivetrain.drive(0.0, 0.0, 0.0);
             isFinished = true;
         }
     }
 
     /**
-     * @return: returns true if the drivetrain is done moving
+     * @return returns true if the drivetrain is done moving
      */
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return isFinished;
     }
 

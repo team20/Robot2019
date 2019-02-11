@@ -29,4 +29,8 @@ public class Intake {
     public static void closeHatch() {
         hatch.set(1);
     }
+
+    public static void stopHatchMotor() {
+        hatch.stopMotor();
+    }
 }
