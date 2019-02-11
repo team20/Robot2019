@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
@@ -10,20 +10,21 @@ public class Elevator {
     static CANSparkMax elevator;
     static CANEncoder elevatorEncoder;
 
-    private static double setPosition = 0, prevPosition = 0;
-    private static final int TICKS_PER_INCH = 695;
-    private static final int MAX_POSITION = 0;
-    private static final int DEADBAND = 50;
+    private static double setPosition, prevPosition;
 
-    public static final int FLOOR_POSITION = 0;
-    public static final int HATCH_LEVEL_ONE_POSITION = 0;
-    public static final int HATCH_LEVEL_TWO_POSITION = 0;
-    public static final int HATCH_LEVEL_THREE_POSITION = 0;
-    public static final int CARGO_LEVEL_ONE_POSITION = 0;
-    public static final int CARGO_LEVEL_TWO_POSITION = 0;
-    public static final int CARGO_LEVEL_THREE_POSITION = 0;
-    public static final int CARGO_SHIP_POSITION = 0;
+    private static final double TICKS_PER_INCH = 695;
+    private static final double STAGE_THRESHOLD = 0.0;
+    private static final double MAX_POSITION = 0.0;
+    private static final double DEADBAND = 50;
 
+    public static final double FLOOR_POSITION = 0.0;
+    public static final double HATCH_LEVEL_ONE_POSITION = 0.0;
+    public static final double HATCH_LEVEL_TWO_POSITION = 0.0;
+    public static final double HATCH_LEVEL_THREE_POSITION = 0.0;
+    public static final double CARGO_LEVEL_ONE_POSITION = 0.0;
+    public static final double CARGO_LEVEL_TWO_POSITION = 0.0;
+    public static final double CARGO_LEVEL_THREE_POSITION = 0.0;
+    public static final double CARGO_SHIP_POSITION = 0.0;
 	
     /**
      * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
@@ -37,18 +38,9 @@ public class Elevator {
         elevatorEncoder = new CANEncoder(elevator);
 
         setPosition = elevatorEncoder.getPosition();
-	}
+        prevPosition = 0.0;
+    }
 	
-    /**
-     * Prevents the user from going past the maximum position of the elevator
-     */
-    public static void limitPosition() {
-		if(setPosition < MAX_POSITION){
-			setPosition = MAX_POSITION;
-            elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
-		}
-	}
-
     /**
 	 * inserts the p i d f values into the Talon SRX
 	 * @param p: proportional value
@@ -128,14 +120,6 @@ public class Elevator {
     }
 
     /**
-     * 
-     */
-    public static void setPosition(double pos) {
-        setPosition = pos;
-        elevator.getPIDController().setReference(pos, ControlType.kPosition);
-    }
-
-    /**
 	 * sets the elevator set position to its current position
 	 */
 	public static void stop() {
@@ -166,7 +150,14 @@ public class Elevator {
 	 */
 	public static double getSetPosition() {
 		return setPosition;
-	}
+    }
+    
+    public static boolean aboveStageThreshold(){
+        if(elevatorEncoder.getPosition() > STAGE_THRESHOLD){
+            return true;
+        }
+        return false;
+    }
 	
 	/**
 	 * @return true if the elevator is within deadband of its set position
@@ -189,9 +180,23 @@ public class Elevator {
 	}
 
     /**
-     * Resets the elevator encoder to zero
+     * Sets the elevator to the entered position
+     * @param: desired elevator position
      */
-    public static void reset() {
+    public static void setPosition(double pos) {
+        setPosition = pos;
+        limitPosition();
+    }
 
-    }	 
+    /**
+     * Prevents the user from going past the maximum position of the elevator
+     */
+    private static void limitPosition() {
+		if(setPosition > MAX_POSITION){
+			setPosition = MAX_POSITION;
+            elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
+		} else {
+            elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
+        }
+	}
 }

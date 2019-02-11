@@ -18,15 +18,15 @@ public class Intake {
         cargo = new VictorSPX(0);
     }
 
-    public void runCargo(double speed) {
+    public static void runCargo(double speed) {
         cargo.set(ControlMode.PercentOutput, speed);
     }
 
-    public void openHatch() {
+    public static void openHatch() {
         hatch.set(0);
     }
 
-    public void closeHatch() {
+    public static void closeHatch() {
         hatch.set(1);
     }
 }
