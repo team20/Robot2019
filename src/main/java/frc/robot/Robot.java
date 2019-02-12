@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.*;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -25,8 +24,10 @@ import frc.robot.utils.PrettyPrint;
 public class Robot extends TimedRobot {
     AutoModes auto;
 
+    Arduino arduino;
     Drivetrain drive;
     Elevator elevator;
+    LineSensor lineSensor;
 
     DriverControls driver;
     OperatorControls operator;
@@ -37,8 +38,10 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         auto = new AutoModes();
 
+        arduino = new Arduino(0);
         drive = new Drivetrain();
         elevator = new Elevator();
+        lineSensor = new LineSensor();
 
         driver = new DriverControls();
         operator = new OperatorControls();
