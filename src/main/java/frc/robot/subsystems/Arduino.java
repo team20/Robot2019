@@ -34,8 +34,8 @@ public class Arduino implements Runnable, PIDSource {
         address = a;
         Wire = new I2C(Port.kOnboard, address);
 
-        writeData = new byte[4];
-        readData = new byte[4];
+        writeData = new byte[3];
+        readData = new byte[3];
     }
 
     public boolean getObjInView() {
