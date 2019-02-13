@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
     Drivetrain drive;
     Elevator elevator;
     LineSensor lineSensor;
+    Intake intake;
 
     DriverControls driver;
     OperatorControls operator;
@@ -42,6 +43,7 @@ public class Robot extends TimedRobot {
         drive = new Drivetrain();
         elevator = new Elevator();
         lineSensor = new LineSensor();
+        intake = new Intake();
 
         driver = new DriverControls();
         operator = new OperatorControls();

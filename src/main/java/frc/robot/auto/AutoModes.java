@@ -1,6 +1,6 @@
 package frc.robot.auto;
 
-import frc.robot.auto.functions.DriveTime;
+import frc.robot.auto.functions.*;
 import frc.robot.auto.setup.RocketScript;
 
 public class AutoModes {
@@ -18,6 +18,10 @@ public class AutoModes {
      */
     public void crossLine() {
         rocketScript.runFunction(new DriveTime(), 0.5, 2.0);
+    }
+
+    public void align() {
+        rocketScript.runFunction(new Align());
     }
 
     /**

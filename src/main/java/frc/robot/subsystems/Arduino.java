@@ -13,6 +13,13 @@ public class Arduino implements Runnable, PIDSource {
     private Notifier thread;
     private I2C Wire;
     private PIDSourceType pidSourceType;
+    
+    private enum read {
+
+    }
+    private enum write {
+        
+    }
 
     //data to be written to Arduino
     byte[] writeData;
