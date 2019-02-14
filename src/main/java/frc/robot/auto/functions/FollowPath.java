@@ -1,93 +1,83 @@
 package frc.robot.auto.functions;
 
 import com.ctre.phoenix.motion.MotionProfileStatus;
-import com.ctre.phoenix.motion.SetValueMotionProfile;
 import com.ctre.phoenix.motion.TrajectoryPoint;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.auto.setup.RobotFunction;
+import frc.robot.utils.PrettyPrint;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
+import java.util.InputMismatchException;
 
-class FollowPath extends RobotFunction {
-    private TalonSRX leftMaster, rightMaster;
-    //    private BufferedTrajectoryPointStream leftPoints, rightPoints;
-    private TrajectoryPoint[] leftPoints, rightPoints;
-    private final int minPoints = 10;
-    private boolean started = false;
+import static frc.robot.subsystems.Drivetrain.frontLeft;
+import static frc.robot.subsystems.Drivetrain.frontRight;
+import static frc.robot.subsystems.Drivetrain.motionProfile;
 
-    public FollowPath(String filePath, TalonSRX leftMaster, TalonSRX rightMaster) {
-        leftMaster.setStatusFramePeriod(StatusFrame.Status_10_Targets, 20);
-        leftMaster.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 20);
-        leftMaster.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 20);
+class FollowPath extends RobotFunction<String> {
+    private final int minPoints = 5;
+    private boolean started;
 
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_10_Targets, 20);
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 20);
-        rightMaster.setStatusFramePeriod(StatusFrame.Status_17_Targets1, 20);
-
-        leftPoints = fromFile(filePath + "left.csv");
-        for (TrajectoryPoint point : leftPoints)
-            leftMaster.pushMotionProfileTrajectory(point);
-
-        rightPoints = fromFile(filePath + "right.csv");
-        for (TrajectoryPoint point : rightPoints)
-            rightMaster.pushMotionProfileTrajectory(point);
-
-        this.leftMaster = leftMaster;
-        this.rightMaster = rightMaster;
+    public FollowPath() {
+        started = false;
     }
 
-    public void start() {
-        leftMaster.configMotionProfileTrajectoryPeriod(20);
-        leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 1000);
-        leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 20);
+    /**
+     * pushes motion profile points into the drivetrain motors
+     *
+     * @param values one String that is the filepath to the spline to be ran
+     */
+    @Override
+    public void collectInputs(String... values) {
+        if (values.length != 1) throw new InputMismatchException("FollowPath requires ONE filepath");
 
-        rightMaster.configMotionProfileTrajectoryPeriod(20);
-        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 1000);
-        rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 20);
+        for (TrajectoryPoint point : fromFile(values[0] + "left.csv"))
+            frontLeft().pushMotionProfileTrajectory(point);
 
-        new Notifier(() -> leftMaster.processMotionProfileBuffer()).startPeriodic(.01);
-        new Notifier(() -> rightMaster.processMotionProfileBuffer()).startPeriodic(.01);
+        for (TrajectoryPoint point : fromFile(values[0] + "right.csv"))
+            frontRight().pushMotionProfileTrajectory(point);
+
+        //push points twice as fast as robot's loop runs
+        new Notifier(() -> frontLeft().processMotionProfileBuffer()).startPeriodic(.01);
+        new Notifier(() -> frontRight().processMotionProfileBuffer()).startPeriodic(.01);
+        PrettyPrint.put("MP left vel", frontLeft()::getActiveTrajectoryVelocity);
+        PrettyPrint.put("MP right vel", frontRight()::getActiveTrajectoryVelocity);
     }
 
+    /**
+     * puts the motion profile in hold mode, holds last pair of velocities
+     */
+    @Override
+    public void stop() {
+        motionProfile(false);
+        PrettyPrint.remove("MP left vel", "MP right vel");
+    }
+
+    @Override
     public void run() {
-        if (started || getLeftStatus().btmBufferCnt >= minPoints) {
-            leftMaster.set(ControlMode.MotionProfile, SetValueMotionProfile.Enable.value);
-            started = true;
-        } else {
-            leftMaster.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
-        }
-
-        if (started || getRightStatus().btmBufferCnt >= minPoints) {
-            rightMaster.set(ControlMode.MotionProfile, SetValueMotionProfile.Enable.value);
-            started = true;
-        } else {
-            rightMaster.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
-        }
+        // ensure that buffer is sufficiently filled
+        motionProfile(started || getLeftStatus().btmBufferCnt >= minPoints && getRightStatus().btmBufferCnt >= minPoints);
+        started = started || getLeftStatus().btmBufferCnt >= minPoints && getRightStatus().btmBufferCnt >= minPoints;
     }
 
+    @Override
     public boolean isFinished() {
-        return leftMaster.getMotionProfileTopLevelBufferCount() == 0 &&
-                rightMaster.getMotionProfileTopLevelBufferCount() == 0 &&
+        return frontLeft().getMotionProfileTopLevelBufferCount() == 0 &&
+                frontRight().getMotionProfileTopLevelBufferCount() == 0 &&
                 started;
     }
 
     public MotionProfileStatus getLeftStatus() {
         var status = new MotionProfileStatus();
-        leftMaster.getMotionProfileStatus(status);
+        frontLeft().getMotionProfileStatus(status);
         return status;
     }
 
     public MotionProfileStatus getRightStatus() {
         var status = new MotionProfileStatus();
-        rightMaster.getMotionProfileStatus(status);
+        frontRight().getMotionProfileStatus(status);
         return status;
     }
 
@@ -104,9 +94,9 @@ class FollowPath extends RobotFunction {
                     .map(vals -> {
                         var p = new TrajectoryPoint();
                         p.position = vals[0];
-                        p.velocity = vals[1]
-                        ;
-                        //might need to set pid slots etc
+                        p.velocity = vals[1];
+//                        p.headingDeg = vals[2]; not tested (maybe not used)
+                        // might need to set pid slots etc
                         p.profileSlotSelect0 = 0;
                         return p;
                     })
@@ -115,7 +105,7 @@ class FollowPath extends RobotFunction {
             points[points.length - 1].isLastPoint = true;
             return points;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            PrettyPrint.error("PathFollower file not found");
         }
         return new TrajectoryPoint[0];
     }

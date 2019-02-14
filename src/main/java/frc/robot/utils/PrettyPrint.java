@@ -2,6 +2,7 @@ package frc.robot.utils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.lang.Math.min;
@@ -46,6 +47,7 @@ public class PrettyPrint {
 
     private static LinkedHashMap<String, Supplier<Object>> values = new LinkedHashMap<>(); // Linked to preserve order
     private static ArrayList<String> tempValues = new ArrayList<>();
+    private static ArrayList<String> errors = new ArrayList<>();
 
     /**
      * store a {@code message} and expression for a value that will be prettyprinted
@@ -73,10 +75,24 @@ public class PrettyPrint {
     }
 
     /**
+     * print an error message in an easily viewable way
+     */
+    public static void error(String errMessage) {
+        errors.add(errMessage);
+    }
+
+    /**
      * stops a message from being printed
      */
     public static void remove(String message) {
         values.remove(message);
+    }
+
+    /**
+     * stops multiple messages from being printed
+     */
+    public static void remove(String... messages) {
+        for (String message : messages) values.remove(message);
     }
 
     /**
@@ -104,7 +120,20 @@ public class PrettyPrint {
      * called to print all stored messages/values. must be called in a periodic mode
      */
     public static void print() {
-        if (values.isEmpty() && tempValues.isEmpty()) return;
+        if (values.isEmpty() && tempValues.isEmpty() && errors.isEmpty()) return;
+
+        for (String errorMessage : errors) {
+            for (int i = 0; i < 70; i++) System.out.print("-");
+            System.out.println();
+            for (int i = 0; i < 70; i++) System.out.print(" ");
+            System.out.println();
+            System.out.println(errorMessage);
+            for (int i = 0; i < 70; i++) System.out.print(" ");
+            System.out.println();
+            for (int i = 0; i < 70; i++) System.out.print("-");
+            System.out.println();
+        }
+
         if (++count != frequency) return;
         count = 0;
 
@@ -115,10 +144,11 @@ public class PrettyPrint {
         }
         System.out.println();
         tempValues.clear();
+        errors.clear();
     }
 
     /**
-     * utility method to ensure that each value is the same num of characters to provide table's vertical straightness
+     * utility method to ensure that each value is the same num of characters to maintain table's vertical straightness
      */
     private static String shortened(Supplier<Object> valSup) {
         String valStr = valSup.get().toString();

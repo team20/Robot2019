@@ -3,7 +3,9 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Elevator;
 
-public class MoveElevator extends RobotFunction {
+import java.util.InputMismatchException;
+
+public class MoveElevator extends RobotFunction<Integer> {
 
     private int position;
 
@@ -18,8 +20,9 @@ public class MoveElevator extends RobotFunction {
      * Stores the desired position of the elevator
      */
     @Override
-    public void collectInputs(int pos) {
-        position = pos;
+    public void collectInputs(Integer... values) {
+        if (values.length != 1) throw new InputMismatchException("MoveElevator requires ONE input");
+        position = values[0];
     }
 
     /**
@@ -31,10 +34,10 @@ public class MoveElevator extends RobotFunction {
     }
 
     /**
-     * @return: is the elevator finished moving?
+     * @return is the elevator isFinished moving?
      */
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return Elevator.elevatorDoneMoving();
     }
 

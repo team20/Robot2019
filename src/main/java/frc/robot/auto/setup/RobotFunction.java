@@ -1,54 +1,30 @@
 package frc.robot.auto.setup;
 
-public class RobotFunction {
+public abstract class RobotFunction<T> {
+    /**
+     * whether or not this function is to be ran in parallel with other functions
+     */
+    public boolean isParallel = false;
 
     /**
-     * Stores one integer
+     * Stores values
      *
-     * @param one: the integer
+     * @param values type differs between functions
      */
-    public void collectInputs(int one) {
-
-    }
-
-    /**
-     * Stores one double
-     *
-     * @param one: the double
-     */
-    public void collectInputs(double one) {
-
-    }
-
-    /**
-     * Stores two doubles
-     *
-     * @param one: the first double
-     * @param two: the second double
-     */
-    public void collectInputs(double one, double two) {
-
-    }
+    public abstract void collectInputs(T... values);
 
     /**
      * Runs the function
      */
-    public void run() {
-
-    }
+    public abstract void run();
 
     /**
      * Stops the function
      */
-    public void stop() {
-
-    }
+    public abstract void stop();
 
     /**
-     * @return: true when the function is completed
+     * @return true when the function is completed
      */
-    public boolean finished() {
-        return false;
-    }
-
+    public abstract boolean isFinished();
 }
