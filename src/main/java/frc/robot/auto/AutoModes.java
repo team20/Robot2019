@@ -20,8 +20,8 @@ public class AutoModes {
         rocketScript.runFunction(new DriveTime(), 0.5, 2.0);
     }
 
-    public void align() {
-        rocketScript.runFunction(new Align());
+    public void align(int step) {
+        rocketScript.runFunction(new Align(), step);
     }
 
     /**
