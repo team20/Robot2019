@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
+import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.*;
@@ -23,6 +24,7 @@ import frc.robot.utils.PrettyPrint;
  */
 public class Robot extends TimedRobot {
     AutoModes auto;
+    Mode mode;
 
     Drivetrain drive;
     Elevator elevator;
@@ -31,11 +33,10 @@ public class Robot extends TimedRobot {
     DriverControls driver;
     OperatorControls operator;
 
-    boolean autoSet;
-
     @Override
     public void robotInit() {
         auto = new AutoModes();
+        mode = null;
 
         drive = new Drivetrain();
         elevator = new Elevator();
@@ -43,21 +44,27 @@ public class Robot extends TimedRobot {
 
         driver = new DriverControls();
         operator = new OperatorControls();
-
-        autoSet = false;
     }
 
     @Override
     public void autonomousInit() {
-
+        mode = Mode.Align;       //TODO: eventually make auto selection based off of user input to the SmartDashboard
+        auto.setMode(mode);
+        switch (auto.getMode()) {
+            case CrossLine:
+                auto.crossLine();
+                break;
+            case Align:
+                auto.align(0);
+                break;
+            default:
+                System.out.println("NO AUTO SELECTED");
+                break;
+        }
     }
 
     @Override
     public void autonomousPeriodic() {
-        if (!autoSet) {
-            auto.crossLine();
-            autoSet = true;
-        }
         auto.runAuto();
     }
 

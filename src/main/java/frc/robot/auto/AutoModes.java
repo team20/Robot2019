@@ -5,12 +5,32 @@ import frc.robot.auto.setup.RocketScript;
 
 public class AutoModes {
     private RocketScript rocketScript;
+    public enum Mode {
+        CrossLine,
+        Align
+    }
+    private Mode selectedMode;
 
     /**
      * Initializes RocketScript
      */
     public AutoModes() {
         rocketScript = new RocketScript();
+        selectedMode = null;
+    }
+
+    /**
+     * Gets selected auto mode
+     */
+    public Mode getMode() {
+        return selectedMode;
+    }
+
+    /**
+     * Sets selected auto mode
+     */
+    public void setMode(Mode m) {
+        selectedMode = m;
     }
 
     /**
