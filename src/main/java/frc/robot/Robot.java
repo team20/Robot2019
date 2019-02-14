@@ -24,7 +24,6 @@ import frc.robot.utils.PrettyPrint;
  */
 public class Robot extends TimedRobot {
     AutoModes auto;
-    Mode mode;
 
     Drivetrain drive;
     Elevator elevator;
@@ -36,7 +35,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         auto = new AutoModes();
-        mode = null;
 
         drive = new Drivetrain();
         elevator = new Elevator();
@@ -48,8 +46,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        mode = Mode.Align;       //TODO: eventually make auto selection based off of user input to the SmartDashboard
-        auto.setMode(mode);
+        auto.setMode(Mode.Align);       //TODO: eventually make auto selection based off of user input to the SmartDashboard
         switch (auto.getMode()) {
             case CrossLine:
                 auto.crossLine();
