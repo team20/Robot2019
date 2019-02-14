@@ -26,7 +26,6 @@ public class CollectHatch extends RobotFunction<Void> {
 
     @Override
     public void stop() {
-        Intake.stopHatchMotor();
     }
 
     /**
