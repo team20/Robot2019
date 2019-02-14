@@ -40,8 +40,12 @@ public class AutoModes {
         rocketScript.runFunction(new DriveTime(), 0.5, 2.0);
     }
 
-    public void align(int step) {
-        rocketScript.runFunction(new Align(), step);
+    /**
+     * Align to target (hatch on rocket/cargo ship or loading station)
+     * @param skip true if turning towards alignment tape should be skipped
+     */
+    public void align(boolean skip) {
+        rocketScript.runFunction(new Align(), skip);
     }
 
     /**

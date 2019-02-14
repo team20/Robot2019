@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
                 auto.crossLine();
                 break;
             case Align:
-                auto.align(0);
+                auto.align(false);
                 break;
             default:
                 System.out.println("NO AUTO SELECTED");

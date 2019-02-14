@@ -6,7 +6,7 @@ import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LineSensor;
 
-public class Align extends RobotFunction<Integer> {
+public class Align extends RobotFunction<Boolean> {
     private PIDController
         anglePid,
         speedPid,
@@ -15,20 +15,23 @@ public class Align extends RobotFunction<Integer> {
     private int
         step,
         prevStep;
-    private boolean autoChanged;
+    private boolean
+        skipFirstStep,
+        autoChanged;
 
     public Align() {
         anglePid = new PIDController(0.012, 0.001, 0.04, Arduino.pidSource, Arduino.pidOutput);
         speedPid = new PIDController(0.02, 0, 0.05, Arduino.pidSource, Arduino.pidOutput);
         linePid = new PIDController(0.002, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
 
+        step = 0;
+        prevStep = -1;
         autoChanged = true;
     }
 
     @Override
-    public void collectInputs(Integer... values) {
-        step = values[0];
-        prevStep = step - 1;
+    public void collectInputs(Boolean... values) {
+        skipFirstStep = values[0];
     }
 
     @Override
