@@ -15,9 +15,7 @@ public class Align extends RobotFunction<Boolean> {
     private int
         step,
         prevStep;
-    private boolean
-        skipFirstStep,
-        autoChanged;
+    private boolean autoChanged;
 
     public Align() {
         anglePid = new PIDController(0.012, 0.001, 0.04, Arduino.pidSource, Arduino.pidOutput);
@@ -31,7 +29,7 @@ public class Align extends RobotFunction<Boolean> {
 
     @Override
     public void collectInputs(Boolean... values) {
-        skipFirstStep = values[0];
+        step = !values[0] ? 0 : 1;
     }
 
     @Override
