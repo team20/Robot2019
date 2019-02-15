@@ -23,11 +23,16 @@ public class Arm {
         kD = 0;
         kIz = 0;
         kFF = 0;
+        /*
+The above code is just filler for the pid inputs until
+we actually get them down and are able to tune them 
+        */
         kMaxOutput = 1;
         kMinOutput = -1;
-        rotations=0;
+        rotations=0;//this counts in total revolutions of motor
         m_pidController = m_motor.getPIDController();
         m_encoder = m_motor.getEncoder();
+        //sends 
         m_pidController.setP(kP);
         m_pidController.setI(kI);
         m_pidController.setD(kD);
@@ -39,8 +44,8 @@ public class Arm {
        
      } 
      public static void Stablize(){// initialize motor
-        m_pidController.setReference(rotations, ControlType.kPosition);
-        SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());
+        m_pidController.setReference(rotations, ControlType.kPosition);//set reference is similar to set poition. Rotation is setpoint controltype is the type of setpoint
+        SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());//returns encoder value
         
         
         
