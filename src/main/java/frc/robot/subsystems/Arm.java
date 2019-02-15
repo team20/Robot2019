@@ -17,19 +17,19 @@ public class Arm {
     public static double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput,rotations;
 
     public Arm() {
-        m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
+        m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);// initializes motor
         kP = 0.0001;
         kI = 0;
         kD = 0;
         kIz = 0;
         kFF = 0;
         /*
-The above code is just filler for the pid inputs until
+The above code is just filler for the PID inputs until
 we actually get them down and are able to tune them 
         */
         kMaxOutput = 1;
         kMinOutput = -1;
-        rotations=0;//this counts in total revolutions of motor
+        rotations=0;//this is the setpoint => set to 0 until we actually get numbers
         m_pidController = m_motor.getPIDController();
         m_encoder = m_motor.getEncoder();
         //sends corresponding values to the pid controller object
@@ -39,12 +39,13 @@ we actually get them down and are able to tune them
         m_pidController.setIZone(kIz);
         m_pidController.setFF(kFF);
         m_pidController.setOutputRange(kMinOutput, kMaxOutput);
-        m_pidController.setReference(rotations, ControlType.kPosition);
-        
-       
      } 
-     public static void Stablize(){// initialize motor
-        m_pidController.setReference(rotations, ControlType.kPosition);//set reference is similar to set poition. Rotation is setpoint controltype is the type of setpoint
+     /*
+Set reference is similar to set poition. Refers to the setpoint
+Rotation is the setpoint, and controltype defines the type of output 
+     */
+     public static void Stablize(){
+        m_pidController.setReference(rotations, ControlType.kPosition);
         SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());//returns encoder value
         
         
