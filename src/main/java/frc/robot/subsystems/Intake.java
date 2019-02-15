@@ -35,6 +35,13 @@ public class Intake {
     }
 
     /**
+     * Runs the cargo motor at spitting speed
+     */
+    public static void outtakeCargo(){
+        runCargoMotor(-0.5);
+    }
+
+    /**
      * Stops the cargo motor
      */
     public static void stopCargoRollers(){
@@ -60,7 +67,7 @@ public class Intake {
      * @param: speed = speed of the cargo motor (-1.0 to 1.0)
      * @return: true if a cargo is in the intake
      */
-    public boolean intakeMode(double speed){
+    public static boolean intakeMode(){
         if(!cargoSensor.get()){
             collectCargo();
             return false;
