@@ -2,7 +2,6 @@ package frc.robot.utils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.lang.Math.min;
