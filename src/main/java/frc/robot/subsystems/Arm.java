@@ -29,7 +29,7 @@ we actually get them down and are able to tune them
         */
         kMaxOutput = 1;
         kMinOutput = -1;
-        rotations=0;//this is the setpoint => set to 0 until we actually get numbers
+        
         m_pidController = m_motor.getPIDController();
         m_encoder = m_motor.getEncoder();
         //sends corresponding values to the pid controller object
@@ -40,6 +40,16 @@ we actually get them down and are able to tune them
         m_pidController.setFF(kFF);
         m_pidController.setOutputRange(kMinOutput, kMaxOutput);
      } 
+     /*
+     Takes in setpoint parameter 
+     A)Down
+     B)Up
+     C)Pre-Match
+
+     */
+     public static void setRevs(double rotation){
+rotations= rotation;
+     }
      /*
 Set reference is similar to set poition. Refers to the setpoint
 Rotation is the setpoint, and controltype defines the type of output 
