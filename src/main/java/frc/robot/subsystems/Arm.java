@@ -32,7 +32,7 @@ we actually get them down and are able to tune them
         rotations=0;//this counts in total revolutions of motor
         m_pidController = m_motor.getPIDController();
         m_encoder = m_motor.getEncoder();
-        //sends 
+        //sends corresponding values to the pid controller object
         m_pidController.setP(kP);
         m_pidController.setI(kI);
         m_pidController.setD(kD);
