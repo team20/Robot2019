@@ -11,7 +11,7 @@ public abstract class RobotFunction<T> {
      *
      * @param values type differs between functions
      */
-    public abstract void collectInputs(T...values);
+    public abstract void collectInputs(T... values);
 
     /**
      * Runs the function

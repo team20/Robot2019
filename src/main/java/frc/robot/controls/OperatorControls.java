@@ -20,66 +20,65 @@ public class OperatorControls {
      */
     public void operatorControls() {
         //Elevator Controls
-          //override
-        if(operatorJoy.getTrackpadButton()){
+        //override
+        if (operatorJoy.getTrackpadButton()) {
             double speed = operatorJoy.getRightYAxis();
             Elevator.moveSpeed(speed);
         } //positions
-        else if(operatorJoy.getLeftYAxis() > 0.1){
-            if(operatorJoy.getButtonDDown()){
+        else if (operatorJoy.getLeftYAxis() > 0.1) {
+            if (operatorJoy.getButtonDDown()) {
                 Elevator.setCargoLevelOne();
-            } else if(operatorJoy.getButtonDLeft()){
+            } else if (operatorJoy.getButtonDLeft()) {
                 Elevator.setCargoLevelTwo();
-            } else if(operatorJoy.getButtonDUp()){
+            } else if (operatorJoy.getButtonDUp()) {
                 Elevator.setCargoLevelThree();
             }
-        }
-        else if(operatorJoy.getLeftYAxis() < -0.1){
-            if(operatorJoy.getButtonDDown()){
+        } else if (operatorJoy.getLeftYAxis() < -0.1) {
+            if (operatorJoy.getButtonDDown()) {
                 Elevator.setHatchLevelOne();
-            } else if(operatorJoy.getButtonDLeft()){
+            } else if (operatorJoy.getButtonDLeft()) {
                 Elevator.setHatchLevelTwo();
-            } else if(operatorJoy.getButtonDUp()){
+            } else if (operatorJoy.getButtonDUp()) {
                 Elevator.setHatchLevelThree();
             }
         }
 
         //Arm Controls
-        if(operatorJoy.getLeftYAxis() > 0.5){
+        if (operatorJoy.getLeftYAxis() > 0.5) {
             Arm.setCargoShootPosition();
-        } else if(operatorJoy.getLeftYAxis() < -0.5){
+        } else if (operatorJoy.getLeftYAxis() < -0.5) {
             Arm.setFloorPosition();
-        } else if (Math.abs(operatorJoy.getLeftXAxis()) > 0.5){
+        } else if (Math.abs(operatorJoy.getLeftXAxis()) > 0.5) {
             Arm.setPlacePosition();
         }
-        if(operatorJoy.getSquareButton()){
+        if (operatorJoy.getSquareButton()) {
             Arm.setStartingConfigPosition();
         }
 
         //Intake Controls
-          //cargo
-        if(operatorJoy.getXButton()){
+        //cargo
+        if (operatorJoy.getXButton()) {
             Intake.intakeMode();
         }
-        if(operatorJoy.getTriButton()){
+        if (operatorJoy.getTriButton()) {
             Intake.outtakeCargo();
         }
-        if(operatorJoy.getCircleButton()){
+        if (operatorJoy.getCircleButton()) {
             Intake.stopCargoRollers();
         }
-        if(operatorJoy.getRightTriggerAxis() > 0.5){
+        if (operatorJoy.getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
         }
-          //hatch
-        if(operatorJoy.getLeftBumperButton()){
+        //hatch
+        if (operatorJoy.getLeftBumperButton()) {
             Intake.openHatch();
         }
-        if(operatorJoy.getRightBumperButton()){
+        if (operatorJoy.getRightBumperButton()) {
             Intake.closeHatch();
         }
 
         //Combined Subsystem Controls
-        if(operatorJoy.getLeftTriggerAxis() > 0.5){
+        if (operatorJoy.getLeftTriggerAxis() > 0.5) {
             Elevator.setFloor();
             Arm.setFloorPosition();
         }

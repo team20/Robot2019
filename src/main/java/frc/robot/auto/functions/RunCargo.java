@@ -16,7 +16,7 @@ public class RunCargo extends RobotFunction<Void> {
      * Stores the desired speed of the cargo collector
      */
     @Override
-    public void collectInputs(Void...values) {
+    public void collectInputs(Void... values) {
     }
 
     /**

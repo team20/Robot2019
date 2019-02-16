@@ -1,14 +1,14 @@
 package frc.robot.subsystems;
 
-import frc.robot.Robot;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
+import frc.robot.Robot;
 
 public class Climber {
     private static CANSparkMax back;
@@ -47,7 +47,7 @@ public class Climber {
 
     /**
      * Climb with gyro assistance
-     * 
+     *
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
@@ -57,7 +57,7 @@ public class Climber {
 
     /**
      * Climb without gyro assistance
-     * 
+     *
      * @param speed: the speed at which to climb
      */
     public static void manualClimb(double speed) {
@@ -67,7 +67,7 @@ public class Climber {
 
     /**
      * Retract the front leg
-     * 
+     *
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractFront(double speed) {
@@ -76,15 +76,16 @@ public class Climber {
 
     /**
      * Retract the rear leg
-     * 
+     *
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractBack(double speed) {
         back.set(-speed);
     }
+
     /**
-	 * Stop all motors
-	 */
+     * Stop all motors
+     */
     public static void stop() {
         front.set(ControlMode.PercentOutput, 0);
         back.set(0);

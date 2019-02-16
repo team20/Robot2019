@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import frc.robot.utils.PrettyPrint;
 
 public class LineSensor {
     public static PIDSource pidSource;
@@ -32,16 +33,16 @@ public class LineSensor {
 
     static {
         pidSource = new PIDSource() {
-            private PIDSourceType pidSouceType;
+            private PIDSourceType pidSourceType;
 
             @Override
             public void setPIDSourceType(PIDSourceType type) {
-                pidSouceType = type;
+                pidSourceType = type;
             }
 
             @Override
             public PIDSourceType getPIDSourceType() {
-                return pidSouceType;
+                return pidSourceType;
             }
 
             @Override
@@ -49,13 +50,11 @@ public class LineSensor {
                 return linePosition;
             }
         };
-        pidOutput = new PIDOutput(){
-            @Override
-            public void pidWrite(double output) {
-                turnSpeed = output;
-            }
+        pidOutput = (double output) -> {
+            turnSpeed = output;
         };
-        thread = new Notifier(() -> update());
+
+        thread = new Notifier(LineSensor::update);
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 9;
         wire = new I2C(Port.kOnboard, address);
@@ -75,7 +74,7 @@ public class LineSensor {
 
     //start thread running once every [ms] milliseconds
     public static void startThread(int ms) {
-        thread.startPeriodic((double)ms / 1000);
+        thread.startPeriodic((double) ms / 1000);
     }
 
     //stops thread from running
@@ -93,39 +92,17 @@ public class LineSensor {
         // wire.read(address, rawSensorData.length, rawSensorData);
         wire.readOnly(rawSensorData, rawSensorData.length);
         //store useful data from sensor in [sensorData]
-        for (int i = 0; i < sensorData.length; i ++)
+        for (int i = 0; i < sensorData.length; i++)
             sensorData[i] = rawSensorData[i * 2];
         numerator = 0;
         denominator = 0;
-        for (int i = 0; i < sensorData.length; i ++) {
+        for (int i = 0; i < sensorData.length; i++) {
             numerator += sensorData[i] * i * 100;
             denominator += sensorData[i];
         }
         if (denominator != 0)
             linePosition = numerator / denominator;
         else
-            System.out.println("LINE SENSOR NEEDS TO BE RESET");
+            PrettyPrint.once("LINE SENSOR NEEDS TO BE RESET");
     }
-
-    // @Override
-    // public void setPIDSourceType(PIDSourceType type) {
-    //     pidSouceType = type;
-    // }
-
-    // @Override
-    // public PIDSourceType getPIDSourceType() {
-    //     return pidSouceType;
-    // }
-
-    // //input for PID controller
-    // @Override
-    // public double pidGet() {
-    //     return linePosition;
-	// }
-
-    // //output for PID controller
-    // @Override
-    // public void pidWrite(double output) {
-    //     turnSpeed = output;
-    // }
 }

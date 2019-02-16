@@ -8,14 +8,16 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -62,7 +64,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         //This is here because autonomous init is not reliable 
-        if(!autoSet){
+        if (!autoSet) {
             auto.setMode(Mode.Align);       //TODO: eventually make auto selection based off of user input to the SmartDashboard
             switch (auto.getMode()) {
                 case CrossLine:
@@ -72,7 +74,7 @@ public class Robot extends TimedRobot {
                     auto.align(false);
                     break;
                 default:
-                    System.out.println("NO AUTO SELECTED");
+                    PrettyPrint.once("NO AUTO SELECTED");
                     break;
             }
             autoSet = true;

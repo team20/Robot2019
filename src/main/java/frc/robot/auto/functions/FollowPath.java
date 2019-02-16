@@ -7,8 +7,8 @@ import frc.robot.auto.setup.RobotFunction;
 import frc.robot.utils.PrettyPrint;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 
@@ -40,8 +40,11 @@ class FollowPath extends RobotFunction<String> {
             frontRight().pushMotionProfileTrajectory(point);
 
         //push points twice as fast as robot's loop runs
-        new Notifier(() -> frontLeft().processMotionProfileBuffer()).startPeriodic(.01);
-        new Notifier(() -> frontRight().processMotionProfileBuffer()).startPeriodic(.01);
+        new Notifier(() -> {
+            frontLeft().processMotionProfileBuffer();
+            frontRight().processMotionProfileBuffer();
+        }).startPeriodic(.01);
+
         PrettyPrint.put("MP left vel", frontLeft()::getActiveTrajectoryVelocity);
         PrettyPrint.put("MP right vel", frontRight()::getActiveTrajectoryVelocity);
     }
@@ -58,8 +61,8 @@ class FollowPath extends RobotFunction<String> {
     @Override
     public void run() {
         // ensure that buffer is sufficiently filled
-        motionProfile(started || getLeftStatus().btmBufferCnt >= minPoints && getRightStatus().btmBufferCnt >= minPoints);
         started = started || getLeftStatus().btmBufferCnt >= minPoints && getRightStatus().btmBufferCnt >= minPoints;
+        motionProfile(started);
     }
 
     @Override
@@ -82,8 +85,8 @@ class FollowPath extends RobotFunction<String> {
     }
 
     private TrajectoryPoint[] fromFile(String filePath) {
-        try {
-            var points = new BufferedReader(new FileReader(filePath))
+        try (var writer = new BufferedReader(new FileReader(filePath))) {
+            var points = writer
                     .lines()
                     .skip(1)
                     .map(s -> s.split(","))
@@ -93,18 +96,16 @@ class FollowPath extends RobotFunction<String> {
                             .toArray())
                     .map(vals -> {
                         var p = new TrajectoryPoint();
+                        p.profileSlotSelect0 = 0;
                         p.position = vals[0];
                         p.velocity = vals[1];
-//                        p.headingDeg = vals[2]; not tested (maybe not used)
-                        // might need to set pid slots etc
-                        p.profileSlotSelect0 = 0;
                         return p;
                     })
                     .toArray(TrajectoryPoint[]::new);
             points[0].zeroPos = true;
             points[points.length - 1].isLastPoint = true;
             return points;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             PrettyPrint.error("PathFollower file not found");
         }
         return new TrajectoryPoint[0];

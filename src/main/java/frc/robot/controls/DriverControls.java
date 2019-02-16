@@ -15,7 +15,9 @@ public class DriverControls {
      */
     public DriverControls() {
         driverJoy = new PS4Controller(0, 2);
-        speedStraight = 0; speedLeft = 0; speedRight = 0;
+        speedStraight = 0;
+        speedLeft = 0;
+        speedRight = 0;
     }
 
     /**
@@ -23,42 +25,42 @@ public class DriverControls {
      */
     public void driverControls() {
         //Drivetrain Controls
-        if(Math.abs(driverJoy.getLeftYAxis()) > 0.1){
-			speedStraight = -driverJoy.getLeftYAxis();			
-		} else {
-			speedStraight = 0.0;
-		}
-		if(Elevator.aboveStageThreshold()){
-			if (driverJoy.getSquareButton()) {
-				speedLeft = driverJoy.getLeftTriggerAxis()*0.25;
-				speedRight = driverJoy.getRightTriggerAxis()*0.25;	
-			} else {
-				speedLeft = driverJoy.getLeftTriggerAxis()*0.4;
-				speedRight = driverJoy.getRightTriggerAxis()*0.4;
-			}
-		} else {
-			if (driverJoy.getSquareButton()) {
-				speedLeft = driverJoy.getLeftTriggerAxis()*0.33;
-				speedRight = driverJoy.getRightTriggerAxis()*0.33;
-			} else {
-				speedLeft = driverJoy.getLeftTriggerAxis()*0.65;
-				speedRight = driverJoy.getRightTriggerAxis()*0.65;
-			}
-		}
+        if (Math.abs(driverJoy.getLeftYAxis()) > 0.1) {
+            speedStraight = -driverJoy.getLeftYAxis();
+        } else {
+            speedStraight = 0.0;
+        }
+        if (Elevator.aboveStageThreshold()) {
+            if (driverJoy.getSquareButton()) {
+                speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
+                speedRight = driverJoy.getRightTriggerAxis() * 0.25;
+            } else {
+                speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
+                speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+            }
+        } else {
+            if (driverJoy.getSquareButton()) {
+                speedLeft = driverJoy.getLeftTriggerAxis() * 0.33;
+                speedRight = driverJoy.getRightTriggerAxis() * 0.33;
+            } else {
+                speedLeft = driverJoy.getLeftTriggerAxis() * 0.65;
+                speedRight = driverJoy.getRightTriggerAxis() * 0.65;
+            }
+        }
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
-        
+
         //Intake Controls
-        if(driverJoy.getRightBumperButton()){
+        if (driverJoy.getRightBumperButton()) {
             Intake.spitCargo();
-        } 
-        if(driverJoy.getLeftBumperButton()){
+        }
+        if (driverJoy.getLeftBumperButton()) {
             Intake.openHatch();
         }
 
         //Climber Controls
-        if(driverJoy.getXButton()){
+        if (driverJoy.getXButton()) {
             Climber.balanceClimb(0.75);
-        } else{
+        } else {
             Climber.stop();
         }
     }

@@ -45,7 +45,8 @@ public class PrettyPrint {
     private static int count = 0;
 
     private static LinkedHashMap<String, Supplier<Object>> values = new LinkedHashMap<>(); // Linked to preserve order
-    private static ArrayList<String> tempValues = new ArrayList<>();
+    private static LinkedHashMap<String, Object> tempValues = new LinkedHashMap<>();
+    private static ArrayList<String> tempMessages = new ArrayList<>();
     private static ArrayList<String> errors = new ArrayList<>();
 
     /**
@@ -70,7 +71,14 @@ public class PrettyPrint {
      * append the message at the end of prettyprint table only once
      */
     public static void once(String message) {
-        tempValues.add(message);
+        tempMessages.add(message);
+    }
+
+    /**
+     * append the message and value at the end of prettyprint table only once
+     */
+    public static void once(String message, Object value) {
+        tempValues.put(message, value);
     }
 
     /**
@@ -119,7 +127,7 @@ public class PrettyPrint {
      * called to print all stored messages/values. must be called in a periodic mode
      */
     public static void print() {
-        if (values.isEmpty() && tempValues.isEmpty() && errors.isEmpty()) return;
+        if (values.isEmpty() && tempMessages.isEmpty() && errors.isEmpty() && tempValues.isEmpty()) return;
 
         for (String errorMessage : errors) {
             for (int i = 0; i < 70; i++) System.out.print("-");
@@ -138,11 +146,13 @@ public class PrettyPrint {
 
         System.out.print("|");
         values.forEach((str, valSup) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(valSup)));
-        for (String message : tempValues) {
+        tempValues.forEach((str, val) -> System.out.printf(" %s = %-" + messageLength + "s |", str, val));
+        for (String message : tempMessages) {
             System.out.printf(" %s |", message);
         }
         System.out.println();
         tempValues.clear();
+        tempMessages.clear();
         errors.clear();
     }
 
@@ -154,4 +164,3 @@ public class PrettyPrint {
         return valStr.substring(0, min(valStr.length(), messageLength));
     }
 }
-
