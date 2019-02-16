@@ -12,10 +12,9 @@ public class Elevator {
 
     private static double setPosition, prevPosition;
 
-    private static final double TICKS_PER_INCH = 695;
     private static final double STAGE_THRESHOLD = 0.0;
     private static final double MAX_POSITION = 0.0;
-    private static final double DEADBAND = 50;
+    private static final double DEADBAND = 0.5;
 
     public static final double FLOOR_POSITION = 0.0;
     public static final double HATCH_LEVEL_ONE_POSITION = 0.0;
@@ -59,92 +58,65 @@ public class Elevator {
      * Sets the elevator to the floor position
      */
     public static void setFloor() {
-        setPosition = FLOOR_POSITION;
-        setPosition(setPosition);
+        setPosition(FLOOR_POSITION);
     }
 
     /**
      * Sets the elevator to the hatch one position
      */
     public static void setHatchLevelOne() {
-        setPosition = HATCH_LEVEL_ONE_POSITION;
-        setPosition(setPosition);
+        setPosition(HATCH_LEVEL_ONE_POSITION);
     }
 
     /**
      * Sets the elevator to the hatch two position
      */
     public static void setHatchLevelTwo() {
-        setPosition = HATCH_LEVEL_TWO_POSITION;
-        setPosition(setPosition);
+        setPosition(HATCH_LEVEL_TWO_POSITION);
     }
 
     /**
      * Sets the elevator to the hatch three position
      */
     public static void setHatchLevelThree() {
-        setPosition = HATCH_LEVEL_THREE_POSITION;
-        setPosition(setPosition);
+        setPosition(HATCH_LEVEL_THREE_POSITION);
     }
 
     /**
      * Sets the elevator to the cargo one position
      */
     public static void setCargoLevelOne() {
-        setPosition = CARGO_LEVEL_ONE_POSITION;
-        setPosition(setPosition);
+        setPosition(CARGO_LEVEL_ONE_POSITION);
     }
 
     /**
      * Sets the elevator to the cargo two position
      */
     public static void setCargoLevelTwo() {
-        setPosition = CARGO_LEVEL_TWO_POSITION;
-        setPosition(setPosition);
+        setPosition(CARGO_LEVEL_TWO_POSITION);
     }
    
     /**
      * Sets the elevator to the cargo three position
      */
     public static void setCargoLevelThree() {
-        setPosition = CARGO_LEVEL_THREE_POSITION;
-        setPosition(setPosition);
+        setPosition(CARGO_LEVEL_THREE_POSITION);
     }
     
     /**
      * Sets the elevator to the cargo ship position
      */
     public static void setCargoShip() {
-        setPosition = CARGO_SHIP_POSITION;
-        setPosition(setPosition);
+        setPosition(CARGO_SHIP_POSITION);
     }
 
     /**
 	 * sets the elevator set position to its current position
 	 */
 	public static void stop() {
-		setPosition = elevatorEncoder.getPosition();
-        setPosition(setPosition);
+        setPosition(elevatorEncoder.getPosition());
 	}
 
-	/**
-	 * brings the elevator up six inches
-	 */
-	public static void upIncrement() {
-		setPosition = elevatorEncoder.getPosition() - (int)6*TICKS_PER_INCH;
-        setPosition(setPosition);
-	}
-	
-	/**
-	 * brings the elevator down six inches
-	 */
-	public static void downIncrement() {
-		setPosition = elevatorEncoder.getPosition() + (int)6*TICKS_PER_INCH;
-		if (setPosition > 0)
-			setPosition = 0;
-            setPosition(setPosition);
-        }
-	
 	/**
 	 * @return the set point of the elevator
 	 */
@@ -181,7 +153,7 @@ public class Elevator {
 
     /**
      * Sets the elevator to the entered position
-     * @param: desired elevator position
+     * @param pos: desired elevator position
      */
     public static void setPosition(double pos) {
         setPosition = pos;
