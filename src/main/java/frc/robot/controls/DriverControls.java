@@ -1,7 +1,9 @@
 package frc.robot.controls;
 
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 
 public class DriverControls {
 
@@ -45,11 +47,19 @@ public class DriverControls {
 		}
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
         
+        //Intake Controls
+        if(driverJoy.getRightBumperButton()){
+            Intake.spitCargo();
+        } 
+        if(driverJoy.getLeftBumperButton()){
+            Intake.openHatch();
+        }
+
         //Climber Controls
         if(driverJoy.getXButton()){
-            //TODO insert climbing code here
+            Climber.balanceClimb(0.75);
         } else{
-            //TODO insert climber stop code here
+            Climber.stop();
         }
     }
 }
