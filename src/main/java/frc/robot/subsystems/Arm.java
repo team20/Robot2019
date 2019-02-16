@@ -25,7 +25,7 @@ public class Arm {
      */
     public Arm() {
         //motor setup
-        armMotor = new CANSparkMax(1, MotorType.kBrushless);
+        armMotor = new CANSparkMax(6, MotorType.kBrushless);
         pidController = armMotor.getPIDController();
         armEncoder = new CANEncoder(armMotor);
 
