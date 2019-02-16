@@ -29,7 +29,7 @@ public class Elevator {
      * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
      */
     public Elevator() {
-        elevator = new CANSparkMax(30, CANSparkMaxLowLevel.MotorType.kBrushless);
+        elevator = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
         setPID(0.075, 0.000015, 1.1, 0.0);

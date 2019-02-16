@@ -7,11 +7,14 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
@@ -30,9 +33,14 @@ public class Robot extends TimedRobot {
     Drivetrain drive;
     Elevator elevator;
     Intake intake;
+    Climber climber;
 
     DriverControls driver;
     OperatorControls operator;
+
+    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); //DO NOT MOVE
+
+    private boolean autoSet;
 
     @Override
     public void robotInit() {
@@ -41,29 +49,36 @@ public class Robot extends TimedRobot {
         drive = new Drivetrain();
         elevator = new Elevator();
         intake = new Intake();
+        climber = new Climber();
 
         driver = new DriverControls();
         operator = new OperatorControls();
+
+        autoSet = false;
     }
 
     @Override
     public void autonomousInit() {
-        auto.setMode(Mode.Align);       //TODO: eventually make auto selection based off of user input to the SmartDashboard
-        switch (auto.getMode()) {
-            case CrossLine:
-                auto.crossLine();
-                break;
-            case Align:
-                auto.align(false);
-                break;
-            default:
-                PrettyPrint.once("NO AUTO SELECTED");
-                break;
-        }
     }
 
     @Override
     public void autonomousPeriodic() {
+        //This is here because autonomous init is not reliable 
+        if (!autoSet) {
+            auto.setMode(Mode.Align);       //TODO: eventually make auto selection based off of user input to the SmartDashboard
+            switch (auto.getMode()) {
+                case CrossLine:
+                    auto.crossLine();
+                    break;
+                case Align:
+                    auto.align(false);
+                    break;
+                default:
+                    PrettyPrint.once("NO AUTO SELECTED");
+                    break;
+            }
+            autoSet = true;
+        }
         auto.runAuto();
     }
 

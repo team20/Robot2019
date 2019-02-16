@@ -17,11 +17,11 @@ public class Drivetrain {
      * Initializes and sets up all motors for the drivetrain
      */
     public Drivetrain() {
-        frontRight = new TalonSRX(25);
-        frontLeft = new TalonSRX(20);
+        frontRight = new TalonSRX(1);
+        frontLeft = new TalonSRX(2);
 
-        backRight = new VictorSPX(15);
-        backLeft = new VictorSPX(10);
+        backRight = new VictorSPX(3);
+        backLeft = new VictorSPX(4);
 
         backRight.follow(frontRight);
         backLeft.follow(backLeft);

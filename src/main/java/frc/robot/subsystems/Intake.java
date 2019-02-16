@@ -16,7 +16,7 @@ public class Intake {
      */
     public Intake() {
         hatch = new Servo(1);
-        cargo = new VictorSPX(0);
+        cargo = new VictorSPX(9);
         cargoSensor = new DigitalInput(0);
     }
 
