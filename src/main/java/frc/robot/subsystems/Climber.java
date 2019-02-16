@@ -21,8 +21,8 @@ public class Climber {
      */
     public Climber() {
         // Declare motors
-        back = new CANSparkMax(0, MotorType.kBrushless);
-        front = new TalonSRX(0);
+        back = new CANSparkMax(7, MotorType.kBrushless);
+        front = new TalonSRX(8);
 
         // Declare PID Output
         PIDOut output = new PIDOut();
