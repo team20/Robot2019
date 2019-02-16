@@ -1,9 +1,9 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Servo;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 
 public class Intake {
 
@@ -23,33 +23,33 @@ public class Intake {
     /**
      * Runs the cargo motor at collection speed
      */
-    public static void collectCargo(){
+    public static void collectCargo() {
         runCargoMotor(1.0);
     }
 
     /**
      * Runs the cargo motor at spitting speed
      */
-    public static void spitCargo(){
+    public static void spitCargo() {
         runCargoMotor(-1.0);
     }
 
     /**
      * Runs the cargo motor at spitting speed
      */
-    public static void outtakeCargo(){
+    public static void outtakeCargo() {
         runCargoMotor(-0.5);
     }
 
     /**
      * Stops the cargo motor
      */
-    public static void stopCargoRollers(){
+    public static void stopCargoRollers() {
         runCargoMotor(0.0);
     }
 
     /**
-     * Opens the hatch mechanism 
+     * Opens the hatch mechanism
      */
     public static void openHatch() {
         hatch.set(0);
@@ -64,11 +64,12 @@ public class Intake {
 
     /**
      * Runs the cargo intake until the digital sensor is tripped
+     *
      * @param: speed = speed of the cargo motor (-1.0 to 1.0)
      * @return: true if a cargo is in the intake
      */
-    public static boolean intakeMode(){
-        if(!cargoSensor.get()){
+    public static boolean intakeMode() {
+        if (!cargoSensor.get()) {
             collectCargo();
             return false;
         } else {
@@ -78,7 +79,8 @@ public class Intake {
     }
 
     /**
-     * Runs the cargo collector 
+     * Runs the cargo collector
+     *
      * @param: speed = speed of the cargo motor (-1.0 to 1.0)
      */
     private static void runCargoMotor(double speed) {

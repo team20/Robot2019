@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.I2C.Port;
 
 public class Arduino {
     public static PIDSource pidSource;
@@ -14,7 +14,7 @@ public class Arduino {
     private static Notifier thread;
     //I2C communication protocol
     private static I2C wire;
-    
+
     // private static enum read {
 
     // }
@@ -54,7 +54,7 @@ public class Arduino {
             public void setPIDSourceType(PIDSourceType type) {
                 pidSourceType = type;
             }
-        
+
             @Override
             public double pidGet() {
                 switch (auto) {
@@ -66,27 +66,25 @@ public class Arduino {
                         return 0;
                 }
             }
+
             @Override
             public PIDSourceType getPIDSourceType() {
                 return pidSourceType;
             }
         };
-        pidOutput = new PIDOutput() {
-            @Override
-            public void pidWrite(double output) {
-                switch (auto) {
-                    case 0:
-                        dTurnSpeed = Math.abs(turnSpeed - output);
-                        turnSpeed = output;
-                        break;
-                    case 1:
-                        dDriveSpeed = Math.abs(driveSpeed - output);
-                        driveSpeed = output;
-                        break;
-                }
+        pidOutput = (double output) -> {
+            switch (auto) {
+                case 0:
+                    dTurnSpeed = Math.abs(turnSpeed - output);
+                    turnSpeed = output;
+                    break;
+                case 1:
+                    dDriveSpeed = Math.abs(driveSpeed - output);
+                    driveSpeed = output;
+                    break;
             }
         };
-        thread = new Notifier(() -> update());
+        thread = new Notifier(Arduino::update);
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 0;
         wire = new I2C(Port.kOnboard, address);
@@ -128,15 +126,15 @@ public class Arduino {
     }
 
     public static void setLEDStripPattern(int pattern) {
-        writeData[0] = (byte)pattern;
+        writeData[0] = (byte) pattern;
     }
 
     public static void setPixyCamState(int state) {
-        writeData[1] = (byte)state;
+        writeData[1] = (byte) state;
     }
 
     public static void setUltrasonicState(boolean enabled) {
-        writeData[2] = (byte)(enabled ? 1 : 0);
+        writeData[2] = (byte) (enabled ? 1 : 0);
     }
 
     public static void startThread() {

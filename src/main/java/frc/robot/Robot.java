@@ -12,7 +12,9 @@ import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -55,7 +57,7 @@ public class Robot extends TimedRobot {
                 auto.align(false);
                 break;
             default:
-                System.out.println("NO AUTO SELECTED");
+                PrettyPrint.once("NO AUTO SELECTED");
                 break;
         }
     }
