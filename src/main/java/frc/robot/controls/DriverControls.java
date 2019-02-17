@@ -53,14 +53,25 @@ public class DriverControls {
             Intake.spitCargo();
         }
         if (driverJoy.getLeftBumperButton()) {
-            Intake.openHatch();
+            Intake.closeHatch();
         }
 
         //Climber Controls
         if (driverJoy.getXButton()) {
             Climber.balanceClimb(0.75);
-        } else {
-            Climber.stop();
+        } else if(driverJoy.getCircleButton() || driverJoy.getTriButton()){
+            if(driverJoy.getCircleButton()){
+                Climber.retractFront(0.5);
+            }
+            if(driverJoy.getTriButton()){
+                Climber.retractBack(0.5);
+            }
+        } else if(driverJoy.getTrackpadButton()){
+            if(driverJoy.getButtonDUp())
+                Climber.manualClimbFront(0.5);
+            if(driverJoy.getButtonDDown()){
+                Climber.manualClimbBack(0.5);
+            }
         }
     }
 }

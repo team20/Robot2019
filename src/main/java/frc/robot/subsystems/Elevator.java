@@ -9,7 +9,7 @@ public class Elevator {
     private static CANSparkMax elevator;
     private static CANEncoder elevatorEncoder;
 
-    private static double setPosition, prevPosition;
+    private static double setPosition, prevPosition, zeroPosition;
 
     private static final double STAGE_THRESHOLD = 0.0;
     private static final double MAX_POSITION = 0.0;
@@ -32,9 +32,6 @@ public class Elevator {
         }
     }
 
-    private Elevator() {
-    }
-
     /*
      * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
      */
@@ -48,6 +45,7 @@ public class Elevator {
 
         setPosition = elevatorEncoder.getPosition();
         prevPosition = 0.0;
+        zeroPosition = 0.0;
     }
 
     /**
@@ -64,62 +62,6 @@ public class Elevator {
         elevator.getPIDController().setD(d);
         elevator.getPIDController().setFF(f);
     }
-
-//    /**
-//     * Sets the elevator to the floor value
-//     */
-//    public static void setFloor() {
-//        setPosition(Position.FLOOR_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the hatch one value
-//     */
-//    public static void setHatchLevelOne() {
-//        setPosition(Position.HATCH_LEVEL_ONE_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the hatch two value
-//     */
-//    public static void setHatchLevelTwo() {
-//        setPosition(Position.HATCH_LEVEL_TWO_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the hatch three value
-//     */
-//    public static void setHatchLevelThree() {
-//        setPosition(Position.HATCH_LEVEL_THREE_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the cargo one value
-//     */
-//    public static void setCargoLevelOne() {
-//        setPosition(Position.CARGO_LEVEL_ONE_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the cargo two value
-//     */
-//    public static void setCargoLevelTwo() {
-//        setPosition(Position.CARGO_LEVEL_TWO_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the cargo three value
-//     */
-//    public static void setCargoLevelThree() {
-//        setPosition(Position.CARGO_LEVEL_THREE_POSITION);
-//    }
-//
-//    /**
-//     * Sets the elevator to the cargo ship value
-//     */
-//    public static void setCargoShip() {
-//        setPosition(Position.CARGO_SHIP_POSITION);
-//    }
 
     /**
      * sets the elevator set value to its current value
@@ -166,7 +108,7 @@ public class Elevator {
      * @param position: desired elevator value
      */
     public static void setPosition(double position) {
-        setPosition = position;
+        setPosition = zeroPosition + position;
         limitPosition();
     }
 
@@ -177,6 +119,13 @@ public class Elevator {
      */
     public static void setPosition(Position position) {
         setPosition(position.value);
+    }
+
+    /**
+     * Sets the current elevator position to the new zero
+     */
+    public static void resetEncoder(){
+        zeroPosition = elevatorEncoder.getPosition();
     }
 
     /**
