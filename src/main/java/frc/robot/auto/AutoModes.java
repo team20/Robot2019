@@ -1,14 +1,17 @@
 package frc.robot.auto;
 
-import frc.robot.auto.functions.*;
+import frc.robot.auto.functions.Align;
+import frc.robot.auto.functions.DriveTime;
 import frc.robot.auto.setup.RocketScript;
 
 public class AutoModes {
     private RocketScript rocketScript;
+
     public enum Mode {
         CrossLine,
         Align
     }
+
     private Mode selectedMode;
 
     /**
@@ -42,6 +45,7 @@ public class AutoModes {
 
     /**
      * Align to target (hatch on rocket/cargo ship or loading station)
+     *
      * @param skip true if turning towards alignment tape should be skipped
      */
     public void align(boolean skip) {

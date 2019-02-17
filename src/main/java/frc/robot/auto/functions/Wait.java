@@ -5,8 +5,10 @@ import frc.robot.auto.setup.RobotFunction;
 
 import java.util.InputMismatchException;
 
+/**
+ * Pauses RocketScript for some amount of time
+ */
 public class Wait extends RobotFunction<Double> {
-
     private boolean setStartTime, isFinished;
     private double startTime, time;
 
@@ -28,6 +30,7 @@ public class Wait extends RobotFunction<Double> {
         if (values.length != 1) throw new InputMismatchException("Wait requires ONE input");
 
         time = values[0];
+        super.isParallel = false;
     }
 
     /**

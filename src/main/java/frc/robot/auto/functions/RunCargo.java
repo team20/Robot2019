@@ -3,27 +3,22 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Intake;
 
-import java.util.InputMismatchException;
-
-public class RunCargo extends RobotFunction<Double> {
-
-    private double speed;
+/**
+ * Outtakes the cargo from the intake
+ */
+public class RunCargo extends RobotFunction<Void> {
 
     /**
      * Initializes all needed variables
      */
     public RunCargo() {
-        speed = 0;
     }
 
     /**
      * Stores the desired speed of the cargo collector
      */
     @Override
-    public void collectInputs(Double... values) {
-        if (values.length != 1) throw new InputMismatchException("RunCargo requires ONE input");
-
-        speed = values[0];
+    public void collectInputs(Void... values) {
     }
 
     /**
@@ -31,12 +26,12 @@ public class RunCargo extends RobotFunction<Double> {
      */
     @Override
     public void run() {
-        Intake.runCargo(speed);
+        Intake.collectCargo();
     }
 
     @Override
     public void stop() {
-        Intake.runCargo(0);
+        Intake.stopCargoRollers();
     }
 
     /**

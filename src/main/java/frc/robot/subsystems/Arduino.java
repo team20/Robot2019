@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.I2C.Port;
 
 public class Arduino {
     public static PIDSource pidSource;
@@ -39,6 +39,9 @@ public class Arduino {
     private static int auto;
     private static double setPoint;
 
+    private Arduino() {
+    }
+
     static {
         pidSource = new PIDSource() {
             private PIDSourceType pidSourceType;
@@ -47,7 +50,7 @@ public class Arduino {
             public void setPIDSourceType(PIDSourceType type) {
                 pidSourceType = type;
             }
-        
+
             @Override
             public double pidGet() {
                 switch (auto) {
@@ -59,27 +62,28 @@ public class Arduino {
                         return 0;
                 }
             }
+
             @Override
             public PIDSourceType getPIDSourceType() {
                 return pidSourceType;
             }
         };
-        pidOutput = new PIDOutput() {
-            @Override
-            public void pidWrite(double output) {
-                switch (auto) {
-                    case 0:
-                        dTurnSpeed = Math.abs(turnSpeed - output);
-                        turnSpeed = output;
-                        break;
-                    case 1:
-                        dDriveSpeed = Math.abs(driveSpeed - output);
-                        driveSpeed = output;
-                        break;
-                }
+        pidOutput = output -> {
+            switch (auto) {
+                case 0:
+                    dTurnSpeed = Math.abs(turnSpeed - output);
+                    turnSpeed = output;
+                    break;
+                case 1:
+                    dDriveSpeed = Math.abs(driveSpeed - output);
+                    driveSpeed = output;
+                    break;
             }
         };
-        thread = new Notifier(() -> update());
+        thread = new Notifier(() -> {
+            read();
+            write();
+        });
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 0;
         wire = new I2C(Port.kOnboard, address);
@@ -141,12 +145,7 @@ public class Arduino {
         thread.stop();
     }
 
-    public static void update() {
-        read();
-        write();
-    }
-
-    public static void read() {
+    private static void read() {
         //get data from Arduino as byte array
         wire.read(address, readData.length, readData);
         //set values from array to variables
@@ -155,7 +154,7 @@ public class Arduino {
         distance = readData[2];
     }
 
-    public static void write() {
+    private static void write() {
         //write data to Arduino as byte array
         wire.writeBulk(writeData, writeData.length);
     }

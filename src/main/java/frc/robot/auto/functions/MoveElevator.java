@@ -5,8 +5,10 @@ import frc.robot.subsystems.Elevator;
 
 import java.util.InputMismatchException;
 
+/**
+ * Moves the elevator to a position
+ */
 public class MoveElevator extends RobotFunction<Integer> {
-
     private int position;
 
     /**
@@ -22,6 +24,7 @@ public class MoveElevator extends RobotFunction<Integer> {
     @Override
     public void collectInputs(Integer... values) {
         if (values.length != 1) throw new InputMismatchException("MoveElevator requires ONE input");
+
         position = values[0];
     }
 
