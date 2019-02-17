@@ -4,27 +4,21 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 
-import static frc.robot.subsystems.Arm.Position.ARM_FLOOR;
-import static frc.robot.subsystems.Arm.Position.CARGO_SHOOT;
-import static frc.robot.subsystems.Arm.Position.PLACING;
-import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_TWO;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_TWO;
+import static frc.robot.subsystems.Arm.Position.*;
+import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls {
 
     private static PS4Controller operatorJoy;
+    private static boolean elevatorOverriden, armOverriden;
 
     /*
      * Initializes the operator controller
      */
     static {
         operatorJoy = new PS4Controller(1, 3);
+        elevatorOverriden = false;
+        armOverriden = true;
     }
 
     /**
@@ -32,10 +26,11 @@ public class OperatorControls {
      */
     public static void operatorControls() {
         //Elevator Controls
-        //override
-        if (operatorJoy.getTrackpadButton()) {
+          //override
+        if (operatorJoy.getRightStickButton()) {
             double speed = operatorJoy.getRightYAxis();
             Elevator.moveSpeed(speed);
+            elevatorOverriden = true;
         } //positions
         else if (operatorJoy.getLeftYAxis() > 0.1) {
             if (operatorJoy.getButtonDDown()) {
@@ -54,17 +49,30 @@ public class OperatorControls {
                 Elevator.setPosition(HATCH_LEVEL_THREE);
             }
         }
+          //encoder reset
+        if(operatorJoy.getShareButton()){
+            Elevator.resetEncoder();
+        }
 
         //Arm Controls
-        if (operatorJoy.getLeftYAxis() > 0.5) {
+          //override
+        if(operatorJoy.getLeftStickButton()){
+            double speed = operatorJoy.getLeftYAxis();
+            Arm.moveSpeed(speed);
+            armOverriden = true;
+        } //positions
+        else if (operatorJoy.getLeftYAxis() > 0.5) {
             Arm.setPosition(CARGO_SHOOT);
         } else if (operatorJoy.getLeftYAxis() < -0.5) {
             Arm.setPosition(ARM_FLOOR);
         } else if (Math.abs(operatorJoy.getLeftXAxis()) > 0.5) {
             Arm.setPosition(PLACING);
-        }
-        if (operatorJoy.getSquareButton()) {
+        } else if (operatorJoy.getSquareButton()) {
             Arm.setPosition(STARTING_CONFIG);
+        }
+          //encoder reset 
+        if(operatorJoy.getOptionsButton()){
+            Arm.resetEncoder();
         }
 
         //Intake Controls
@@ -93,6 +101,14 @@ public class OperatorControls {
         if (operatorJoy.getLeftTriggerAxis() > 0.5) {
             Elevator.setPosition(ELEVATOR_FLOOR);
             Arm.setPosition(ARM_FLOOR);
+        }
+        if(armOverriden){
+            Arm.stop();
+            armOverriden = false;
+        }
+        if(elevatorOverriden){
+            Elevator.stop();
+            elevatorOverriden = false;
         }
     }
 }

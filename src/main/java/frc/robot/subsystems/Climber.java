@@ -64,8 +64,16 @@ public class Climber {
      *
      * @param speed: the speed at which to climb
      */
-    public static void manualClimb(double speed) {
+    public static void manualClimbFront(double speed) {
         front.set(ControlMode.PercentOutput, speed);
+    }
+
+    /**
+     * Climb without gyro assistance
+     *
+     * @param speed: the speed at which to climb
+     */
+    public static void manualClimbBack(double speed) {
         back.set(speed);
     }
 

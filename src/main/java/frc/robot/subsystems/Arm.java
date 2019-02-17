@@ -11,7 +11,7 @@ public class Arm {
     private static CANPIDController pidController;
     private static CANEncoder armEncoder;
 
-    private static double setPosition, prevPosition;
+    private static double setPosition, prevPosition, zeroPosition;
 
     private static final double DEADBAND = 0.3;
 
@@ -28,9 +28,6 @@ public class Arm {
         }
     }
 
-    private Arm() {
-    }
-
     /*
      * Initializes all necessary objects and variables
      */
@@ -43,6 +40,7 @@ public class Arm {
         //initialize variables
         setPosition = armEncoder.getPosition();
         prevPosition = 0.0;
+        zeroPosition = 0.0;
 
         //sends corresponding values to the pid controller object
         pidController.setP(0.001);
@@ -57,10 +55,22 @@ public class Arm {
      * @param pos: desired value
      */
     public static void setPosition(double pos) {
-        setPosition = pos;
+        setPosition = zeroPosition + pos;
         pidController.setReference(setPosition, ControlType.kPosition);
     }
 
+    /**
+     * Sets the current arm position to the new zero
+     */
+    public static void resetEncoder(){
+        zeroPosition = armEncoder.getPosition();
+    }
+
+    /**
+     * Sets the value of the elevator
+     *
+     * @param position: desired value
+     */
     public static void setPosition(Position position) {
         setPosition(position.value);
     }
@@ -77,4 +87,18 @@ public class Arm {
         }
     }
 
+    /**
+     * Stops the arm from moving
+     */
+    public static void stop(){
+        setPosition(armEncoder.getPosition());
+    }
+
+    /**
+     * Moves the arm at the desired speed
+     * @param speed: the desired speed
+     */
+    public static void moveSpeed(double speed){
+        armMotor.set(speed);
+    }
 }
