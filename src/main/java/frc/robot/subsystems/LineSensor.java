@@ -50,11 +50,9 @@ public class LineSensor {
                 return linePosition;
             }
         };
-        pidOutput = (double output) -> {
-            turnSpeed = output;
-        };
+        pidOutput = output -> turnSpeed = output;
 
-        thread = new Notifier(LineSensor::update);
+        thread = new Notifier(LineSensor::updateLinePosition);
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 9;
         wire = new I2C(Port.kOnboard, address);
@@ -80,11 +78,6 @@ public class LineSensor {
     //stops thread from running
     public static void stopThread() {
         thread.stop();
-    }
-
-    //this function is called every time the thread runs
-    public static void update() {
-        updateLinePosition();
     }
 
     //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all

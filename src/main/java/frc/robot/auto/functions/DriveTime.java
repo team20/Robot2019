@@ -7,6 +7,9 @@ import frc.robot.utils.PrettyPrint;
 
 import java.util.InputMismatchException;
 
+/**
+ * Drives straight for some amount of time
+ */
 public class DriveTime extends RobotFunction<Double> {
 
     private boolean setStartTime, isFinished;

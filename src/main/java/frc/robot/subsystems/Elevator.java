@@ -6,9 +6,8 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 
 public class Elevator {
-
-    static CANSparkMax elevator;
-    static CANEncoder elevatorEncoder;
+    private static CANSparkMax elevator;
+    private static CANEncoder elevatorEncoder;
 
     private static double setPosition, prevPosition;
 
@@ -16,19 +15,30 @@ public class Elevator {
     private static final double MAX_POSITION = 0.0;
     private static final double DEADBAND = 0.5;
 
-    public static final double FLOOR_POSITION = 0.0;
-    public static final double HATCH_LEVEL_ONE_POSITION = 0.0;
-    public static final double HATCH_LEVEL_TWO_POSITION = 0.0;
-    public static final double HATCH_LEVEL_THREE_POSITION = 0.0;
-    public static final double CARGO_LEVEL_ONE_POSITION = 0.0;
-    public static final double CARGO_LEVEL_TWO_POSITION = 0.0;
-    public static final double CARGO_LEVEL_THREE_POSITION = 0.0;
-    public static final double CARGO_SHIP_POSITION = 0.0;
+    public enum Position {
+        ELEVATOR_FLOOR(0.0),
+        HATCH_LEVEL_ONE(0.0),
+        HATCH_LEVEL_TWO(0.0),
+        HATCH_LEVEL_THREE(0.0),
+        CARGO_LEVEL_ONE(0.0),
+        CARGO_LEVEL_TWO(0.0),
+        CARGO_LEVEL_THREE(0.0),
+        CARGO_SHIP(0.0);
 
-    /**
+        double value;
+
+        Position(double position) {
+            value = position;
+        }
+    }
+
+    private Elevator() {
+    }
+
+    /*
      * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
      */
-    public Elevator() {
+    static {
         elevator = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
@@ -55,64 +65,64 @@ public class Elevator {
         elevator.getPIDController().setFF(f);
     }
 
-    /**
-     * Sets the elevator to the floor position
-     */
-    public static void setFloor() {
-        setPosition(FLOOR_POSITION);
-    }
+//    /**
+//     * Sets the elevator to the floor value
+//     */
+//    public static void setFloor() {
+//        setPosition(Position.FLOOR_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the hatch one value
+//     */
+//    public static void setHatchLevelOne() {
+//        setPosition(Position.HATCH_LEVEL_ONE_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the hatch two value
+//     */
+//    public static void setHatchLevelTwo() {
+//        setPosition(Position.HATCH_LEVEL_TWO_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the hatch three value
+//     */
+//    public static void setHatchLevelThree() {
+//        setPosition(Position.HATCH_LEVEL_THREE_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the cargo one value
+//     */
+//    public static void setCargoLevelOne() {
+//        setPosition(Position.CARGO_LEVEL_ONE_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the cargo two value
+//     */
+//    public static void setCargoLevelTwo() {
+//        setPosition(Position.CARGO_LEVEL_TWO_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the cargo three value
+//     */
+//    public static void setCargoLevelThree() {
+//        setPosition(Position.CARGO_LEVEL_THREE_POSITION);
+//    }
+//
+//    /**
+//     * Sets the elevator to the cargo ship value
+//     */
+//    public static void setCargoShip() {
+//        setPosition(Position.CARGO_SHIP_POSITION);
+//    }
 
     /**
-     * Sets the elevator to the hatch one position
-     */
-    public static void setHatchLevelOne() {
-        setPosition(HATCH_LEVEL_ONE_POSITION);
-    }
-
-    /**
-     * Sets the elevator to the hatch two position
-     */
-    public static void setHatchLevelTwo() {
-        setPosition(HATCH_LEVEL_TWO_POSITION);
-    }
-
-    /**
-     * Sets the elevator to the hatch three position
-     */
-    public static void setHatchLevelThree() {
-        setPosition(HATCH_LEVEL_THREE_POSITION);
-    }
-
-    /**
-     * Sets the elevator to the cargo one position
-     */
-    public static void setCargoLevelOne() {
-        setPosition(CARGO_LEVEL_ONE_POSITION);
-    }
-
-    /**
-     * Sets the elevator to the cargo two position
-     */
-    public static void setCargoLevelTwo() {
-        setPosition(CARGO_LEVEL_TWO_POSITION);
-    }
-
-    /**
-     * Sets the elevator to the cargo three position
-     */
-    public static void setCargoLevelThree() {
-        setPosition(CARGO_LEVEL_THREE_POSITION);
-    }
-
-    /**
-     * Sets the elevator to the cargo ship position
-     */
-    public static void setCargoShip() {
-        setPosition(CARGO_SHIP_POSITION);
-    }
-
-    /**
-     * sets the elevator set position to its current position
+     * sets the elevator set value to its current value
      */
     public static void stop() {
         setPosition(elevatorEncoder.getPosition());
@@ -121,19 +131,16 @@ public class Elevator {
     /**
      * @return the set point of the elevator
      */
-    public static double getSetPosition() {
+    public static double getPosition() {
         return setPosition;
     }
 
     public static boolean aboveStageThreshold() {
-        if (elevatorEncoder.getPosition() > STAGE_THRESHOLD) {
-            return true;
-        }
-        return false;
+        return elevatorEncoder.getPosition() > STAGE_THRESHOLD;
     }
 
     /**
-     * @return true if the elevator is within deadband of its set position
+     * @return true if the elevator is within deadband of its set value
      */
     public static boolean elevatorDoneMoving() {
         if (Math.abs(elevatorEncoder.getPosition() - prevPosition) > DEADBAND) {
@@ -154,17 +161,26 @@ public class Elevator {
     }
 
     /**
-     * Sets the elevator to the entered position
+     * Sets the elevator to the entered value
      *
-     * @param pos: desired elevator position
+     * @param position: desired elevator value
      */
-    public static void setPosition(double pos) {
-        setPosition = pos;
+    public static void setPosition(double position) {
+        setPosition = position;
         limitPosition();
     }
 
     /**
-     * Prevents the user from going past the maximum position of the elevator
+     * Sets the elevator to the entered position
+     *
+     * @param position desired elevator position
+     */
+    public static void setPosition(Position position) {
+        setPosition(position.value);
+    }
+
+    /**
+     * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
         if (setPosition > MAX_POSITION) {

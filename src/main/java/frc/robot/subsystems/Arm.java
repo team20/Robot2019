@@ -15,15 +15,26 @@ public class Arm {
 
     private static final double DEADBAND = 0.3;
 
-    public static final double FLOOR_POSITION = 0.0;
-    public static final double CARGO_SHOOT_POSITION = 0.0;
-    public static final double PLACE_POSITION = 0.0;
-    public static final double STARTING_CONFIG_POSITION = 0.0;
+    public enum Position {
+        ARM_FLOOR(0.0),
+        CARGO_SHOOT(0.0),
+        PLACING(0.0),
+        STARTING_CONFIG(0.0);
 
-    /**
+        double value;
+
+        Position(double position) {
+            value = position;
+        }
+    }
+
+    private Arm() {
+    }
+
+    /*
      * Initializes all necessary objects and variables
      */
-    public Arm() {
+    static {
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
         pidController = armMotor.getPIDController();
@@ -41,45 +52,21 @@ public class Arm {
     }
 
     /**
-     * Sets the arm to the floor position
-     */
-    public static void setStartingConfigPosition() {
-        setPosition(STARTING_CONFIG_POSITION);
-    }
-
-    /**
-     * Sets the arm to the place (cargo or hatch) position
-     */
-    public static void setPlacePosition() {
-        setPosition(PLACE_POSITION);
-    }
-
-    /**
-     * Sets the arm to the cargo shoot position
-     */
-    public static void setCargoShootPosition() {
-        setPosition(CARGO_SHOOT_POSITION);
-    }
-
-    /**
-     * Sets the arm to the floor position
-     */
-    public static void setFloorPosition() {
-        setPosition(FLOOR_POSITION);
-    }
-
-    /**
-     * Sets the position of the elevator
+     * Sets the value of the elevator
      *
-     * @param pos: desired position
+     * @param pos: desired value
      */
     public static void setPosition(double pos) {
         setPosition = pos;
         pidController.setReference(setPosition, ControlType.kPosition);
     }
 
+    public static void setPosition(Position position) {
+        setPosition(position.value);
+    }
+
     /**
-     * @return true if the arm is within deadband of its set position
+     * @return true if the arm is within deadband of its set value
      */
     public static boolean armDoneMoving() {
         if (Math.abs(armEncoder.getPosition() - prevPosition) > DEADBAND) {

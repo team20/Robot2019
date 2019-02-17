@@ -3,6 +3,9 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Intake;
 
+/**
+ * Closes hatch grabbing mechanism
+ */
 public class CollectHatch extends RobotFunction<Void> {
 
     /**
