@@ -14,14 +14,6 @@ public class Arduino {
     private static Notifier thread;
     //I2C communication protocol
     private static I2C wire;
-
-    // private static enum read {
-
-    // }
-    // private static enum write {
-
-    // }
-
     //I2C port to use with Arduino
     private static final int address;
     //data to be written to Arduino
@@ -45,6 +37,9 @@ public class Arduino {
     //useful variables from [Robot.java]
     private static int auto;
     private static double setPoint;
+
+    private Arduino() {
+    }
 
     static {
         pidSource = new PIDSource() {
@@ -72,7 +67,7 @@ public class Arduino {
                 return pidSourceType;
             }
         };
-        pidOutput = (double output) -> {
+        pidOutput = output -> {
             switch (auto) {
                 case 0:
                     dTurnSpeed = Math.abs(turnSpeed - output);
@@ -84,7 +79,10 @@ public class Arduino {
                     break;
             }
         };
-        thread = new Notifier(Arduino::update);
+        thread = new Notifier(() -> {
+            read();
+            write();
+        });
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 0;
         wire = new I2C(Port.kOnboard, address);
@@ -145,12 +143,7 @@ public class Arduino {
         thread.stop();
     }
 
-    public static void update() {
-        read();
-        write();
-    }
-
-    public static void read() {
+    private static void read() {
         //get data from Arduino as byte array
         wire.read(address, readData.length, readData);
         //set values from array to variables
@@ -159,7 +152,7 @@ public class Arduino {
         distance = readData[2];
     }
 
-    public static void write() {
+    private static void write() {
         //write data to Arduino as byte array
         wire.writeBulk(writeData, writeData.length);
     }

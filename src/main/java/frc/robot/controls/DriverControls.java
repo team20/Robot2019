@@ -6,14 +6,13 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 
 public class DriverControls {
+    private static PS4Controller driverJoy;
+    private static double speedStraight, speedLeft, speedRight;
 
-    private PS4Controller driverJoy;
-    private double speedStraight, speedLeft, speedRight;
-
-    /**
+    /*
      * Initializes the driver controller
      */
-    public DriverControls() {
+    static {
         driverJoy = new PS4Controller(0, 2);
         speedStraight = 0;
         speedLeft = 0;
@@ -23,7 +22,7 @@ public class DriverControls {
     /**
      * Runs the driver controls
      */
-    public void driverControls() {
+    public static void driverControls() {
         //Drivetrain Controls
         if (Math.abs(driverJoy.getLeftYAxis()) > 0.1) {
             speedStraight = -driverJoy.getLeftYAxis();

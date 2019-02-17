@@ -6,15 +6,17 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 
 public class Intake {
-
     private static Servo hatch;
     private static VictorSPX cargo;
     private static DigitalInput cargoSensor;
 
-    /**
+    private Intake() {
+    }
+
+    /*
      * Initializes and sets up all motors for the intake
      */
-    public Intake() {
+    static {
         hatch = new Servo(1);
         cargo = new VictorSPX(9);
         cargoSensor = new DigitalInput(0);
@@ -65,8 +67,8 @@ public class Intake {
     /**
      * Runs the cargo intake until the digital sensor is tripped
      *
-     * @param: speed = speed of the cargo motor (-1.0 to 1.0)
-     * @return: true if a cargo is in the intake
+     * @param speed = speed of the cargo motor (-1.0 to 1.0)
+     * @return true if a cargo is in the intake
      */
     public static boolean intakeMode() {
         if (!cargoSensor.get()) {
@@ -81,7 +83,7 @@ public class Intake {
     /**
      * Runs the cargo collector
      *
-     * @param: speed = speed of the cargo motor (-1.0 to 1.0)
+     * @param speed = speed of the cargo motor (-1.0 to 1.0)
      */
     private static void runCargoMotor(double speed) {
         cargo.set(ControlMode.PercentOutput, speed);

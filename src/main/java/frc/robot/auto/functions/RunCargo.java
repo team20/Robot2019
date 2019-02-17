@@ -3,13 +3,15 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Intake;
 
+/**
+ * Outtakes the cargo from the intake
+ */
 public class RunCargo extends RobotFunction<Void> {
 
     /**
      * Initializes all needed variables
      */
     public RunCargo() {
-
     }
 
     /**

@@ -5,7 +5,7 @@ import frc.robot.utils.PrettyPrint;
 import java.util.ArrayList;
 
 public class RocketScript {
-    private ArrayList<RobotFunction> auto;
+    private ArrayList<RobotFunction<?>> auto;
     private int autoSteps;
     private boolean lastCommand;
 
@@ -46,9 +46,9 @@ public class RocketScript {
      * Parallel functions are run at the same time as the function before it
      */
     public void run() {
-        if (autoSteps == auto.size() - 1) {
+        if (autoSteps == auto.size() - 1)
             lastCommand = true;
-        }
+
         if (autoSteps < auto.size()) {
             auto.get(autoSteps).run();
             if (!lastCommand && auto.get(autoSteps + 1).isParallel) {

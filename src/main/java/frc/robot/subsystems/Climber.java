@@ -13,36 +13,40 @@ import frc.robot.Robot;
 public class Climber {
     private static CANSparkMax back;
     private static TalonSRX front;
-    private static PIDController frontC, backC;
+    private static PIDController frontPID, backPID;
     private static double kP = .08, kI = 0, kD = 0;
+    private static double balancePidOutput;
 
-    /**
+    private Climber() {
+    }
+
+    /*
      * Initializes and sets up all motors and PID Controllers
      */
-    public Climber() {
+    static {
         // Declare motors
         back = new CANSparkMax(7, MotorType.kBrushless);
         front = new TalonSRX(8);
 
         // Declare PID Output
-        PIDOut output = new PIDOut();
+        PIDOutput pidOutput = output -> balancePidOutput = output;
 
         // Declare PID Source
         GyroSource input = new GyroSource();
 
         // Declare PID Controllers
-        frontC = new PIDController(kP, kI, kD, input, output);
-        backC = new PIDController(kP, kI, kD, input, output);
-        frontC.setSetpoint(0);
-        frontC.setInputRange(-180, 180);
-        frontC.setOutputRange(-1, 1);
-        backC.setSetpoint(0);
-        backC.setInputRange(-180, 180);
-        backC.setOutputRange(-1, 1);
+        frontPID = new PIDController(kP, kI, kD, input, pidOutput);
+        backPID = new PIDController(kP, kI, kD, input, pidOutput);
+        frontPID.setSetpoint(0);
+        frontPID.setInputRange(-180, 180);
+        frontPID.setOutputRange(-1, 1);
+        backPID.setSetpoint(0);
+        backPID.setInputRange(-180, 180);
+        backPID.setOutputRange(-1, 1);
 
         // Enable
-        frontC.enable();
-        backC.enable();
+        frontPID.enable();
+        backPID.enable();
     }
 
     /**
@@ -51,8 +55,8 @@ public class Climber {
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
-        front.set(ControlMode.PercentOutput, PIDOut.output + speed);
-        back.set(-PIDOut.output + speed);
+        front.set(ControlMode.PercentOutput, balancePidOutput + speed);
+        back.set(-balancePidOutput + speed);
     }
 
     /**
@@ -92,10 +96,6 @@ public class Climber {
     }
 
     static class GyroSource implements PIDSource {
-
-        public GyroSource() {
-        }
-
         @Override
         public void setPIDSourceType(PIDSourceType pidSource) {
         }
@@ -108,18 +108,6 @@ public class Climber {
         @Override
         public double pidGet() {
             return Robot.gyro.getPitch();
-        }
-    }
-
-    static class PIDOut implements PIDOutput {
-        public static double output = 0;
-
-        public PIDOut() {
-        }
-
-        @Override
-        public void pidWrite(double output) {
-            PIDOut.output = output;
         }
     }
 }

@@ -14,10 +14,6 @@ import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -28,15 +24,7 @@ import frc.robot.utils.PrettyPrint;
  * project.
  */
 public class Robot extends TimedRobot {
-    AutoModes auto;
-
-    Drivetrain drive;
-    Elevator elevator;
-    Intake intake;
-    Climber climber;
-
-    DriverControls driver;
-    OperatorControls operator;
+    private AutoModes auto;
 
     public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); //DO NOT MOVE
 
@@ -45,14 +33,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         auto = new AutoModes();
-
-        drive = new Drivetrain();
-        elevator = new Elevator();
-        intake = new Intake();
-        climber = new Climber();
-
-        driver = new DriverControls();
-        operator = new OperatorControls();
 
         autoSet = false;
     }
@@ -88,8 +68,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        driver.driverControls();
-        operator.operatorControls();
+        DriverControls.driverControls();
+        OperatorControls.operatorControls();
     }
 
     @Override
