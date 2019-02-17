@@ -14,6 +14,7 @@ public class Arduino {
     private static Notifier thread;
     //I2C communication protocol
     private static I2C wire;
+
     //I2C port to use with Arduino
     private static final int address;
     //data to be written to Arduino
@@ -87,7 +88,7 @@ public class Arduino {
         address = 0;
         wire = new I2C(Port.kOnboard, address);
 
-        writeData = new byte[3];
+        writeData = new byte[4];
         readData = new byte[3];
         turnSpeed = 0;
         dTurnSpeed = 0;
@@ -123,16 +124,17 @@ public class Arduino {
         return dDriveSpeed;
     }
 
-    public static void setLEDStripPattern(int pattern) {
-        writeData[0] = (byte) pattern;
+    public static void setLEDStripPattern(int main, int diagnostic) {
+        writeData[0] = (byte)main;
+        writeData[1] = (byte)diagnostic;
     }
 
     public static void setPixyCamState(int state) {
-        writeData[1] = (byte) state;
+        writeData[2] = (byte)state;
     }
 
     public static void setUltrasonicState(boolean enabled) {
-        writeData[2] = (byte) (enabled ? 1 : 0);
+        writeData[3] = (byte)(enabled ? 1 : 0);
     }
 
     public static void startThread() {
