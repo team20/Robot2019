@@ -21,11 +21,11 @@ void setup() {
 }
 
 void loop() {
-  LEDStrip::updateDisplay(0, 2, 2, 1);       //(I2C::getAllianceColor(), I2C::getPattern(), I2C::getDiagnosticColor(), I2C::getDiagnosticPattern());
-//  PixyCam::refresh(2);    //I2C::getPixyCamState());
+  LEDStrip::updateDisplay(I2C::getAllianceColor(), I2C::getPattern(), I2C::getDiagnosticColor(), I2C::getDiagnosticPattern());
+  PixyCam::refresh(2);    //I2C::getPixyCamState());
 //  if (I2C::getLineFollowerState())
 //    LineFollower::updateLineData();
 //  if (I2C::getUltrasonicState())
-//    Ultrasonic::updateDistance();
-//  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
+    Ultrasonic::updateDistance();
+  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
 }
