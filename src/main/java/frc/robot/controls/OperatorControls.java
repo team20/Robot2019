@@ -18,7 +18,7 @@ public class OperatorControls {
     static {
         operatorJoy = new PS4Controller(1, 3);
         elevatorOverriden = false;
-        armOverriden = true;
+        armOverriden = false;
     }
 
     /**
