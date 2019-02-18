@@ -96,6 +96,6 @@ public class LineSensor {
         if (denominator != 0)
             linePosition = numerator / denominator;
         else
-            PrettyPrint.once("LINE SENSOR NEEDS TO BE RESET");
+            PrettyPrint.error("LINE SENSOR NEEDS TO BE RESET");
     }
 }

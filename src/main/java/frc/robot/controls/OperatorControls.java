@@ -4,8 +4,17 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 
-import static frc.robot.subsystems.Arm.Position.*;
-import static frc.robot.subsystems.Elevator.Position.*;
+import static frc.robot.subsystems.Arm.Position.ARM_FLOOR;
+import static frc.robot.subsystems.Arm.Position.CARGO_SHOOT;
+import static frc.robot.subsystems.Arm.Position.PLACING;
+import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
+import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_ONE;
+import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_THREE;
+import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_TWO;
+import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
+import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_ONE;
+import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_THREE;
+import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_TWO;
 
 public class OperatorControls {
 
@@ -26,7 +35,7 @@ public class OperatorControls {
      */
     public static void operatorControls() {
         //Elevator Controls
-          //override
+        //override
         if (operatorJoy.getRightStickButton()) {
             double speed = operatorJoy.getRightYAxis();
             Elevator.moveSpeed(speed);
@@ -49,14 +58,14 @@ public class OperatorControls {
                 Elevator.setPosition(HATCH_LEVEL_THREE);
             }
         }
-          //encoder reset
-        if(operatorJoy.getShareButton()){
+        //encoder reset
+        if (operatorJoy.getShareButton()) {
             Elevator.resetEncoder();
         }
 
         //Arm Controls
-          //override
-        if(operatorJoy.getLeftStickButton()){
+        //override
+        if (operatorJoy.getLeftStickButton()) {
             double speed = operatorJoy.getLeftYAxis();
             Arm.moveSpeed(speed);
             armOverriden = true;
@@ -70,8 +79,8 @@ public class OperatorControls {
         } else if (operatorJoy.getSquareButton()) {
             Arm.setPosition(STARTING_CONFIG);
         }
-          //encoder reset 
-        if(operatorJoy.getOptionsButton()){
+        //encoder reset
+        if (operatorJoy.getOptionsButton()) {
             Arm.resetEncoder();
         }
 
@@ -102,11 +111,11 @@ public class OperatorControls {
             Elevator.setPosition(ELEVATOR_FLOOR);
             Arm.setPosition(ARM_FLOOR);
         }
-        if(armOverriden){
+        if (armOverriden) {
             Arm.stop();
             armOverriden = false;
         }
-        if(elevatorOverriden){
+        if (elevatorOverriden) {
             Elevator.stop();
             elevatorOverriden = false;
         }
