@@ -64,7 +64,7 @@ public class PrettyPrint {
      * @param value constant value of any type
      */
     public static void put(String message, Object value) {
-        values.put(message, () -> value);
+        tempValues.put(message, value);
     }
 
     /**
@@ -72,13 +72,6 @@ public class PrettyPrint {
      */
     public static void once(String message) {
         tempMessages.add(message);
-    }
-
-    /**
-     * append the message and value at the end of prettyprint table only once
-     */
-    public static void once(String message, Object value) {
-        tempValues.put(message, value);
     }
 
     /**
@@ -151,6 +144,7 @@ public class PrettyPrint {
             System.out.printf(" %s |", message);
         }
         System.out.println();
+
         tempValues.clear();
         tempMessages.clear();
         errors.clear();

@@ -86,7 +86,7 @@ public class Climber {
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractFront(double speed) {
-        if(front.getSelectedSensorPosition() < 1.0){
+        if (front.getSelectedSensorPosition() < 1.0) {
             front.set(ControlMode.PercentOutput, 0.0);
         } else {
             front.set(ControlMode.PercentOutput, -speed);
@@ -99,7 +99,7 @@ public class Climber {
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractBack(double speed) {
-        if(backEnc.getPosition() < 1.0){
+        if (backEnc.getPosition() < 1.0) {
             back.set(0.0);
         } else {
             back.set(-speed);

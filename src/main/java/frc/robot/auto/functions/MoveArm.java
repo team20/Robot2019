@@ -2,6 +2,7 @@ package frc.robot.auto.functions;
 
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Arm;
+
 import java.util.InputMismatchException;
 
 public class MoveArm extends RobotFunction<Double> {
