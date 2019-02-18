@@ -16,6 +16,9 @@ public class LineSensor {
     //I2C communication protocol
     private static I2C wire;
 
+    //threshold for whether lineSeen is true or not
+    private static final int lineSeenThreshold = 100;   //TODO: figure out what this actually is
+
     //the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final int address;
     //raw data from the sensor
@@ -93,9 +96,11 @@ public class LineSensor {
             numerator += sensorData[i] * i * 100;
             denominator += sensorData[i];
         }
-        if (denominator != 0)
+        if (denominator != 0) {
+            Arduino.setDiagnosticColor(3);
+            Arduino.setDiagnosticPattern(numerator > lineSeenThreshold ? 0 : 1);
             linePosition = numerator / denominator;
-        else
+        } else
             PrettyPrint.once("LINE SENSOR NEEDS TO BE RESET");
     }
 }

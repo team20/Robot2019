@@ -11,8 +11,6 @@ public class Elevator {
 
     private static double setPosition, prevPosition, zeroPosition;
 
-    private static final double STAGE_THRESHOLD = 0.0;
-    private static final double MAX_POSITION = 0.0;
     private static final double DEADBAND = 0.5;
 
     public enum Position {
@@ -23,9 +21,11 @@ public class Elevator {
         CARGO_LEVEL_ONE(0.0),
         CARGO_LEVEL_TWO(0.0),
         CARGO_LEVEL_THREE(0.0),
-        CARGO_SHIP(0.0);
+        CARGO_SHIP(0.0),
+        STAGE_THRESHOLD(0.0),
+        MAX_POSITION(0.0);
 
-        double value;
+        public double value;
 
         Position(double position) {
             value = position;
@@ -78,19 +78,18 @@ public class Elevator {
     }
 
     public static boolean aboveStageThreshold() {
-        return elevatorEncoder.getPosition() > STAGE_THRESHOLD;
+        return elevatorEncoder.getPosition() > Position.STAGE_THRESHOLD.value;
     }
 
     /**
      * @return true if the elevator is within deadband of its set value
      */
-    public static boolean elevatorDoneMoving() {
+    public static boolean isMoving() {
         if (Math.abs(elevatorEncoder.getPosition() - prevPosition) > DEADBAND) {
             prevPosition = elevatorEncoder.getPosition();
-            return true;
-        } else {
             return false;
-        }
+        } else
+            return true;
     }
 
     /**
@@ -132,11 +131,7 @@ public class Elevator {
      * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
-        if (setPosition > MAX_POSITION) {
-            setPosition = MAX_POSITION;
-            elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
-        } else {
-            elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
-        }
+        setPosition = Math.min(setPosition, Position.MAX_POSITION.value);
+        elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
     }
 }

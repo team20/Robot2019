@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Arduino {
     public static PIDSource pidSource;
@@ -88,7 +89,7 @@ public class Arduino {
         address = 0;
         wire = new I2C(Port.kOnboard, address);
 
-        writeData = new byte[4];
+        writeData = new byte[6];
         readData = new byte[3];
         turnSpeed = 0;
         dTurnSpeed = 0;
@@ -124,17 +125,38 @@ public class Arduino {
         return dDriveSpeed;
     }
 
-    public static void setLEDStripPattern(int main, int diagnostic) {
-        writeData[0] = (byte)main;
-        writeData[1] = (byte)diagnostic;
+    public static void setAllianceColor(Alliance color) {
+        switch (color) {
+            case Red:
+                writeData[0] = 0;
+                break;
+            case Blue:
+                writeData[0] = 1;
+                break;
+            case Invalid:
+                writeData[0] = 2;
+                break;
+        }
+    }
+
+    public static void setPattern(int pattern) {
+        writeData[1] = (byte)pattern;
+    }
+    
+    public static void setDiagnosticColor(int color) {
+        writeData[2] = (byte)color;
+    }
+
+    public static void setDiagnosticPattern(int pattern) {
+        writeData[3] = (byte)pattern;
     }
 
     public static void setPixyCamState(int state) {
-        writeData[2] = (byte)state;
+        writeData[4] = (byte)state;
     }
 
     public static void setUltrasonicState(boolean enabled) {
-        writeData[3] = (byte)(enabled ? 1 : 0);
+        writeData[5] = (byte)(enabled ? 1 : 0);
     }
 
     public static void startThread() {

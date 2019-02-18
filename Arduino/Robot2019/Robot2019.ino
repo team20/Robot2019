@@ -13,19 +13,19 @@
 void setup() {
   Serial.begin(9600);
   Serial.println("program started");
-  I2C::initialize(0);
+//  I2C::initialize(0);
   LEDStrip::initialize(6, 20, 15);
-  PixyCam::initialize();
-  LineFollower::initialize();
-  Ultrasonic::initialize();
+//  PixyCam::initialize();
+//  LineFollower::initialize();
+//  Ultrasonic::initialize();
 }
 
 void loop() {
-  LEDStrip::displayPattern(I2C::getPattern(), I2C::getDiagnosticColor());
-  PixyCam::refresh(2);    //I2C::getPixyCamState());
+  LEDStrip::updateDisplay(0, 2, 2, 1);       //(I2C::getAllianceColor(), I2C::getPattern(), I2C::getDiagnosticColor(), I2C::getDiagnosticPattern());
+//  PixyCam::refresh(2);    //I2C::getPixyCamState());
 //  if (I2C::getLineFollowerState())
 //    LineFollower::updateLineData();
 //  if (I2C::getUltrasonicState())
-    Ultrasonic::updateDistance();
-  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
+//    Ultrasonic::updateDistance();
+//  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
 }

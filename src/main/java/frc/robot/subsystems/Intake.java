@@ -27,6 +27,8 @@ public class Intake {
      */
     public static void collectCargo() {
         runCargoMotor(1.0);
+        Arduino.setDiagnosticColor(1);
+        Arduino.setDiagnosticPattern(2);
     }
 
     /**
@@ -34,6 +36,8 @@ public class Intake {
      */
     public static void spitCargo() {
         runCargoMotor(-1.0);
+        Arduino.setDiagnosticColor(1);
+        Arduino.setDiagnosticPattern(2);
     }
 
     /**
@@ -41,6 +45,8 @@ public class Intake {
      */
     public static void outtakeCargo() {
         runCargoMotor(-0.5);
+        Arduino.setDiagnosticColor(1);
+        Arduino.setDiagnosticPattern(2);
     }
 
     /**
@@ -48,6 +54,7 @@ public class Intake {
      */
     public static void stopCargoRollers() {
         runCargoMotor(0.0);
+        Arduino.setDiagnosticPattern(0);
     }
 
     /**
@@ -55,6 +62,7 @@ public class Intake {
      */
     public static void openHatch() {
         hatch.set(0);
+        Arduino.setDiagnosticPattern(0);
     }
 
     /**
@@ -62,6 +70,8 @@ public class Intake {
      */
     public static void closeHatch() {
         hatch.set(1);
+        Arduino.setDiagnosticColor(3);
+        Arduino.setDiagnosticPattern(1);
     }
 
     /**
@@ -88,6 +98,4 @@ public class Intake {
     private static void runCargoMotor(double speed) {
         cargo.set(ControlMode.PercentOutput, speed);
     }
-
 }
-

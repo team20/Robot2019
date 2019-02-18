@@ -50,12 +50,16 @@ package frc.robot;
  */
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
+import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.Elevator;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -77,6 +81,10 @@ public class Robot extends TimedRobot {
         auto = new AutoModes();
 
         autoSet = false;
+
+        Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
+        Arduino.setPattern(1);
+        Arduino.setDiagnosticColor(0);
     }
 
     @Override
@@ -130,5 +138,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         PrettyPrint.print();
+        Arduino.setPattern(Elevator.isMoving() ? (int)((Elevator.getPosition() / Elevator.Position.MAX_POSITION.value) * 20.0) : 2);
     }
 }
