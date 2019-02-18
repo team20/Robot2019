@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PIDController;
@@ -12,6 +13,7 @@ import frc.robot.Robot;
 
 public class Climber {
     private static CANSparkMax back;
+    private static CANEncoder backEnc;
     private static TalonSRX front;
     private static PIDController frontPID, backPID;
     private static double kP = .08, kI = 0, kD = 0;
@@ -26,6 +28,7 @@ public class Climber {
     static {
         // Declare motors
         back = new CANSparkMax(7, MotorType.kBrushless);
+        backEnc = new CANEncoder(back);
         front = new TalonSRX(8);
 
         // Declare PID Output
@@ -83,7 +86,11 @@ public class Climber {
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractFront(double speed) {
-        front.set(ControlMode.PercentOutput, -speed);
+        if(front.getSelectedSensorPosition() < 1.0){
+            front.set(ControlMode.PercentOutput, 0.0);
+        } else {
+            front.set(ControlMode.PercentOutput, -speed);
+        }
     }
 
     /**
@@ -92,15 +99,19 @@ public class Climber {
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractBack(double speed) {
-        back.set(-speed);
+        if(backEnc.getPosition() < 1.0){
+            back.set(0.0);
+        } else {
+            back.set(-speed);
+        }
     }
 
     /**
      * Stop all motors
      */
     public static void stop() {
-        front.set(ControlMode.PercentOutput, 0);
-        back.set(0);
+        front.set(ControlMode.PercentOutput, 0.0);
+        back.set(0.0);
     }
 
     static class GyroSource implements PIDSource {
