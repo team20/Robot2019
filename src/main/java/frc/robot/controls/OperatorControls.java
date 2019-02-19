@@ -3,7 +3,6 @@ package frc.robot.controls;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-
 import static frc.robot.subsystems.Arm.Position.*;
 import static frc.robot.subsystems.Elevator.Position.*;
 
@@ -32,7 +31,7 @@ public class OperatorControls {
             Elevator.moveSpeed(-speedE);
             elevatorOverriden = true;
         } else {
-            if(elevatorOverriden){
+            if (elevatorOverriden) {
                 Elevator.stop();
                 elevatorOverriden = false;
             }
@@ -56,18 +55,18 @@ public class OperatorControls {
             }
         }
           //encoder reset
-        if(operatorJoy.getShareButton()){
+        if (operatorJoy.getShareButton()) {
             Elevator.resetEncoder();
         }
 
         //Arm Controls
           //override
-        if(operatorJoy.getLeftStickButton()){
+        if (operatorJoy.getLeftStickButton()) {
             double speedA = operatorJoy.getLeftYAxis();
             Arm.moveSpeed(speedA);
             armOverriden = true;
         } else {
-            if(armOverriden){
+            if (armOverriden) {
                 Arm.stop();
                 armOverriden = false;
             }
@@ -84,7 +83,7 @@ public class OperatorControls {
             Elevator.setPosition(ELEVATOR_FLOOR);
         }
           //encoder reset 
-        if(operatorJoy.getOptionsButton()){
+        if (operatorJoy.getOptionsButton()) {
             Arm.resetEncoder();
         }
 
@@ -118,7 +117,7 @@ public class OperatorControls {
         }
 
         //Controller Vibrations
-        if(Intake.intakeRunning()){
+        if (Intake.intakeRunning()) {
             operatorJoy.setRumble(1.0);
         }
     }

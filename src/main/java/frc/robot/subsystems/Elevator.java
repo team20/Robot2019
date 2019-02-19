@@ -126,7 +126,7 @@ public class Elevator {
     /**
      * Sets the current elevator position to the new zero
      */
-    public static void resetEncoder(){
+    public static void resetEncoder() {
         zeroPosition = elevatorEncoder.getPosition();
     }
 

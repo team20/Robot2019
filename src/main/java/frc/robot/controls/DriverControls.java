@@ -61,22 +61,21 @@ public class DriverControls {
         //Climber Controls
         if (driverJoy.getXButton()) {
             Climber.balanceClimb(0.75);
-        } else if(driverJoy.getCircleButton() || driverJoy.getTriButton()){
-            if(driverJoy.getCircleButton()){
+        } else if (driverJoy.getCircleButton() || driverJoy.getTriButton()) {
+            if (driverJoy.getCircleButton()) {
                 Climber.retractFront(0.5);
             }
-            if(driverJoy.getTriButton()){
+            if (driverJoy.getTriButton()) {
                 Climber.retractBack(0.5);
             }
-        } else if(driverJoy.getTrackpadButton()){
+        } else if (driverJoy.getTrackpadButton()) {
             climberOverride = true;
-            if(driverJoy.getButtonDUp())
+            if (driverJoy.getButtonDUp())
                 Climber.manualClimbFront(0.5);
-            if(driverJoy.getButtonDDown()){
+            if (driverJoy.getButtonDDown()) 
                 Climber.manualClimbBack(0.5);
-            }
         }
-        if(climberOverride){
+        if (climberOverride) {
             Climber.manualClimbFront(0.0);
             Climber.manualClimbBack(0.0);
             climberOverride = false;

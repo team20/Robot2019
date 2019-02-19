@@ -90,22 +90,23 @@ public class Arm {
     /**
      * Stops the arm from moving
      */
-    public static void stop(){
+    public static void stop() {
         setPosition(armEncoder.getPosition());
     }
 
     /**
      * Moves the arm at the desired speed
+     * 
      * @param speed: the desired speed
      */
-    public static void moveSpeed(double speed){
+    public static void moveSpeed(double speed) {
         armMotor.set(speed);
     }
 
     /**
      * @return: the value of the arm encoder
      */
-    public static double getPosition(){
+    public static double getPosition() {
         return armEncoder.getPosition();
     }
 }

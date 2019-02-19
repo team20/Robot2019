@@ -22,7 +22,7 @@ public class Arduino {
     //data read from Arduino
     private static byte[] readData;
     //does the camera see an object?
-    private static boolean objInView;
+    private static boolean isObjInView;
     //distance in inches from distance sensor
     private static int distance;
     //x-value of coordinates of point to be turned towards
@@ -96,8 +96,8 @@ public class Arduino {
         dDriveSpeed = 0;
     }
 
-    public static boolean getObjInView() {
-        return objInView;
+    public static boolean isObjInView() {
+        return isObjInView;
     }
 
     public static int getDistance() {
@@ -125,16 +125,16 @@ public class Arduino {
     }
 
     public static void setLEDStripPattern(int main, int diagnostic) {
-        writeData[0] = (byte)main;
-        writeData[1] = (byte)diagnostic;
+        writeData[0] = (byte) main;
+        writeData[1] = (byte) diagnostic;
     }
 
     public static void setPixyCamState(int state) {
-        writeData[2] = (byte)state;
+        writeData[2] = (byte) state;
     }
 
     public static void setUltrasonicState(boolean enabled) {
-        writeData[3] = (byte)(enabled ? 1 : 0);
+        writeData[3] = (byte) (enabled ? 1 : 0);
     }
 
     public static void startThread() {
@@ -149,7 +149,7 @@ public class Arduino {
         //get data from Arduino as byte array
         wire.read(address, readData.length, readData);
         //set values from array to variables
-        objInView = readData[0] == 1;
+        isObjInView = readData[0] == 1;
         xValue = readData[1];
         distance = readData[2];
     }
