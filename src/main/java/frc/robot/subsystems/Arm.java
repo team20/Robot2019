@@ -20,7 +20,7 @@ public class Arm {
         CARGO_SHOOT(0.0),
         PLACING(0.0),
         STARTING_CONFIG(0.0);
-
+        
         double value;
 
         Position(double position) {
@@ -101,5 +101,12 @@ public class Arm {
      */
     public static void moveSpeed(double speed) {
         armMotor.set(speed);
+    }
+
+    /**
+     * @return: the value of the arm encoder
+     */
+    public static double getPosition() {
+        return armEncoder.getPosition();
     }
 }
