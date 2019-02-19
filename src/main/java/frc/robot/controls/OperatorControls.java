@@ -25,7 +25,7 @@ public class OperatorControls {
      */
     public static void operatorControls() {
         //Elevator Controls
-          //override
+        //override
         if (operatorJoy.getRightStickButton()) {
             double speedE = operatorJoy.getRightYAxis();
             Elevator.moveSpeed(-speedE);
@@ -54,16 +54,16 @@ public class OperatorControls {
                 Elevator.setPosition(HATCH_LEVEL_THREE);
             }
         }
-          //encoder reset
+        //encoder reset
         if (operatorJoy.getShareButton()) {
             Elevator.resetEncoder();
         }
 
         //Arm Controls
-          //override
+        //override
         if (operatorJoy.getLeftStickButton()) {
-            double speedA = operatorJoy.getLeftYAxis();
-            Arm.moveSpeed(speedA);
+            double speed = operatorJoy.getLeftYAxis();
+            Arm.moveSpeed(speed);
             armOverriden = true;
         } else {
             if (armOverriden) {
@@ -82,7 +82,7 @@ public class OperatorControls {
             Arm.setPosition(STARTING_CONFIG);
             Elevator.setPosition(ELEVATOR_FLOOR);
         }
-          //encoder reset 
+        //encoder reset
         if (operatorJoy.getOptionsButton()) {
             Arm.resetEncoder();
         }

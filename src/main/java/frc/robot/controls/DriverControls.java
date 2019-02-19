@@ -74,11 +74,12 @@ public class DriverControls {
                 Climber.manualClimbFront(0.5);
             if (driverJoy.getButtonDDown()) 
                 Climber.manualClimbBack(0.5);
-        }
-        if (climberOverride) {
-            Climber.manualClimbFront(0.0);
-            Climber.manualClimbBack(0.0);
-            climberOverride = false;
+        } else {
+            if (climberOverride) {
+                Climber.manualClimbFront(0.0);
+                Climber.manualClimbBack(0.0);
+                climberOverride = false;
+            }    
         }
     }
 }

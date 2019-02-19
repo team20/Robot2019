@@ -62,7 +62,7 @@ public class Arm {
     /**
      * Sets the current arm position to the new zero
      */
-    public static void resetEncoder(){
+    public static void resetEncoder() {
         zeroPosition = armEncoder.getPosition();
     }
 
@@ -96,7 +96,7 @@ public class Arm {
 
     /**
      * Moves the arm at the desired speed
-     * 
+     *
      * @param speed: the desired speed
      */
     public static void moveSpeed(double speed) {
