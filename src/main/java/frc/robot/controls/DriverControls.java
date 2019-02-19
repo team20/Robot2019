@@ -8,6 +8,7 @@ import frc.robot.subsystems.Intake;
 public class DriverControls {
     private static PS4Controller driverJoy;
     private static double speedStraight, speedLeft, speedRight;
+    private static boolean climberOverride;
 
     /*
      * Initializes the driver controller
@@ -17,6 +18,7 @@ public class DriverControls {
         speedStraight = 0;
         speedLeft = 0;
         speedRight = 0;
+        climberOverride = false;
     }
 
     /**
@@ -67,11 +69,17 @@ public class DriverControls {
                 Climber.retractBack(0.5);
             }
         } else if(driverJoy.getTrackpadButton()){
+            climberOverride = true;
             if(driverJoy.getButtonDUp())
                 Climber.manualClimbFront(0.5);
             if(driverJoy.getButtonDDown()){
                 Climber.manualClimbBack(0.5);
             }
+        }
+        if(climberOverride){
+            Climber.manualClimbFront(0.0);
+            Climber.manualClimbBack(0.0);
+            climberOverride = false;
         }
     }
 }

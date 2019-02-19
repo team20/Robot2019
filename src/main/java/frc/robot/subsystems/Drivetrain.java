@@ -40,8 +40,8 @@ public class Drivetrain {
      * @param leftTurn:  left axis value
      */
     public static void drive(double speed, double rightTurn, double leftTurn) {
-        frontRight.set(ControlMode.PercentOutput, (speed - rightTurn + leftTurn) * 0.75);
-        frontLeft.set(ControlMode.PercentOutput, (-speed + leftTurn - rightTurn));
+        frontRight.set(ControlMode.PercentOutput, -(speed - rightTurn + leftTurn));
+        frontLeft.set(ControlMode.PercentOutput, -speed + leftTurn - rightTurn);
     }
 
     /**

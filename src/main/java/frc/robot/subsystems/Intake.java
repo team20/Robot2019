@@ -9,6 +9,7 @@ public class Intake {
     private static Servo hatch;
     private static VictorSPX cargo;
     private static DigitalInput cargoSensor;
+    private static boolean intakeRunning;
 
     private Intake() {
     }
@@ -17,9 +18,11 @@ public class Intake {
      * Initializes and sets up all motors for the intake
      */
     static {
-        hatch = new Servo(1);
+        hatch = new Servo(0);
         cargo = new VictorSPX(9);
         cargoSensor = new DigitalInput(0);
+
+        intakeRunning = false;
     }
 
     /**
@@ -27,6 +30,7 @@ public class Intake {
      */
     public static void collectCargo() {
         runCargoMotor(1.0);
+        intakeRunning = true;
     }
 
     /**
@@ -34,6 +38,7 @@ public class Intake {
      */
     public static void spitCargo() {
         runCargoMotor(-1.0);
+        intakeRunning = true;
     }
 
     /**
@@ -41,6 +46,7 @@ public class Intake {
      */
     public static void outtakeCargo() {
         runCargoMotor(-0.5);
+        intakeRunning = true;
     }
 
     /**
@@ -48,6 +54,7 @@ public class Intake {
      */
     public static void stopCargoRollers() {
         runCargoMotor(0.0);
+        intakeRunning = false;
     }
 
     /**
@@ -87,6 +94,11 @@ public class Intake {
      */
     private static void runCargoMotor(double speed) {
         cargo.set(ControlMode.PercentOutput, speed);
+        intakeRunning = true;
+    }
+
+    public static boolean intakeRunning(){
+        return intakeRunning;
     }
 
 }
