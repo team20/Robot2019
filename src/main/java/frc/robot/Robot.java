@@ -50,7 +50,6 @@ package frc.robot;
  */
 
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
@@ -116,8 +115,8 @@ public class Robot extends TimedRobot {
         DriverControls.driverControls();
         OperatorControls.operatorControls();
 
-        System.out.println("Elevator: " + Elevator.getPosition());
-        System.out.println("              Arm: " + Arm.getPosition());
+        PrettyPrint.put("Elevator", Elevator.getPosition());
+        PrettyPrint.put("arm", Arm.getPosition());
     }
 
     @Override

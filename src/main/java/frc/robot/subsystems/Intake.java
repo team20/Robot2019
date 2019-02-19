@@ -97,7 +97,7 @@ public class Intake {
         intakeRunning = true;
     }
 
-    public static boolean intakeRunning(){
+    public static boolean intakeRunning() {
         return intakeRunning;
     }
 
