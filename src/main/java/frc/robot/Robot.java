@@ -50,15 +50,12 @@ package frc.robot;
  */
 
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Elevator;
 import frc.robot.utils.PrettyPrint;
 
 /**
