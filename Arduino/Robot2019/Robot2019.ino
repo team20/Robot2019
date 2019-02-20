@@ -14,7 +14,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("program started");
 //  I2C::initialize(0);
-  LEDStrip::initialize(6, 20, 15);
+  LEDStrip::initialize(6, 15, 15);
 //  PixyCam::initialize();
 //  LineFollower::initialize();
 //  Ultrasonic::initialize();

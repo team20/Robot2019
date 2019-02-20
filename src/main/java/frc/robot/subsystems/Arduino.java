@@ -16,6 +16,9 @@ public class Arduino {
     //I2C communication protocol
     private static I2C wire;
 
+    //colors for diagnostic LED signals
+    public enum Colors { Red, Orange, Yellow, Green, Blue, Purple };
+
     //I2C port to use with Arduino
     private static final int address;
     //data to be written to Arduino
@@ -39,9 +42,6 @@ public class Arduino {
     //useful variables from [Robot.java]
     private static int auto;
     private static double setPoint;
-
-    private Arduino() {
-    }
 
     static {
         pidSource = new PIDSource() {
@@ -142,12 +142,28 @@ public class Arduino {
     public static void setPattern(int pattern) {
         writeData[1] = (byte)pattern;
     }
-    
-    public static void setDiagnosticColor(int color) {
-        writeData[2] = (byte)color;
-    }
 
-    public static void setDiagnosticPattern(int pattern) {
+    public static void setDiagnosticPattern(Colors color, int pattern) {
+        switch (color) {
+            case Red:
+                writeData[2] = 0;
+                break;
+            case Orange:
+                writeData[2] = 1;
+                break;
+            case Yellow:
+                writeData[2] = 2;
+                break;
+            case Green:
+                writeData[2] = 3;
+                break;
+            case Blue:
+                writeData[2] = 4;
+                break;
+            case Purple:
+                writeData[2] = 5;
+                break;
+        }
         writeData[3] = (byte)pattern;
     }
 

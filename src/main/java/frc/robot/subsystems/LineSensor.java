@@ -26,9 +26,9 @@ public class LineSensor {
     //improved format of the data that is used in the calculations
     private static int[] sensorData;
     //sum of all sensor values after each is multiplied by a value larger than that of the previous
-    private static int numerator;
+    private static int weightedTotal;
     //sum of all sensor values
-    private static int denominator;
+    private static int total;
     //value from 0 to 700 representing how far right or left the sensor is over the line
     private static int linePosition;
     //the speed for the robot to adjust its angle at
@@ -65,6 +65,10 @@ public class LineSensor {
         turnSpeed = 0;
     }
 
+    public static boolean isLineSeen() {
+        return total > lineSeenThreshold;
+    }
+
     public static double getLinePosition() {
         return linePosition;
     }
@@ -90,17 +94,15 @@ public class LineSensor {
         //store useful data from sensor in [sensorData]
         for (int i = 0; i < sensorData.length; i++)
             sensorData[i] = rawSensorData[i * 2];
-        numerator = 0;
-        denominator = 0;
+        weightedTotal = 0;
+        total = 0;
         for (int i = 0; i < sensorData.length; i++) {
-            numerator += sensorData[i] * i * 100;
-            denominator += sensorData[i];
+            weightedTotal += sensorData[i] * i * 100;
+            total += sensorData[i];
         }
-        if (denominator != 0) {
-            Arduino.setDiagnosticColor(3);
-            Arduino.setDiagnosticPattern(numerator > lineSeenThreshold ? 0 : 1);
-            linePosition = numerator / denominator;
-        } else
+        if (total != 0)
+            linePosition = weightedTotal / total;
+        else
             PrettyPrint.once("LINE SENSOR NEEDS TO BE RESET");
     }
 }

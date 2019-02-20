@@ -60,6 +60,9 @@ import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LineSensor;
+import frc.robot.subsystems.Arduino.Colors;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -84,7 +87,21 @@ public class Robot extends TimedRobot {
 
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
-        Arduino.setDiagnosticColor(0);
+        Arduino.setDiagnosticPattern(null, 0);
+    }
+
+    @Override
+    public void robotPeriodic() {
+        Arduino.setPattern(Elevator.isMoving() ? (int)((Elevator.getPosition() / Elevator.Position.MAX_POSITION.value) * 15.0) : 2);
+        if (LineSensor.isLineSeen())
+            Arduino.setDiagnosticPattern(Colors.Green, 1);
+        if (Intake.isHatchClosed())
+            Arduino.setDiagnosticPattern(Colors.Yellow, 1);
+        if (Intake.isCargoRunning())
+            Arduino.setDiagnosticPattern(Colors.Orange, 2);
+        if (Intake.isCargoPresent())
+            Arduino.setDiagnosticPattern(Colors.Orange, 1);
+        PrettyPrint.print();
     }
 
     @Override
@@ -133,11 +150,5 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         PrettyPrint.removeAll();
-    }
-
-    @Override
-    public void robotPeriodic() {
-        PrettyPrint.print();
-        Arduino.setPattern(Elevator.isMoving() ? (int)((Elevator.getPosition() / Elevator.Position.MAX_POSITION.value) * 20.0) : 2);
     }
 }

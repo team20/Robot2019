@@ -66,7 +66,7 @@ void LEDStrip::updateDisplay(byte ac, byte pattern, byte dc, byte diagnosticPatt
       greenFlowing();
       break;
     default:
-      if (pattern >= 4 && pattern <= 24)
+      if (pattern >= 4 && pattern <= 19)
         elevator(pattern - 4);
       break;
   }
@@ -169,7 +169,7 @@ void LEDStrip::elevator(byte height) {
 }
 
 void LEDStrip::diagnosticSolid() {
-  for (byte i = 14; i < 20; i ++)
+  for (byte i = 12; i < 15; i ++)
     strip.setPixelColor(i, diagnosticColor);
 }
 
@@ -178,6 +178,6 @@ void LEDStrip::diagnosticBlinking() {
     diagnosticTimeStamp = millis();
     diagnosticOn = !diagnosticOn;
   }
-  for (byte i = 14; i < 20; i ++)
+  for (byte i = 12; i < 15; i ++)
     strip.setPixelColor(i, diagnosticOn ? diagnosticColor : off);
 }
