@@ -8,7 +8,7 @@ import frc.robot.subsystems.Intake;
 public class DriverControls {
     private static PS4Controller driverJoy;
     private static double speedStraight, speedLeft, speedRight;
-    private static boolean climberOverride;
+    private static boolean climberOverride, climberRetract;
 
     /*
      * Initializes the driver controller
@@ -19,33 +19,37 @@ public class DriverControls {
         speedLeft = 0;
         speedRight = 0;
         climberOverride = false;
+        climberRetract = false;
     }
 
     /**
      * Runs the driver controls
      */
     public static void driverControls() {
+
         //Drivetrain Controls
         if (Math.abs(driverJoy.getLeftYAxis()) > 0.1) {
             speedStraight = -driverJoy.getLeftYAxis();
         } else {
             speedStraight = 0.0;
         }
-        if (Elevator.aboveStageThreshold()) {
-            if (driverJoy.getSquareButton()) {
-                speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
-                speedRight = driverJoy.getRightTriggerAxis() * 0.25;
+        if(!climberOverride){
+            if (Elevator.aboveStageThreshold()) {
+                if (driverJoy.getCircleButton()) {
+                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
+                    speedRight = driverJoy.getRightTriggerAxis() * 0.25;
+                } else {
+                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
+                    speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                }
             } else {
-                speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
-                speedRight = driverJoy.getRightTriggerAxis() * 0.4;
-            }
-        } else {
-            if (driverJoy.getSquareButton()) {
-                speedLeft = driverJoy.getLeftTriggerAxis() * 0.33;
-                speedRight = driverJoy.getRightTriggerAxis() * 0.33;
-            } else {
-                speedLeft = driverJoy.getLeftTriggerAxis() * 0.65;
-                speedRight = driverJoy.getRightTriggerAxis() * 0.65;
+                if (driverJoy.getCircleButton()) {
+                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.33;
+                    speedRight = driverJoy.getRightTriggerAxis() * 0.33;
+                } else {
+                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.65;
+                    speedRight = driverJoy.getRightTriggerAxis() * 0.65;
+                }
             }
         }
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
@@ -59,26 +63,27 @@ public class DriverControls {
         }
 
         //Climber Controls
+        //extend
         if (driverJoy.getXButton()) {
-            Climber.balanceClimb(0.75);
-        } else if (driverJoy.getCircleButton() || driverJoy.getTriButton()) {
-            if (driverJoy.getCircleButton()) {
-                Climber.retractFront(0.5);
-            }
-            if (driverJoy.getTriButton()) {
-                Climber.retractBack(0.5);
-            }
-        } else if (driverJoy.getTrackpadButton()) {
-            climberOverride = true;
-            if (driverJoy.getButtonDUp())
-                Climber.manualClimbFront(0.5);
-            if (driverJoy.getButtonDDown())
-                Climber.manualClimbBack(0.5);
+            Climber.balanceClimb(0.4);
         } else {
-            if (climberOverride) {
-                Climber.manualClimbFront(0.0);
-                Climber.manualClimbBack(0.0);
+            if (driverJoy.getSquareButton()){
+                climberOverride = true;
+            } else {
                 climberOverride = false;
+            }
+            if(climberOverride){
+                Climber.manualClimbFront(driverJoy.getLeftTriggerAxis());
+                Climber.manualClimbBack(driverJoy.getRightTriggerAxis());
+            }
+        }
+        //retract
+        if(Math.abs(driverJoy.getRightYAxis()) > 0.1){
+            Climber.retractClimber(driverJoy.getRightTriggerAxis());
+            climberRetract = true;
+        } else {
+            if(climberRetract){
+                Climber.stop();
             }
         }
     }

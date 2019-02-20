@@ -2,8 +2,9 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANPIDController.AccelStrategy;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Elevator {
     private static CANSparkMax elevator;
@@ -12,22 +13,21 @@ public class Elevator {
     private static double setPosition, prevPosition, zeroPosition;
 
     private static final double STAGE_THRESHOLD = 0.0;
-    private static final double MAX_POSITION = 100.0;
+    private static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
 
     public enum Position {
-        ELEVATOR_FLOOR(0.0),
-        HATCH_LEVEL_ONE(0.0),
-        HATCH_LEVEL_TWO(0.0),
-        HATCH_LEVEL_THREE(0.0),
+        ELEVATOR_FLOOR(0.0), 
+        HATCH_LEVEL_ONE(0.0), 
+        HATCH_LEVEL_TWO(21.0), 
+        HATCH_LEVEL_THREE(42.0), 
         CARGO_LEVEL_ONE(0.0),
-        CARGO_LEVEL_TWO(0.0),
-        CARGO_LEVEL_THREE(0.0),
-        CARGO_SHIP(0.0),
-        STAGE_THRESHOLD(0.0),
-        MAX_POSITION(0.0);
+        CARGO_LEVEL_TWO(21.0), 
+        CARGO_LEVEL_THREE(42.0), 
+        CARGO_SHIP(10.0),
+        ELEVATOR_COLLECT_CARGO(3.9);
 
-        public double value;
+        double value;
 
         Position(double position) {
             value = position;
@@ -35,21 +35,26 @@ public class Elevator {
     }
 
     /*
-     * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
+     * Initializes the elevator motor, sets PID values, and zeros the elevator
+     * encoder
      */
     static {
         elevator = new CANSparkMax(5, MotorType.kBrushless);
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
-        elevator.setOpenLoopRampRate(0.2);
-        elevator.setClosedLoopRampRate(0.2);
-        setPID(0.0, 0.0, 0.0, 0.0);
+        elevator.getPIDController().setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+        elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.0, 0);
+        elevator.getPIDController().setSmartMotionMaxAccel(8000.0, 0);
+        elevator.getPIDController().setSmartMotionMaxVelocity(15000.0, 0);
+        elevator.getPIDController().setSmartMotionMinOutputVelocity(0.1, 0);
+
+        setPID(0.0003, 0.0, 0.0, 0.0);
 
         elevatorEncoder = new CANEncoder(elevator);
 
         setPosition = elevatorEncoder.getPosition();
-        prevPosition = 0.0;
-        zeroPosition = 0.0;
+        prevPosition = elevatorEncoder.getPosition();
+        zeroPosition = elevatorEncoder.getPosition();
     }
 
     /**
@@ -60,7 +65,7 @@ public class Elevator {
      * @param d: derivative value
      * @param f: feed forward value
      */
-    public static void setPID(double p, double i, double d, double f) {
+    private static void setPID(double p, double i, double d, double f) {
         elevator.getPIDController().setP(p);
         elevator.getPIDController().setI(i);
         elevator.getPIDController().setD(d);
@@ -77,23 +82,34 @@ public class Elevator {
     /**
      * @return the set point of the elevator
      */
-    public static double getPosition() {
-        return setPosition;
+    public static double getSetPosition() {
+        return setPosition - zeroPosition;
     }
 
+    /**
+     * @return the position of the elevator
+     */
+    public static double getPosition() {
+        return elevatorEncoder.getPosition() - zeroPosition;
+    }
+
+    /**
+     * @return true if the elevator is above the stationary stage
+     */
     public static boolean aboveStageThreshold() {
-        return elevatorEncoder.getPosition() > Position.STAGE_THRESHOLD.value;
+        return elevatorEncoder.getPosition() > STAGE_THRESHOLD;
     }
 
     /**
      * @return true if the elevator is within deadband of its set value
      */
-    public static boolean isMoving() {
+    public static boolean elevatorDoneMoving() {
         if (Math.abs(elevatorEncoder.getPosition() - prevPosition) > DEADBAND) {
             prevPosition = elevatorEncoder.getPosition();
-            return false;
-        } else
             return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -129,13 +145,20 @@ public class Elevator {
      */
     public static void resetEncoder() {
         zeroPosition = elevatorEncoder.getPosition();
+        setPosition(Position.ELEVATOR_FLOOR);
     }
 
     /**
      * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
-        setPosition = Math.min(setPosition, Position.MAX_POSITION.value);
-        elevator.getPIDController().setReference(setPosition, ControlType.kPosition);
+        if (setPosition > MAX_POSITION + zeroPosition) {
+            setPosition = MAX_POSITION + zeroPosition;
+        }
+        elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
+    }
+
+    public static double getVelocity(){
+        return elevatorEncoder.getVelocity();
     }
 }

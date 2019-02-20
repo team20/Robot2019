@@ -136,8 +136,8 @@ public class PrettyPrint {
         count = 0;
 
         System.out.print("|");
-        values.forEach((str, valSup) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(valSup)));
-        tempValues.forEach((str, val) -> System.out.printf(" %s = %-" + messageLength + "s |", str, val));
+        values.forEach((str, valSup) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(valSup.get())));
+        tempValues.forEach((str, val) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(val)));
         for (String message : tempMessages) {
             System.out.printf(" %s |", message);
         }
@@ -151,8 +151,8 @@ public class PrettyPrint {
     /**
      * utility method to ensure that each value is the same num of characters to maintain table's vertical straightness
      */
-    private static String shortened(Supplier<Object> valSup) {
-        String valStr = valSup.get().toString();
+    private static String shortened(Object valSup) {
+        String valStr = valSup.toString();
         return valStr.substring(0, min(valStr.length(), messageLength));
     }
 }

@@ -3,18 +3,9 @@ package frc.robot.controls;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-
-import static frc.robot.subsystems.Arm.Position.ARM_FLOOR;
-import static frc.robot.subsystems.Arm.Position.CARGO_SHOOT;
-import static frc.robot.subsystems.Arm.Position.PLACING;
-import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_TWO;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_TWO;
+import frc.robot.utils.PrettyPrint;
+import static frc.robot.subsystems.Arm.Position.*;
+import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls {
 
@@ -34,11 +25,15 @@ public class OperatorControls {
      * Runs the operator controls
      */
     public static void operatorControls() {
+
+        PrettyPrint.put("Position", Elevator.getPosition());
+        PrettyPrint.put("Arm", Arm.getPosition());
+
         //Elevator Controls
         //override
         if (operatorJoy.getRightStickButton()) {
-            double speedE = operatorJoy.getRightYAxis();
-            Elevator.moveSpeed(-speedE);
+            double speed = operatorJoy.getRightYAxis();
+            Elevator.moveSpeed(-speed);
             elevatorOverriden = true;
         } else {
             if (elevatorOverriden) {
@@ -46,16 +41,18 @@ public class OperatorControls {
                 elevatorOverriden = false;
             }
         }
-        //positions
-        if (operatorJoy.getLeftYAxis() > 0.1) {
+         //positions
+        if (operatorJoy.getLeftYAxis() < 0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(CARGO_LEVEL_ONE);
             } else if (operatorJoy.getButtonDLeft()) {
                 Elevator.setPosition(CARGO_LEVEL_TWO);
             } else if (operatorJoy.getButtonDUp()) {
                 Elevator.setPosition(CARGO_LEVEL_THREE);
+            } else if (operatorJoy.getButtonDRight()) {
+                Elevator.setPosition(CARGO_SHIP);
             }
-        } else if (operatorJoy.getLeftYAxis() < -0.1) {
+        } else if (operatorJoy.getLeftYAxis() > -0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(HATCH_LEVEL_ONE);
             } else if (operatorJoy.getButtonDLeft()) {
@@ -81,10 +78,10 @@ public class OperatorControls {
                 armOverriden = false;
             }
         }
-        //positions
-        if (operatorJoy.getLeftYAxis() > 0.5) {
+          //positions
+        if (operatorJoy.getLeftYAxis() < -0.5) {
             Arm.setPosition(CARGO_SHOOT);
-        } else if (operatorJoy.getLeftYAxis() < -0.5) {
+        } else if (operatorJoy.getLeftYAxis() > 0.5) {
             Arm.setPosition(ARM_FLOOR);
         } else if (Math.abs(operatorJoy.getLeftXAxis()) > 0.5) {
             Arm.setPosition(PLACING);
@@ -98,7 +95,7 @@ public class OperatorControls {
         }
 
         //Intake Controls
-        //cargo
+          //cargo
         if (operatorJoy.getXButton()) {
             //Intake.intakeMode(); //TODO enable sensor - not plugged in for initial testing
             Intake.collectCargo();
@@ -112,7 +109,7 @@ public class OperatorControls {
         if (operatorJoy.getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
         }
-        //hatch
+          //hatch
         if (operatorJoy.getLeftBumperButton()) {
             Intake.openHatch();
         }
@@ -122,13 +119,15 @@ public class OperatorControls {
 
         //Combined Subsystem Controls
         if (operatorJoy.getLeftTriggerAxis() > 0.5) {
-            Elevator.setPosition(ELEVATOR_FLOOR);
-            Arm.setPosition(ARM_FLOOR);
+            Elevator.setPosition(ELEVATOR_COLLECT_CARGO);
+            Arm.setPosition(ARM_COLLECT_CARGO);
         }
 
         //Controller Vibrations
         if (Intake.intakeRunning()) {
             operatorJoy.setRumble(1.0);
+        } else {
+            operatorJoy.setRumble(0.0);
         }
     }
 }

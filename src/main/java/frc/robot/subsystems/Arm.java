@@ -16,11 +16,12 @@ public class Arm {
     private static final double DEADBAND = 0.3;
 
     public enum Position {
-        ARM_FLOOR(0.0),
-        CARGO_SHOOT(0.0),
-        PLACING(0.0),
-        STARTING_CONFIG(0.0);
-
+        ARM_FLOOR(-41.38),
+        CARGO_SHOOT(-22.38),
+        PLACING(-8.98),
+        STARTING_CONFIG(-3.5),
+        ARM_COLLECT_CARGO(-48.0);
+        
         double value;
 
         Position(double position) {
@@ -43,9 +44,9 @@ public class Arm {
         zeroPosition = 0.0;
 
         //sends corresponding values to the pid controller object
-        pidController.setP(0.001);
+        pidController.setP(0.08);
         pidController.setI(0.0);
-        pidController.setD(0.0);
+        pidController.setD(0.8);
         pidController.setOutputRange(-1.0, 1.0);
     }
 
@@ -101,6 +102,13 @@ public class Arm {
      */
     public static void moveSpeed(double speed) {
         armMotor.set(speed);
+    }
+
+    /**
+     * @return: the value of the arm encoder
+     */
+    public static double getSetPosition() {
+        return setPosition;
     }
 
     /**
