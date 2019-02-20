@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Arduino {
     public static PIDSource pidSource;
@@ -14,6 +15,9 @@ public class Arduino {
     private static Notifier thread;
     //I2C communication protocol
     private static I2C wire;
+
+    //colors for diagnostic LED signals
+    public enum Colors { Red, Orange, Yellow, Green, Blue, Purple };
 
     //I2C port to use with Arduino
     private static final int address;
@@ -38,9 +42,6 @@ public class Arduino {
     //useful variables from [Robot.java]
     private static int auto;
     private static double setPoint;
-
-    private Arduino() {
-    }
 
     static {
         pidSource = new PIDSource() {
@@ -88,7 +89,7 @@ public class Arduino {
         address = 0;
         wire = new I2C(Port.kOnboard, address);
 
-        writeData = new byte[4];
+        writeData = new byte[6];
         readData = new byte[3];
         turnSpeed = 0;
         dTurnSpeed = 0;
@@ -124,17 +125,54 @@ public class Arduino {
         return dDriveSpeed;
     }
 
-    public static void setLEDStripPattern(int main, int diagnostic) {
-        writeData[0] = (byte) main;
-        writeData[1] = (byte) diagnostic;
+    public static void setAllianceColor(Alliance color) {
+        switch (color) {
+            case Red:
+                writeData[0] = 0;
+                break;
+            case Blue:
+                writeData[0] = 1;
+                break;
+            case Invalid:
+                writeData[0] = 2;
+                break;
+        }
+    }
+
+    public static void setPattern(int pattern) {
+        writeData[1] = (byte)pattern;
+    }
+
+    public static void setDiagnosticPattern(Colors color, int pattern) {
+        switch (color) {
+            case Red:
+                writeData[2] = 0;
+                break;
+            case Orange:
+                writeData[2] = 1;
+                break;
+            case Yellow:
+                writeData[2] = 2;
+                break;
+            case Green:
+                writeData[2] = 3;
+                break;
+            case Blue:
+                writeData[2] = 4;
+                break;
+            case Purple:
+                writeData[2] = 5;
+                break;
+        }
+        writeData[3] = (byte)pattern;
     }
 
     public static void setPixyCamState(int state) {
-        writeData[2] = (byte) state;
+        writeData[4] = (byte)state;
     }
 
     public static void setUltrasonicState(boolean enabled) {
-        writeData[3] = (byte) (enabled ? 1 : 0);
+        writeData[5] = (byte)(enabled ? 1 : 0);
     }
 
     public static void startThread() {

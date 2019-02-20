@@ -1,27 +1,32 @@
 # Robot 2019 Arduino
 ## Arduino-RoboRIO Communication Codes (sent via I2C as `byte` arrays)
 ### RoboRIO (`writeData`) to Arduino (`readData`)
-* `0`: LED strip first 15
+* `0`: LED strip alliance color
+    * `0`: red
+    * `1`: blue
+    * `2`: green (invalid)
+* `1`: LED strip main pattern
     * `0`: off
     * `1`: robot ready
-    * `2`: red chasing up
-	* `3`: blue chasing up
-    * `4`: green flowing up and down
-	* `5` to `25`: red elevator height
-	* `26` to `46`: blue elevator height
-* `1`: LED strip last 5
-    * `0`: same as first 15
-    * `1`: red
-    * `2`: orange
-    * `3`: yellow
-    * `4`: green
-    * `5`: blue
-    * `6`: purple
-* `2`: Pixy2 camera
+    * `2`: chasing up
+    * `3`: green flowing up and down
+	* `4` to `24`: elevator height
+* `2`: LED strip diagnostic color
+    * `0`: red
+    * `1`: orange
+    * `2`: yellow
+    * `3`: green
+    * `4`: blue
+    * `5`: purple
+* `3`: LED strip diagnostic pattern
+    * `0`: same as main
+    * `1`: solid on
+    * `2`: blinking
+* `4`: Pixy2 camera
     * `0`: disabled
     * `1`: color mode
     * `2`: line mode
-* `3`: Ultrasonic distance sensor
+* `5`: Ultrasonic distance sensor
     * `0`: disabled
     * `1`: enabled
 ### Arduino (`writeData`) to RoboRIO (`readData`)

@@ -40,7 +40,7 @@ import static java.lang.Math.min;
  * <p>| Navx angle = 120 | Other way = 120 | constant = 120 |</p>
  */
 public class PrettyPrint {
-    private static int messageLength = 5;
+    private static int messageLength = 7;
     private static int frequency = 1;
     private static int count = 0;
 
@@ -111,6 +111,7 @@ public class PrettyPrint {
 
     /**
      * how many characters wide each value will be
+     * default is 1
      */
     public static void setMessageLength(int messageLength) {
         PrettyPrint.messageLength = messageLength;
@@ -125,11 +126,8 @@ public class PrettyPrint {
         for (String errorMessage : errors) {
             for (int i = 0; i < 70; i++) System.out.print("-");
             System.out.println();
-            for (int i = 0; i < 70; i++) System.out.print(" ");
             System.out.println();
             System.out.println(errorMessage);
-            for (int i = 0; i < 70; i++) System.out.print(" ");
-            System.out.println();
             for (int i = 0; i < 70; i++) System.out.print("-");
             System.out.println();
         }

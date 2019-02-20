@@ -11,9 +11,6 @@ public class Intake {
     private static DigitalInput cargoSensor;
     private static boolean intakeRunning;
 
-    private Intake() {
-    }
-
     /*
      * Initializes and sets up all motors for the intake
      */
@@ -70,6 +67,20 @@ public class Intake {
     public static void closeHatch() {
         hatch.set(1);
     }
+    
+    /**
+     * Returns if there is cargo in the intake
+     */
+    public static boolean isCargoPresent() {
+        return cargoSensor.get();
+    }
+
+    /**
+     * Returns if the hatch is closed
+     */
+    public static boolean isHatchClosed() {
+        return hatch.getPosition() > 0.0;
+    }
 
     /**
      * Runs the cargo intake until the digital sensor is tripped
@@ -97,9 +108,7 @@ public class Intake {
         intakeRunning = true;
     }
 
-    public static boolean intakeRunning(){
+    public static boolean intakeRunning() {
         return intakeRunning;
     }
-
 }
-

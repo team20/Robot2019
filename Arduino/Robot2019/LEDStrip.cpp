@@ -9,12 +9,17 @@ const uint32_t LEDStrip::orange = strip.Color(255, 63, 0);
 const uint32_t LEDStrip::yellow = strip.Color(255, 127, 0);
 const uint32_t LEDStrip::green = strip.Color(0, 255, 0);
 const uint32_t LEDStrip::blue = strip.Color(0, 0, 255);
-const uint32_t LEDStrip::purple = strip.Color(0, 255, 255);
+const uint32_t LEDStrip::purple = strip.Color(127, 0, 255);
 const uint32_t LEDStrip::white = strip.Color(255, 255, 255);
 
 int LEDStrip::counter;
-unsigned long LEDStrip::timeStamp;
+unsigned long LEDStrip::mainTimeStamp;
+unsigned long LEDStrip::diagnosticTimeStamp;
+uint32_t LEDStrip::allianceColor;
+uint32_t LEDStrip::diagnosticColor;
 byte LEDStrip::prevPattern;
+bool LEDStrip::robotOn;
+bool LEDStrip::diagnosticOn;
 
 void LEDStrip::initialize(byte pin, byte numLEDs, byte brightness) {
   strip = Adafruit_NeoPixel(numLEDs, pin, NEO_GRB + NEO_KHZ800);
@@ -22,16 +27,31 @@ void LEDStrip::initialize(byte pin, byte numLEDs, byte brightness) {
   strip.setBrightness(brightness);
   strip.show();
   counter = 0;
-  timeStamp = millis();
+  mainTimeStamp = millis();
+  diagnosticTimeStamp = millis();
+  robotOn = false;
 }
 
-void LEDStrip::displayPattern(byte pattern, byte diagnosticColor) {
+void LEDStrip::updateDisplay(byte ac, byte pattern, byte dc, byte diagnosticPattern) {
+  //reset pixels if pattern changed
   if (pattern != prevPattern) {
     allOff();
     counter = 0;
-    timeStamp = millis();
+    mainTimeStamp = millis();
   }
-  //selects correct pattern to display
+  //sets alliance color
+  switch (ac) {
+    case 0:
+      allianceColor = red;
+      break;
+    case 1:
+      allianceColor = blue;
+      break;
+    case 2:
+      allianceColor = green;
+      break;
+  }
+  //sets pattern
   switch (pattern) {
     case 0:
       allOff();
@@ -40,39 +60,44 @@ void LEDStrip::displayPattern(byte pattern, byte diagnosticColor) {
       robotReady();
       break;
     case 2:
-      redChasing();
+      chasing();
       break;
     case 3:
-      blueChasing();
-      break;
-    case 4:
       greenFlowing();
       break;
     default:
-      if (pattern >= 5 && pattern <= 25)
-        redElevator(pattern - 5);
-      else if (pattern >= 26 && pattern <= 46)
-        blueElevator(pattern - 26);
+      if (pattern >= 4 && pattern <= 19)
+        elevator(pattern - 4);
       break;
   }
-  switch (diagnosticColor) {
+  //sets diagnostic color
+  switch (dc) {
+    case 0:
+      diagnosticColor = red;
+      break;
     case 1:
-      setDiagnosticColor(red);
+      diagnosticColor = orange;
       break;
     case 2:
-      setDiagnosticColor(orange);
+      diagnosticColor = yellow;
       break;
     case 3:
-      setDiagnosticColor(yellow);
+      diagnosticColor = green;
       break;
     case 4:
-      setDiagnosticColor(green);
+      diagnosticColor = blue;
       break;
     case 5:
-      setDiagnosticColor(blue);
+      diagnosticColor = purple;
       break;
-    case 6:
-      setDiagnosticColor(purple);
+  }
+  //sets diagnostic pattern
+  switch (diagnosticPattern) {
+    case 1:
+      diagnosticSolid();
+      break;
+    case 2:
+      diagnosticBlinking();
       break;
   }
   //send data to LED strip
@@ -87,95 +112,72 @@ void LEDStrip::allOff() {
 }
 
 void LEDStrip::robotReady() {
-  if (millis() - timeStamp >= 10) {
-    timeStamp = millis();
-    if (counter < 511) {
-      for (byte i = 0; i < strip.numPixels(); i ++) {
-        if (counter < 256)
-          strip.setPixelColor(i, strip.Color(0, counter, 0));
-        else
-          strip.setPixelColor(i, strip.Color(0, 511 - counter, 0));
-      }
-      counter ++;
+  if (!robotOn) {
+    for (int i = 0; i < 256; i ++) {
+      for (byte j = 0; j < strip.numPixels(); j ++)
+        strip.setPixelColor(j, strip.Color(0, i, 0));
+      strip.show();
+      delay(10);
     }
+    for (int i = 255; i >= 0; i --) {
+      for (byte j = 0; j < strip.numPixels(); j ++)
+        strip.setPixelColor(j, strip.Color(0, i, 0));
+      strip.show();
+      delay(10);
+    }
+    robotOn = true;
   }
 }
 
-//void LEDStrip::redLowGear() {
-//  if (millis() - timeStamp >= 80) {
-//    timeStamp = millis();
-//    if (!(counter < pixelSpacing))
-//      counter = 0;
-//    for (int i = strip.numPixels() - counter; i >= -1; i -= pixelSpacing) {
-//      strip.setPixelColor(i, red);
-//      strip.setPixelColor(i + 1, off);
-//    }
-//    counter ++;
-//  }
-//}
-
-void LEDStrip::redChasing() {
-  if (millis() - timeStamp >= 80) {
-    timeStamp = millis();
+void LEDStrip::chasing() {
+  if (millis() - mainTimeStamp >= 80) {
+    mainTimeStamp = millis();
     if (!(counter < pixelSpacing))
       counter = 0;
     for (byte j = counter; j <= strip.numPixels(); j += pixelSpacing) {
-      strip.setPixelColor(j, red);
+      strip.setPixelColor(j, allianceColor);
       strip.setPixelColor(j - 1, off);
     }
     counter ++;
   }
 }
 
-//void LEDStrip::blueLowGear() {
+//void LEDStrip::chasingDown(uint32_t color) {
 //  if (millis() - timeStamp >= 80) {
 //    timeStamp = millis();
 //    if (!(counter < pixelSpacing))
 //      counter = 0;
 //    for (int i = strip.numPixels() - counter; i >= -1; i -= pixelSpacing) {
-//      strip.setPixelColor(i, blue);
+//      strip.setPixelColor(i, color);
 //      strip.setPixelColor(i + 1, off);
 //    }
 //    counter ++;
 //  }
 //}
-
-void LEDStrip::blueChasing() {
-  if (millis() - timeStamp >= 80) {
-    timeStamp = millis();
-    if (!(counter < pixelSpacing))
-      counter = 0;
-    for (byte j = counter; j <= strip.numPixels(); j += pixelSpacing) {
-      strip.setPixelColor(j, blue);
-      strip.setPixelColor(j - 1, off);
-    }
-    counter ++;
-  }
-}
 
 void LEDStrip::greenFlowing() {
   //TODO: make this
 }
 
-void LEDStrip::redElevator(byte height) {
+void LEDStrip::elevator(byte height) {
   for (byte i = 0; i < strip.numPixels(); i ++) {
     if (i < height)
-      strip.setPixelColor(i, red);
+      strip.setPixelColor(i, allianceColor);
     else
       strip.setPixelColor(i, off);
   }
 }
 
-void LEDStrip::blueElevator(byte height) {
-  for (byte i = 0; i < strip.numPixels(); i ++) {
-    if (i < height)
-      strip.setPixelColor(i, blue);
-    else
-      strip.setPixelColor(i, off);
-  }
+void LEDStrip::diagnosticSolid() {
+  for (byte i = 12; i < 15; i ++)
+    strip.setPixelColor(i, diagnosticColor);
 }
 
-void LEDStrip::setDiagnosticColor(uint32_t color) {
-  for (byte i = 14; i < 20; i ++)
-    strip.setPixelColor(i, color);
+void LEDStrip::diagnosticBlinking() {
+  if (millis() - diagnosticTimeStamp >= 250) {
+    diagnosticTimeStamp = millis();
+    diagnosticOn = !diagnosticOn;
+  }
+  for (byte i = 12; i < 15; i ++)
+    strip.setPixelColor(i, diagnosticOn ? diagnosticColor : off);
 }

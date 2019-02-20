@@ -1,6 +1,6 @@
 #include "I2C.h"
 
-byte I2C::readData[4];
+byte I2C::readData[6];
 byte I2C::writeData[3];
 
 void I2C::initialize(byte address) {
@@ -25,20 +25,28 @@ void I2C::requestEvent() {
   Wire.write(writeData, sizeof(writeData) / sizeof(byte));
 }
 
-byte I2C::getPattern() {
+byte I2C::getAllianceColor() {
   return readData[0];
 }
 
-byte I2C::getDiagnosticColor() {
+byte I2C::getPattern() {
   return readData[1];
 }
 
-byte I2C::getPixyCamState() {
+byte I2C::getDiagnosticColor() {
   return readData[2];
 }
 
+byte I2C::getDiagnosticPattern() {
+  return readData[3];
+}
+
+byte I2C::getPixyCamState() {
+  return readData[4];
+}
+
 bool I2C::getUltrasonicState() {
-  return readData[3] == 1;
+  return readData[5] == 1;
 }
 
 void I2C::setWriteData(bool objInView, byte xValue, byte distance) {

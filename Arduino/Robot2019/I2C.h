@@ -9,8 +9,10 @@ class I2C {
     static void initialize(byte address);
     static void receiveEvent();
     static void requestEvent();
+    static byte getAllianceColor();
     static byte getPattern();
     static byte getDiagnosticColor();
+    static byte getDiagnosticPattern();
     static byte getPixyCamState();
     static bool getLineFollowerState();
     static bool getUltrasonicState();
@@ -18,7 +20,7 @@ class I2C {
 
   private:
     //data received from RoboRio
-    static byte readData[4];
+    static byte readData[6];
     //data to send to RoboRio
     static byte writeData[3];
 };
