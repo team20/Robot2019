@@ -41,7 +41,7 @@ public class MoveElevator extends RobotFunction<Integer> {
      */
     @Override
     public boolean isFinished() {
-        return Elevator.elevatorDoneMoving();
+        return !Elevator.isMoving();
     }
 
     /**
