@@ -37,6 +37,9 @@ public class Align extends RobotFunction<Boolean> {
         finished = false;
     }
 
+    /**
+     * whether or not to skip turning towards the target
+     */
     @Override
     public void collectInputs(Boolean... values) {
         if (values.length != 1) throw new InputMismatchException("Align requires ONE value");

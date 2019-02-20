@@ -55,9 +55,6 @@ public class FollowPath extends RobotFunction<String> {
         }).startPeriodic(msPerPoint / 3000.0);
 
         configTalons();
-
-        PrettyPrint.put("MP left vel", Drivetrain.frontLeft::getActiveTrajectoryVelocity);
-        PrettyPrint.put("MP right vel", Drivetrain.frontRight::getActiveTrajectoryVelocity);
     }
 
     /**
@@ -66,7 +63,6 @@ public class FollowPath extends RobotFunction<String> {
     @Override
     public void stop() {
         Drivetrain.motionProfile(false);
-        PrettyPrint.remove("MP left vel", "MP right vel");
     }
 
     @Override
@@ -75,6 +71,9 @@ public class FollowPath extends RobotFunction<String> {
         started |= getLeftStatus().btmBufferCnt >= minPoints && getRightStatus().btmBufferCnt >= minPoints;
 
         Drivetrain.motionProfile(started);
+
+        PrettyPrint.put("MP left vel", Drivetrain.frontLeft.getActiveTrajectoryVelocity());
+        PrettyPrint.put("MP right vel", Drivetrain.frontRight.getActiveTrajectoryVelocity());
     }
 
     @Override

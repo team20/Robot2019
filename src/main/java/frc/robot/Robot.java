@@ -63,6 +63,8 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LineSensor;
 import frc.robot.subsystems.Arduino.Colors;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Elevator;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -97,7 +99,7 @@ public class Robot extends TimedRobot {
             Arduino.setDiagnosticPattern(Colors.Green, 1);
         if (Intake.isHatchClosed())
             Arduino.setDiagnosticPattern(Colors.Yellow, 1);
-        if (Intake.isCargoRunning())
+        if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Colors.Orange, 2);
         if (Intake.isCargoPresent())
             Arduino.setDiagnosticPattern(Colors.Orange, 1);
@@ -137,6 +139,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         DriverControls.driverControls();
         OperatorControls.operatorControls();
+
+        System.out.println("Elevator: " + Elevator.getPosition());
+        System.out.println("              Arm: " + Arm.getPosition());
     }
 
     @Override

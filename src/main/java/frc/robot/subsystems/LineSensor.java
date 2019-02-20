@@ -103,6 +103,6 @@ public class LineSensor {
         if (total != 0)
             linePosition = weightedTotal / total;
         else
-            PrettyPrint.once("LINE SENSOR NEEDS TO BE RESET");
+            PrettyPrint.error("LINE SENSOR NEEDS TO BE RESET");
     }
 }

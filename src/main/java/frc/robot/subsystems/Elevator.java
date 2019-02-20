@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Elevator {
     private static CANSparkMax elevator;
@@ -11,6 +11,8 @@ public class Elevator {
 
     private static double setPosition, prevPosition, zeroPosition;
 
+    private static final double STAGE_THRESHOLD = 0.0;
+    private static final double MAX_POSITION = 100.0;
     private static final double DEADBAND = 0.5;
 
     public enum Position {
@@ -36,10 +38,12 @@ public class Elevator {
      * Initializes the elevator motor, sets PID values, and zeros the elevator encoder
      */
     static {
-        elevator = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
+        elevator = new CANSparkMax(5, MotorType.kBrushless);
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
-        setPID(0.075, 0.000015, 1.1, 0.0);
+        elevator.setOpenLoopRampRate(0.2);
+        elevator.setClosedLoopRampRate(0.2);
+        setPID(0.0, 0.0, 0.0, 0.0);
 
         elevatorEncoder = new CANEncoder(elevator);
 
@@ -123,7 +127,7 @@ public class Elevator {
     /**
      * Sets the current elevator position to the new zero
      */
-    public static void resetEncoder(){
+    public static void resetEncoder() {
         zeroPosition = elevatorEncoder.getPosition();
     }
 

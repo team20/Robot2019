@@ -40,12 +40,14 @@ public class Drivetrain {
      * @param leftTurn:  left axis value
      */
     public static void drive(double speed, double rightTurn, double leftTurn) {
-        frontRight.set(ControlMode.PercentOutput, (speed - rightTurn + leftTurn) * 0.75);
-        frontLeft.set(ControlMode.PercentOutput, (-speed + leftTurn - rightTurn));
+        frontRight.set(ControlMode.PercentOutput, -(speed - rightTurn + leftTurn));
+        frontLeft.set(ControlMode.PercentOutput, -speed + leftTurn - rightTurn);
     }
 
     /**
+     * if {@code enabled} is true,
      * makes the drive train follow whatever motion profile it has stored in it
+     * otherwise, the drivetrain keeps targeting whatever the its last point was
      */
     public static void motionProfile(boolean enabled) {
         if (enabled) {
