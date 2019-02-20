@@ -10,13 +10,14 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
+import frc.robot.utils.PrettyPrint;
 
 public class Climber {
     private static CANSparkMax back;
     private static CANEncoder backEnc;
     private static TalonSRX front;
-    private static PIDController frontPID, backPID;
-    private static double kP = .08, kI = 0, kD = 0;
+    private static PIDController PID;
+    private static double kP = 0.055, kI = 0, kD = 0;
     private static double balancePidOutput;
 
     private Climber() {
@@ -28,8 +29,10 @@ public class Climber {
     static {
         // Declare motors
         back = new CANSparkMax(7, MotorType.kBrushless);
+        back.setInverted(true);
         backEnc = new CANEncoder(back);
         front = new TalonSRX(8);
+        front.setInverted(true);
 
         // Declare PID Output
         PIDOutput pidOutput = output -> balancePidOutput = output;
@@ -37,19 +40,14 @@ public class Climber {
         // Declare PID Source
         GyroSource input = new GyroSource();
 
-        // Declare PID Controllers
-        frontPID = new PIDController(kP, kI, kD, input, pidOutput);
-        backPID = new PIDController(kP, kI, kD, input, pidOutput);
-        frontPID.setSetpoint(0);
-        frontPID.setInputRange(-180, 180);
-        frontPID.setOutputRange(-1, 1);
-        backPID.setSetpoint(0);
-        backPID.setInputRange(-180, 180);
-        backPID.setOutputRange(-1, 1);
+        // Declare PID Controller
+        PID = new PIDController(kP, kI, kD, input, pidOutput);
+        PID.setSetpoint(0);
+        PID.setInputRange(-180, 180);
+        PID.setOutputRange(-1, 1);
 
         // Enable
-        frontPID.enable();
-        backPID.enable();
+        PID.enable();
     }
 
     /**
@@ -58,8 +56,10 @@ public class Climber {
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
-        front.set(ControlMode.PercentOutput, balancePidOutput + speed);
-        back.set(-balancePidOutput + speed);
+        front.set(ControlMode.PercentOutput, (balancePidOutput) + speed);
+        back.set(.4175*(-balancePidOutput + speed));
+        PrettyPrint.put("Front Speed", ((balancePidOutput) + speed));
+        PrettyPrint.put("Back Speed", (-balancePidOutput + speed));
     }
 
     /**
@@ -81,16 +81,36 @@ public class Climber {
     }
 
     /**
+     * Retracts the climber, front legs first, then back
+     * 
+     * @param speed: the speed of retraction
+     */
+    public static void retractClimber(double speed){
+        // if (front.getSelectedSensorPosition() < 1.0) {
+        //     front.set(ControlMode.PercentOutput, 0.0);
+        //     if(backEnc.getPosition() < 1.0){
+        //         back.set(0.0);
+        //     } else {
+        //         back.set(speed);
+        //     }
+        // } else {
+        //     front.set(ControlMode.PercentOutput, -speed);
+        // }
+            front.set(ControlMode.PercentOutput, speed);
+            back.set(0.5*speed);
+    }
+
+    /**
      * Retract the front leg
      *
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractFront(double speed) {
-        if (front.getSelectedSensorPosition() < 1.0) {
-            front.set(ControlMode.PercentOutput, 0.0);
-        } else {
+        // if (front.getSelectedSensorPosition() < 1.0) {
+        //     front.set(ControlMode.PercentOutput, 0.0);
+        // } else {
             front.set(ControlMode.PercentOutput, -speed);
-        }
+//        }
     }
 
     /**
@@ -99,11 +119,25 @@ public class Climber {
      * @param speed: the speed at which to retract (positive)
      */
     public static void retractBack(double speed) {
-        if (backEnc.getPosition() < 1.0) {
-            back.set(0.0);
-        } else {
+        // if (backEnc.getPosition() < 1.0) {
+        //     back.set(0.0);
+        // } else {
             back.set(-speed);
-        }
+//        }
+    }
+
+    /**
+     * @return: value of the front encoder
+     */
+    public static int getFrontEncPosition(){
+        return front.getSelectedSensorPosition();
+    }
+
+    /**
+     * @return: value fo the back encoder
+     */
+    public static double getBackEncPosition(){
+        return backEnc.getPosition();
     }
 
     /**
