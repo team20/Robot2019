@@ -3,8 +3,18 @@ package frc.robot.controls;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-import static frc.robot.subsystems.Arm.Position.*;
-import static frc.robot.subsystems.Elevator.Position.*;
+
+import static frc.robot.subsystems.Arm.Position.ARM_FLOOR;
+import static frc.robot.subsystems.Arm.Position.CARGO_SHOOT;
+import static frc.robot.subsystems.Arm.Position.PLACING;
+import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
+import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_ONE;
+import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_THREE;
+import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_TWO;
+import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
+import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_ONE;
+import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_THREE;
+import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_TWO;
 
 public class OperatorControls {
 
@@ -36,7 +46,7 @@ public class OperatorControls {
                 elevatorOverriden = false;
             }
         }
-         //positions
+        //positions
         if (operatorJoy.getLeftYAxis() > 0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(CARGO_LEVEL_ONE);
@@ -71,7 +81,7 @@ public class OperatorControls {
                 armOverriden = false;
             }
         }
-          //positions
+        //positions
         if (operatorJoy.getLeftYAxis() > 0.5) {
             Arm.setPosition(CARGO_SHOOT);
         } else if (operatorJoy.getLeftYAxis() < -0.5) {
@@ -88,7 +98,7 @@ public class OperatorControls {
         }
 
         //Intake Controls
-          //cargo
+        //cargo
         if (operatorJoy.getXButton()) {
             //Intake.intakeMode(); //TODO enable sensor - not plugged in for initial testing
             Intake.collectCargo();
@@ -102,7 +112,7 @@ public class OperatorControls {
         if (operatorJoy.getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
         }
-          //hatch
+        //hatch
         if (operatorJoy.getLeftBumperButton()) {
             Intake.openHatch();
         }

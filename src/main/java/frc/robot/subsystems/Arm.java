@@ -20,7 +20,7 @@ public class Arm {
         CARGO_SHOOT(0.0),
         PLACING(0.0),
         STARTING_CONFIG(0.0);
-        
+
         double value;
 
         Position(double position) {
