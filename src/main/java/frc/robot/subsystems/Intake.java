@@ -26,7 +26,7 @@ public class Intake {
      * Runs the cargo motor at collection speed
      */
     public static void collectCargo() {
-        runCargoMotor(1.0);
+        runCargoMotor(-0.75);
         intakeRunning = true;
     }
 
@@ -34,7 +34,7 @@ public class Intake {
      * Runs the cargo motor at spitting speed
      */
     public static void spitCargo() {
-        runCargoMotor(-1.0);
+        runCargoMotor(1.0);
         intakeRunning = true;
     }
 
@@ -42,7 +42,7 @@ public class Intake {
      * Runs the cargo motor at spitting speed
      */
     public static void outtakeCargo() {
-        runCargoMotor(-0.5);
+        runCargoMotor(0.5);
         intakeRunning = true;
     }
 

@@ -84,20 +84,20 @@ public class FollowPath extends RobotFunction<String> {
     }
 
     public MotionProfileStatus getLeftStatus() {
-        var status = new MotionProfileStatus();
+        MotionProfileStatus status = new MotionProfileStatus();
         Drivetrain.frontLeft.getMotionProfileStatus(status);
         return status;
     }
 
     public MotionProfileStatus getRightStatus() {
-        var status = new MotionProfileStatus();
+        MotionProfileStatus status = new MotionProfileStatus();
         Drivetrain.frontRight.getMotionProfileStatus(status);
         return status;
     }
 
     private TrajectoryPoint[] fromFile(String filePath) {
-        try (var reader = new BufferedReader(new FileReader(filePath))) {
-            var points = reader
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            TrajectoryPoint[] points = reader
                     .lines()
                     .skip(1)
                     .map(s -> s.split(","))
@@ -106,7 +106,7 @@ public class FollowPath extends RobotFunction<String> {
                             .mapToDouble(Double::parseDouble)
                             .toArray())
                     .map(vals -> {
-                        var p = new TrajectoryPoint();
+                        TrajectoryPoint p = new TrajectoryPoint();
                         p.profileSlotSelect0 = 0;
                         p.position = vals[0];
                         p.velocity = vals[1];

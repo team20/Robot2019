@@ -77,7 +77,7 @@ import frc.robot.utils.PrettyPrint;
 public class Robot extends TimedRobot {
     private AutoModes auto;
 
-    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); //DO NOT MOVE
+    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
     private boolean autoSet;
 
@@ -112,19 +112,20 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        //This is here because autonomous init is not reliable 
+        // This is here because autonomous init is not reliable
         if (!autoSet) {
-            auto.setMode(Mode.Align);       //TODO: eventually make auto selection based off of user input to the SmartDashboard
+            auto.setMode(Mode.Align); // TODO: eventually make auto selection based off of user input to the
+                                      // SmartDashboard
             switch (auto.getMode()) {
-                case CrossLine:
-                    auto.crossLine();
-                    break;
-                case Align:
-                    auto.align(false);
-                    break;
-                default:
-                    PrettyPrint.once("NO AUTO SELECTED");
-                    break;
+            case CrossLine:
+                auto.crossLine();
+                break;
+            case Align:
+                auto.align(false);
+                break;
+            default:
+                PrettyPrint.once("NO AUTO SELECTED");
+                break;
             }
             autoSet = true;
         }
@@ -139,9 +140,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         DriverControls.driverControls();
         OperatorControls.operatorControls();
-
-        PrettyPrint.put("Elevator", Elevator.getPosition());
-        PrettyPrint.put("arm", Arm.getPosition());
     }
 
     @Override
@@ -150,6 +148,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+        PrettyPrint.put("Pitch", gyro.getPitch());
     }
 
     @Override
