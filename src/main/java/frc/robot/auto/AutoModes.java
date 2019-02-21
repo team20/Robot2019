@@ -2,6 +2,7 @@ package frc.robot.auto;
 
 import frc.robot.auto.functions.Align;
 import frc.robot.auto.functions.DriveTime;
+import frc.robot.auto.functions.TeleopControls;
 import frc.robot.auto.setup.RocketScript;
 
 public class AutoModes {
@@ -9,7 +10,8 @@ public class AutoModes {
 
     public enum Mode {
         CrossLine,
-        Align
+        Align,
+        FullyTeleop
     }
 
     private Mode selectedMode;
@@ -40,7 +42,7 @@ public class AutoModes {
      * Autonomous: crosses the HAB line
      */
     public void crossLine() {
-        rocketScript.runFunction(new DriveTime(), 0.5, 2.0);
+        rocketScript.addFunction(new DriveTime(), 0.5, 2.0);
     }
 
     /**
@@ -49,7 +51,14 @@ public class AutoModes {
      * @param skip true if turning towards alignment tape should be skipped
      */
     public void align(boolean skip) {
-        rocketScript.runFunction(new Align(), skip);
+        rocketScript.addFunction(new Align(), skip);
+    }
+
+    /**
+     * No auto - just driver and operator controls the whole time
+     */
+    public void fullyTeleop() {
+        rocketScript.addFunction(new TeleopControls(), true);
     }
 
     /**

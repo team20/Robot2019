@@ -7,6 +7,7 @@ import java.util.InputMismatchException;
 
 /**
  * Pauses RocketScript for some amount of time
+ * <p>{@code values[0]} is the length of time to wait</p>
  */
 public class Wait extends RobotFunction<Double> {
     private boolean setStartTime, isFinished;
@@ -23,7 +24,7 @@ public class Wait extends RobotFunction<Double> {
     }
 
     /**
-     * Collects the length of time of the wait
+     * Collects the length of time to wait
      */
     @Override
     public void collectInputs(Double... values) {
@@ -42,9 +43,9 @@ public class Wait extends RobotFunction<Double> {
             startTime = Timer.getFPGATimestamp();
             setStartTime = true;
         }
-        if (Math.abs(Timer.getFPGATimestamp() - startTime) > time) {
+
+        if (Math.abs(Timer.getFPGATimestamp() - startTime) > time)
             isFinished = true;
-        }
     }
 
     @Override
@@ -52,7 +53,7 @@ public class Wait extends RobotFunction<Double> {
     }
 
     /**
-     * @return returns true if the drivetrain is done moving
+     * @return true if the drivetrain is done moving
      */
     @Override
     public boolean isFinished() {

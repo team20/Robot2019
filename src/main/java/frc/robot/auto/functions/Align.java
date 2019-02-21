@@ -11,6 +11,7 @@ import java.util.InputMismatchException;
 
 /**
  * Align to vision target
+ * <p>if {@code values[0]} is true, {@code Align} skips the turn to target phase</p>
  */
 public class Align extends RobotFunction<Boolean> {
     private PIDController

@@ -1,23 +1,25 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Arduino {
-    public static PIDSource pidSource;
-    public static PIDOutput pidOutput;
+    public final static PIDSource pidSource;
+    public final static PIDOutput pidOutput;
     //separate thread for data collection and calculations
-    private static Notifier thread;
+    private final static Notifier thread;
     //I2C communication protocol
-    private static I2C wire;
+    private final static I2C wire;
 
     //colors for diagnostic LED signals
-    public enum Colors { Red, Orange, Yellow, Green, Blue, Purple };
+    public enum Colors {
+        Red, Orange, Yellow, Green, Blue, Purple
+    }
 
     //I2C port to use with Arduino
     private static final int address;
@@ -140,7 +142,7 @@ public class Arduino {
     }
 
     public static void setPattern(int pattern) {
-        writeData[1] = (byte)pattern;
+        writeData[1] = (byte) pattern;
     }
 
     public static void setDiagnosticPattern(Colors color, int pattern) {
@@ -164,15 +166,15 @@ public class Arduino {
                 writeData[2] = 5;
                 break;
         }
-        writeData[3] = (byte)pattern;
+        writeData[3] = (byte) pattern;
     }
 
     public static void setPixyCamState(int state) {
-        writeData[4] = (byte)state;
+        writeData[4] = (byte) state;
     }
 
     public static void setUltrasonicState(boolean enabled) {
-        writeData[5] = (byte)(enabled ? 1 : 0);
+        writeData[5] = (byte) (enabled ? 1 : 0);
     }
 
     public static void startThread() {

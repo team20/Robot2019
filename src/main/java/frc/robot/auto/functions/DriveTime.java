@@ -9,6 +9,8 @@ import java.util.InputMismatchException;
 
 /**
  * Drives straight for some amount of time
+ * <p>{@code values[0]} is percent output</p>
+ * <p>{@code values[1} is time</p>
  */
 public class DriveTime extends RobotFunction<Double> {
 

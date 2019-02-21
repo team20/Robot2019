@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 
 public class Intake {
-    private static Servo hatch;
-    private static VictorSPX cargo;
-    private static DigitalInput cargoSensor;
+    private static final Servo hatch;
+    private static final VictorSPX cargo;
+    private static final DigitalInput cargoSensor;
     private static boolean intakeRunning;
 
     /*
@@ -67,7 +67,7 @@ public class Intake {
     public static void closeHatch() {
         hatch.set(1);
     }
-    
+
     /**
      * Returns if there is cargo in the intake
      */
@@ -85,7 +85,6 @@ public class Intake {
     /**
      * Runs the cargo intake until the digital sensor is tripped
      *
-     * @param speed = speed of the cargo motor (-1.0 to 1.0)
      * @return true if a cargo is in the intake
      */
     public static boolean intakeMode() {

@@ -7,9 +7,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Arm {
-    private static CANSparkMax armMotor;
-    private static CANPIDController pidController;
-    private static CANEncoder armEncoder;
+    private static final CANSparkMax armMotor;
+    private static final CANPIDController pidController;
+    private static final CANEncoder armEncoder;
 
     private static double setPosition, prevPosition, zeroPosition;
 
@@ -21,7 +21,7 @@ public class Arm {
         PLACING(-8.98),
         STARTING_CONFIG(-3.5),
         ARM_COLLECT_CARGO(-48.0);
-        
+
         double value;
 
         Position(double position) {

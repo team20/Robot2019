@@ -33,7 +33,7 @@ public class DriverControls {
         } else {
             speedStraight = 0.0;
         }
-        if(!climberOverride){
+        if (!climberOverride) {
             if (Elevator.aboveStageThreshold()) {
                 if (driverJoy.getCircleButton()) {
                     speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
@@ -67,24 +67,29 @@ public class DriverControls {
         if (driverJoy.getXButton()) {
             Climber.balanceClimb(0.4);
         } else {
-            if (driverJoy.getSquareButton()){
-                climberOverride = true;
-            } else {
-                climberOverride = false;
-            }
-            if(climberOverride){
+            climberOverride = driverJoy.getSquareButton();
+            if (climberOverride) {
                 Climber.manualClimbFront(driverJoy.getLeftTriggerAxis());
                 Climber.manualClimbBack(driverJoy.getRightTriggerAxis());
             }
         }
         //retract
-        if(Math.abs(driverJoy.getRightYAxis()) > 0.1){
+        if (Math.abs(driverJoy.getRightYAxis()) > 0.1) {
             Climber.retractClimber(driverJoy.getRightTriggerAxis());
             climberRetract = true;
         } else {
-            if(climberRetract){
+            if (climberRetract) {
                 Climber.stop();
             }
         }
+    }
+
+    // TODO determine these controls
+    public static boolean isOverridingAuto() {
+        return driverJoy.getTrackpadButton();
+    }
+
+    public static boolean isStoppingAutoControl() {
+        return driverJoy.getTrackpadButton();
     }
 }

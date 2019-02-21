@@ -18,6 +18,7 @@ import java.util.InputMismatchException;
 
 /**
  * Follows a motion profiling path saved in a csv
+ * <p>{@code values[0]} is the filepath to the spline to be ran</p>
  */
 public class FollowPath extends RobotFunction<String> {
     private final int minPoints = 5;
@@ -36,7 +37,7 @@ public class FollowPath extends RobotFunction<String> {
     /**
      * pushes motion profile points into the drivetrain motors
      *
-     * @param values one String that is the filepath to the spline to be ran
+     * @param values the filepath to the spline to be ran
      */
     @Override
     public void collectInputs(String... values) {
