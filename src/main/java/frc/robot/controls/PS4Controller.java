@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class PS4Controller {
 
-    Joystick joy, joyRumble;
+    private final Joystick joy, joyRumble;
     private double rumble = 0;
 
     /**
-     * Inititalizes the controller
+     * Initializes the controller
      *
      * @param portMain:   main port of the controller
      * @param portRumble: port with external PS4 drivers

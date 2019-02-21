@@ -13,11 +13,12 @@ import frc.robot.Robot;
 import frc.robot.utils.PrettyPrint;
 
 public class Climber {
-    private static CANSparkMax back;
-    private static CANEncoder backEnc;
-    private static TalonSRX front;
-    private static PIDController PID;
-    private static double kP = 0.055, kI = 0, kD = 0;
+    private static final CANSparkMax back;
+    private static final CANEncoder backEnc;
+    private static final TalonSRX front;
+    private static final PIDController PID;
+    private static final double kP = 0.055, kI = 0, kD = 0;
+    private static final double neoSpeedEqualizingCoefficient = .4175;
     private static double balancePidOutput;
 
     private Climber() {
@@ -38,10 +39,24 @@ public class Climber {
         PIDOutput pidOutput = output -> balancePidOutput = output;
 
         // Declare PID Source
-        GyroSource input = new GyroSource();
+        PIDSource source = new PIDSource() {
+            @Override
+            public void setPIDSourceType(PIDSourceType pidSource) {
+            }
+
+            @Override
+            public PIDSourceType getPIDSourceType() {
+                return PIDSourceType.kDisplacement;
+            }
+
+            @Override
+            public double pidGet() {
+                return Robot.gyro.getPitch();
+            }
+        };
 
         // Declare PID Controller
-        PID = new PIDController(kP, kI, kD, input, pidOutput);
+        PID = new PIDController(kP, kI, kD, source, pidOutput);
         PID.setSetpoint(0);
         PID.setInputRange(-180, 180);
         PID.setOutputRange(-1, 1);
@@ -56,10 +71,14 @@ public class Climber {
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
-        front.set(ControlMode.PercentOutput, (balancePidOutput) + speed);
-        back.set(.4175*(-balancePidOutput + speed));
-        PrettyPrint.put("Front Speed", ((balancePidOutput) + speed));
-        PrettyPrint.put("Back Speed", (-balancePidOutput + speed));
+        double frontSpeed = speed + balancePidOutput;
+        double backSpeed = speed - balancePidOutput;
+
+        front.set(ControlMode.PercentOutput, frontSpeed);
+        back.set(neoSpeedEqualizingCoefficient * backSpeed);
+
+        PrettyPrint.put("Front Speed", frontSpeed);
+        PrettyPrint.put("Back Speed", backSpeed);
     }
 
     /**
@@ -82,10 +101,10 @@ public class Climber {
 
     /**
      * Retracts the climber, front legs first, then back
-     * 
+     *
      * @param speed: the speed of retraction
      */
-    public static void retractClimber(double speed){
+    public static void retractClimber(double speed) {
         // if (front.getSelectedSensorPosition() < 1.0) {
         //     front.set(ControlMode.PercentOutput, 0.0);
         //     if(backEnc.getPosition() < 1.0){
@@ -96,8 +115,8 @@ public class Climber {
         // } else {
         //     front.set(ControlMode.PercentOutput, -speed);
         // }
-            front.set(ControlMode.PercentOutput, speed);
-            back.set(0.5*speed);
+        front.set(ControlMode.PercentOutput, speed);
+        back.set(neoSpeedEqualizingCoefficient * speed);
     }
 
     /**
@@ -109,7 +128,7 @@ public class Climber {
         // if (front.getSelectedSensorPosition() < 1.0) {
         //     front.set(ControlMode.PercentOutput, 0.0);
         // } else {
-            front.set(ControlMode.PercentOutput, -speed);
+        front.set(ControlMode.PercentOutput, -speed);
 //        }
     }
 
@@ -122,21 +141,21 @@ public class Climber {
         // if (backEnc.getPosition() < 1.0) {
         //     back.set(0.0);
         // } else {
-            back.set(-speed);
+        back.set(-speed);
 //        }
     }
 
     /**
      * @return: value of the front encoder
      */
-    public static int getFrontEncPosition(){
+    public static int getFrontEncPosition() {
         return front.getSelectedSensorPosition();
     }
 
     /**
      * @return: value fo the back encoder
      */
-    public static double getBackEncPosition(){
+    public static double getBackEncPosition() {
         return backEnc.getPosition();
     }
 
@@ -146,21 +165,5 @@ public class Climber {
     public static void stop() {
         front.set(ControlMode.PercentOutput, 0.0);
         back.set(0.0);
-    }
-
-    static class GyroSource implements PIDSource {
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-        }
-
-        @Override
-        public PIDSourceType getPIDSourceType() {
-            return PIDSourceType.kDisplacement;
-        }
-
-        @Override
-        public double pidGet() {
-            return Robot.gyro.getPitch();
-        }
     }
 }

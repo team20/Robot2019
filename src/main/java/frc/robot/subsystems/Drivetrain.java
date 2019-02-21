@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 public class Drivetrain {
     public final static TalonSRX frontRight, frontLeft;
-    private static VictorSPX backRight, backLeft;
+    private final static VictorSPX backRight, backLeft;
 
     private Drivetrain() {
     }

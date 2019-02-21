@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.utils.PrettyPrint;
 
 public class LineSensor {
-    public static PIDSource pidSource;
-    public static PIDOutput pidOutput;
+    public static final PIDSource pidSource;
+    public static final PIDOutput pidOutput;
     //separate thread for data collection and calculations
-    private static Notifier thread;
+    private static final Notifier thread;
     //I2C communication protocol
-    private static I2C wire;
+    private static final I2C wire;
 
     //threshold for whether lineSeen is true or not
     private static final int lineSeenThreshold = 100;   //TODO: figure out what this actually is

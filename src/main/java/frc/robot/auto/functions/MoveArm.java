@@ -5,6 +5,10 @@ import frc.robot.subsystems.Arm;
 
 import java.util.InputMismatchException;
 
+/**
+ * Moves the arm to a desired position in rotations
+ * <p>{@code values[0]} is the position in rotations</p>
+ */
 public class MoveArm extends RobotFunction<Double> {
 
     private double position;

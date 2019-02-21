@@ -53,18 +53,15 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.Arduino.Colors;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LineSensor;
-import frc.robot.subsystems.Arduino.Colors;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Elevator;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -94,7 +91,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        Arduino.setPattern(Elevator.isMoving() ? (int)((Elevator.getPosition() / Elevator.Position.MAX_POSITION.value) * 15.0) : 2);
+        Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.getMaxPosition()) * 15.0));
         if (LineSensor.isLineSeen())
             Arduino.setDiagnosticPattern(Colors.Green, 1);
         if (Intake.isHatchClosed())
@@ -114,21 +111,24 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         // This is here because autonomous init is not reliable
         if (!autoSet) {
-            auto.setMode(Mode.Align); // TODO: eventually make auto selection based off of user input to the
-                                      // SmartDashboard
+            auto.setMode(Mode.CrossLine); // TODO: eventually make auto selection based off of user input to the SmartDashboard
             switch (auto.getMode()) {
-            case CrossLine:
-                auto.crossLine();
-                break;
-            case Align:
-                auto.align(false);
-                break;
-            default:
-                PrettyPrint.once("NO AUTO SELECTED");
-                break;
+                case CrossLine:
+                    auto.crossLine();
+                    break;
+                case Align:
+                    auto.align(false);
+                    break;
+                case FullyTeleop:
+                    auto.fullyTeleop();
+                    break;
+                default:
+                    PrettyPrint.once("NO AUTO SELECTED");
+                    break;
             }
             autoSet = true;
         }
+
         auto.runAuto();
     }
 
@@ -148,7 +148,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
-        PrettyPrint.put("Pitch", gyro.getPitch());
+
     }
 
     @Override

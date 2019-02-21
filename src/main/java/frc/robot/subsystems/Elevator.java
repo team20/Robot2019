@@ -1,14 +1,14 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANPIDController.AccelStrategy;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.ControlType;
 
 public class Elevator {
-    private static CANSparkMax elevator;
-    private static CANEncoder elevatorEncoder;
+    private static final CANSparkMax elevator;
+    private static final CANEncoder elevatorEncoder;
 
     private static double setPosition, prevPosition, zeroPosition;
 
@@ -17,13 +17,13 @@ public class Elevator {
     private static final double DEADBAND = 0.5;
 
     public enum Position {
-        ELEVATOR_FLOOR(0.0), 
-        HATCH_LEVEL_ONE(0.0), 
-        HATCH_LEVEL_TWO(21.0), 
-        HATCH_LEVEL_THREE(42.0), 
+        ELEVATOR_FLOOR(0.0),
+        HATCH_LEVEL_ONE(0.0),
+        HATCH_LEVEL_TWO(21.0),
+        HATCH_LEVEL_THREE(42.0),
         CARGO_LEVEL_ONE(0.0),
-        CARGO_LEVEL_TWO(21.0), 
-        CARGO_LEVEL_THREE(42.0), 
+        CARGO_LEVEL_TWO(21.0),
+        CARGO_LEVEL_THREE(42.0),
         CARGO_SHIP(10.0),
         ELEVATOR_COLLECT_CARGO(3.9);
 
@@ -101,9 +101,16 @@ public class Elevator {
     }
 
     /**
+     * @return max position accounting for updated zero
+     */
+    public static double getMaxPosition() {
+        return MAX_POSITION + zeroPosition;
+    }
+
+    /**
      * @return true if the elevator is within deadband of its set value
      */
-    public static boolean elevatorDoneMoving() {
+    public static boolean doneMoving() {
         if (Math.abs(elevatorEncoder.getPosition() - prevPosition) > DEADBAND) {
             prevPosition = elevatorEncoder.getPosition();
             return true;
@@ -152,13 +159,11 @@ public class Elevator {
      * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
-        if (setPosition > MAX_POSITION + zeroPosition) {
-            setPosition = MAX_POSITION + zeroPosition;
-        }
+        setPosition = Math.max(setPosition, getMaxPosition());
         elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
     }
 
-    public static double getVelocity(){
+    public static double getVelocity() {
         return elevatorEncoder.getVelocity();
     }
 }
