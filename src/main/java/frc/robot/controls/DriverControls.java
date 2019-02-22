@@ -84,11 +84,37 @@ public class DriverControls {
         }
     }
 
-    // TODO determine these controls
     public static boolean isOverridingAuto() {
-        return driverJoy.getTrackpadButton();
+        return driverJoy.getTriButton() ||
+                driverJoy.getSquareButton() ||
+                driverJoy.getCircleButton() ||
+                driverJoy.getXButton() ||
+
+                driverJoy.getPSButton() ||
+                driverJoy.getShareButton() ||
+                driverJoy.getOptionsButton() ||
+
+                driverJoy.getButtonDDown() ||
+                driverJoy.getButtonDLeft() ||
+                driverJoy.getButtonDRight() ||
+                driverJoy.getButtonDUp() ||
+
+                driverJoy.getLeftBumperButton() ||
+                Math.abs(driverJoy.getLeftTriggerAxis()) > .1 ||
+
+                driverJoy.getRightBumperButton() ||
+                Math.abs(driverJoy.getRightTriggerAxis()) > .1 ||
+
+                driverJoy.getLeftStickButton() ||
+                Math.abs(driverJoy.getLeftXAxis()) > .1 ||
+                Math.abs(driverJoy.getLeftYAxis()) > .1 ||
+
+                driverJoy.getRightStickButton() ||
+                Math.abs(driverJoy.getRightXAxis()) > .1 ||
+                Math.abs(driverJoy.getRightYAxis()) > .1;
     }
 
+    // TODO this button
     public static boolean isStoppingAutoControl() {
         return driverJoy.getTrackpadButton();
     }

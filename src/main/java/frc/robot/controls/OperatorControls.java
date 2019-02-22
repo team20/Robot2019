@@ -144,11 +144,37 @@ public class OperatorControls {
         }
     }
 
-    // TODO determine these controls
     public static boolean isOverridingAuto() {
-        return operatorJoy.getTrackpadButton();
+        return operatorJoy.getTriButton() ||
+                operatorJoy.getSquareButton() ||
+                operatorJoy.getCircleButton() ||
+                operatorJoy.getXButton() ||
+
+                operatorJoy.getPSButton() ||
+                operatorJoy.getShareButton() ||
+                operatorJoy.getOptionsButton() ||
+
+                operatorJoy.getButtonDDown() ||
+                operatorJoy.getButtonDLeft() ||
+                operatorJoy.getButtonDRight() ||
+                operatorJoy.getButtonDUp() ||
+
+                operatorJoy.getLeftBumperButton() ||
+                Math.abs(operatorJoy.getLeftTriggerAxis()) > .1 ||
+
+                operatorJoy.getRightBumperButton() ||
+                Math.abs(operatorJoy.getRightTriggerAxis()) > .1 ||
+
+                operatorJoy.getLeftStickButton() ||
+                Math.abs(operatorJoy.getLeftXAxis()) > .1 ||
+                Math.abs(operatorJoy.getLeftYAxis()) > .1 ||
+
+                operatorJoy.getRightStickButton() ||
+                Math.abs(operatorJoy.getRightXAxis()) > .1 ||
+                Math.abs(operatorJoy.getRightYAxis()) > .1;
     }
 
+    // TODO determine this button
     public static boolean isStoppingAutoControl() {
         return operatorJoy.getTrackpadButton();
     }
