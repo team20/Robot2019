@@ -26,7 +26,7 @@ public class Intake {
      * Runs the cargo motor at collection speed
      */
     public static void collectCargo() {
-        runCargoMotor(-0.75);
+        runCargoMotor(-0.6); // was .75
         intakeRunning = true;
     }
 
@@ -72,7 +72,7 @@ public class Intake {
      * Returns if there is cargo in the intake
      */
     public static boolean isCargoPresent() {
-        return cargoSensor.get();
+        return !cargoSensor.get();
     }
 
     /**
@@ -88,7 +88,7 @@ public class Intake {
      * @return true if a cargo is in the intake
      */
     public static boolean intakeMode() {
-        if (!cargoSensor.get()) {
+        if (cargoSensor.get()) {
             collectCargo();
             return false;
         } else {

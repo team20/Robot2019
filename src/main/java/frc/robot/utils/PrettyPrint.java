@@ -76,6 +76,8 @@ public class PrettyPrint {
 
     /**
      * print an error message in an easily viewable way
+     * <p>
+     * CURRENTLY THIS THROWS AN ERROR DON'T USE
      */
     public static void error(String errMessage) {
         errors.add(errMessage);

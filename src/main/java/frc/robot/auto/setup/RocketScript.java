@@ -20,7 +20,7 @@ public class RocketScript {
         autoSteps = 0;
         lastCommand = false;
 
-        PrettyPrint.put("script size", auto::size);
+//        PrettyPrint.put("script size", auto::size);
     }
 
     /**
