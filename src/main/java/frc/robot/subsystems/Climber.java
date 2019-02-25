@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
+import frc.robot.controls.DriverControls;
 import frc.robot.utils.PrettyPrint;
 
 public class Climber {
@@ -18,8 +19,13 @@ public class Climber {
     private static final TalonSRX front;
     private static final PIDController PID;
     private static final double kP = 0.055, kI = 0, kD = 0;
-    private static final double neoSpeedEqualizingCoefficient = .4175;
+    private static final double neoSpeedEqualizingCoefficient = .4;
     private static double balancePidOutput;
+    private static int stepNum = 0;
+    public static double holdSpeed = .08;
+
+    private static int frontHab3Height = -150_000;
+    private static double backHab3Height = 138.0;
 
     private Climber() {
     }
@@ -60,9 +66,13 @@ public class Climber {
         PID.setSetpoint(0);
         PID.setInputRange(-180, 180);
         PID.setOutputRange(-1, 1);
+        PID.setAbsoluteTolerance(1);
 
         // Enable
         PID.enable();
+
+        front.setSelectedSensorPosition(0);
+        back.setEncPosition(0);
     }
 
     /**
@@ -71,14 +81,52 @@ public class Climber {
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
-        double frontSpeed = speed + balancePidOutput;
-        double backSpeed = speed - balancePidOutput;
+        switch (stepNum) {
+            case 0:     //climbing straight up
+                if (getFrontEncPosition() < frontHab3Height && getBackEncPosition() > backHab3Height || DriverControls.getShareButton()) {
+                    PID.setSetpoint(-10);
+                    stepNum = 1;
+                }
 
-        front.set(ControlMode.PercentOutput, frontSpeed);
-        back.set(neoSpeedEqualizingCoefficient * backSpeed);
+                front.set(ControlMode.PercentOutput, speed + balancePidOutput);
+                back.set(neoSpeedEqualizingCoefficient * (speed - balancePidOutput));
 
-        PrettyPrint.put("Front Speed", frontSpeed);
-        PrettyPrint.put("Back Speed", backSpeed);
+                PrettyPrint.once("Climbing");
+                break;
+            case 1:     //tilting forwards
+                if (DriverControls.getShareButton()) {
+                    stepNum = 2;
+                }
+
+                if (PID.onTarget()) {
+                    PrettyPrint.once("On target");
+                }
+
+                double tiltSpeed = speed * .75;
+
+                front.set(ControlMode.PercentOutput, tiltSpeed + balancePidOutput);
+                back.set(neoSpeedEqualizingCoefficient * (tiltSpeed - balancePidOutput));
+
+                PrettyPrint.once("Tilting");
+                break;
+            case 2:
+                manualClimbBack(holdSpeed);
+                manualClimbFront(holdSpeed);
+
+                PrettyPrint.once("Retracting Front");
+                break;
+//            case 3:     //driving forwards
+//                //TODO: add code to drive forwards and somehow check if it has driven far enough
+//                break;
+//            case 4:     //retracting back stilts
+//                if (getBackEncPosition() <= 0) {
+//                    PrettyPrint.once("Finished Retracting");
+////                    stepNum = 5;
+//                }
+//
+//                manualClimbBack(-.5);
+//                break;
+        }
     }
 
     /**
@@ -104,6 +152,7 @@ public class Climber {
      *
      * @param speed: the speed of retraction
      */
+    @Deprecated
     public static void retractClimber(double speed) {
         // if (front.getSelectedSensorPosition() < 1.0) {
         //     front.set(ControlMode.PercentOutput, 0.0);

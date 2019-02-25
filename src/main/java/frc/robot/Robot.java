@@ -57,11 +57,8 @@ import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.Arduino.Colors;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LineSensor;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -86,20 +83,26 @@ public class Robot extends TimedRobot {
 
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
+        Arduino.startThread();
+        LineSensor.startThread();
         Arduino.setDiagnosticPattern(null, 0);
     }
 
     @Override
     public void robotPeriodic() {
-        Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.getMaxPosition()) * 15.0));
+//        Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
+        Arduino.setPattern(2);
         if (LineSensor.isLineSeen())
             Arduino.setDiagnosticPattern(Colors.Green, 1);
-        if (Intake.isHatchClosed())
-            Arduino.setDiagnosticPattern(Colors.Yellow, 1);
-        if (Intake.intakeRunning())
-            Arduino.setDiagnosticPattern(Colors.Orange, 2);
-        if (Intake.isCargoPresent())
+//         if (Intake.isHatchClosed())
+//             Arduino.setDiagnosticPattern(Colors.Yellow, 1);
+        else if (Intake.isCargoPresent())
             Arduino.setDiagnosticPattern(Colors.Orange, 1);
+        else if (Intake.intakeRunning())
+            Arduino.setDiagnosticPattern(Colors.Orange, 2);
+        else
+            Arduino.setDiagnosticPattern(null, 0);
+        PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
         PrettyPrint.print();
     }
 
@@ -134,25 +137,35 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+//        PrettyPrint.put("Elev Pos", Elevator::getPosition);
     }
 
     @Override
     public void teleopPeriodic() {
         DriverControls.driverControls();
         OperatorControls.operatorControls();
+
     }
+
 
     @Override
     public void testInit() {
+        Drivetrain.frontLeft.setSelectedSensorPosition(0);
+        Drivetrain.frontRight.setSelectedSensorPosition(0);
+//        PrettyPrint.put("L", Drivetrain.frontLeft::getSelectedSensorPosition);
+//        PrettyPrint.put("R", Drivetrain.frontRight::getSelectedSensorPosition);
+        PrettyPrint.put("Line sensor value", LineSensor::getLinePosition);
+//        PrettyPrint.put("NEO TEMP", Elevator::temp);
+        PrettyPrint.put("Neo Mode", Elevator.elevator.getIdleMode());
     }
 
     @Override
     public void testPeriodic() {
-
     }
 
     @Override
     public void disabledInit() {
+//        LineSensor.stopThread();
         PrettyPrint.removeAll();
     }
 }
