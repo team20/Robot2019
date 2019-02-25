@@ -1,12 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import frc.robot.utils.PrettyPrint;
 
 public class LineSensor {
     public static final PIDSource pidSource;
@@ -17,7 +12,7 @@ public class LineSensor {
     private static final I2C wire;
 
     //threshold for whether lineSeen is true or not
-    private static final int lineSeenThreshold = 100;   //TODO: figure out what this actually is
+    private static final int lineSeenThreshold = 3;   //TODO: figure out what this actually is
 
     //the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final int address;
@@ -33,6 +28,8 @@ public class LineSensor {
     private static int linePosition;
     //the speed for the robot to adjust its angle at
     private static double turnSpeed;
+
+    private static boolean success;
 
     static {
         pidSource = new PIDSource() {
@@ -77,9 +74,9 @@ public class LineSensor {
         return turnSpeed;
     }
 
-    //start thread running once every [ms] milliseconds
-    public static void startThread(int ms) {
-        thread.startPeriodic((double) ms / 1000);
+    //start thread running
+    public static void startThread() {
+        thread.startPeriodic(0.1);
     }
 
     //stops thread from running
@@ -90,7 +87,7 @@ public class LineSensor {
     //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all
     private static void updateLinePosition() {
         // wire.read(address, rawSensorData.length, rawSensorData);
-        wire.readOnly(rawSensorData, rawSensorData.length);
+        success = wire.readOnly(rawSensorData, rawSensorData.length);
         //store useful data from sensor in [sensorData]
         for (int i = 0; i < sensorData.length; i++)
             sensorData[i] = rawSensorData[i * 2];
@@ -102,7 +99,12 @@ public class LineSensor {
         }
         if (total != 0)
             linePosition = weightedTotal / total;
-        else
-            PrettyPrint.error("LINE SENSOR NEEDS TO BE RESET");
+//        else
+//            PrettyPrint.error("LINE SENSOR NEEDS TO BE RESET");
+//         System.out.println("total: " + total + "\tweightedTotal: " + weightedTotal);
+//         for (int data : sensorData)
+//            System.out.print(data + "\t");
+//         System.out.print("success: " + !success);
+//         System.out.println();
     }
 }

@@ -1,14 +1,15 @@
 package frc.robot.controls;
 
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
+import edu.wpi.first.wpilibj.PIDController;
+import frc.robot.subsystems.*;
+import frc.robot.utils.PrettyPrint;
 
 public class DriverControls {
     private static PS4Controller driverJoy;
     private static double speedStraight, speedLeft, speedRight;
     private static boolean climberOverride, climberRetract;
+
+    private static final PIDController linePid;
 
     /*
      * Initializes the driver controller
@@ -20,6 +21,8 @@ public class DriverControls {
         speedRight = 0;
         climberOverride = false;
         climberRetract = false;
+
+        linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
     }
 
     /**
@@ -33,23 +36,32 @@ public class DriverControls {
         } else {
             speedStraight = 0.0;
         }
+
         if (!climberOverride) {
-            if (Elevator.aboveStageThreshold()) {
-                if (driverJoy.getCircleButton()) {
-                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
-                    speedRight = driverJoy.getRightTriggerAxis() * 0.25;
+            if (!driverJoy.getTriButton()) {
+                linePid.reset();
+                if (Elevator.aboveStageThreshold()) {
+                    if (driverJoy.getCircleButton()) {
+                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
+                        speedRight = driverJoy.getRightTriggerAxis() * 0.25;
+                    } else {
+                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
+                        speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                    }
                 } else {
-                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
-                    speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                    if (driverJoy.getCircleButton()) {
+                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
+                        speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                    } else {
+                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.75;
+                        speedRight = driverJoy.getRightTriggerAxis() * 0.75;
+                    }
                 }
             } else {
-                if (driverJoy.getCircleButton()) {
-                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.33;
-                    speedRight = driverJoy.getRightTriggerAxis() * 0.33;
-                } else {
-                    speedLeft = driverJoy.getLeftTriggerAxis() * 0.65;
-                    speedRight = driverJoy.getRightTriggerAxis() * 0.65;
-                }
+                linePid.enable();
+                speedRight = -LineSensor.getTurnSpeed();
+                speedLeft = LineSensor.getTurnSpeed();
+                PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
             }
         }
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
@@ -57,6 +69,8 @@ public class DriverControls {
         //Intake Controls
         if (driverJoy.getRightBumperButton()) {
             Intake.spitCargo();
+        } else {
+            Intake.stopCargoRollers();
         }
         if (driverJoy.getLeftBumperButton()) {
             Intake.closeHatch();
@@ -67,14 +81,16 @@ public class DriverControls {
         if (driverJoy.getXButton()) {
             Climber.balanceClimb(0.4);
         } else {
-            climberOverride = driverJoy.getSquareButton();
+            climberOverride = driverJoy.getSquareButton(); //was right bumper
             if (climberOverride) {
-                Climber.manualClimbFront(driverJoy.getLeftTriggerAxis());
-                Climber.manualClimbBack(driverJoy.getRightTriggerAxis());
+                Climber.manualClimbFront(-driverJoy.getRightYAxis() + Climber.holdSpeed);
+                Climber.manualClimbBack(-driverJoy.getLeftYAxis() + Climber.holdSpeed);
+            } else {
+                Climber.stop();
             }
         }
         //retract
-        if (Math.abs(driverJoy.getRightYAxis()) > 0.1) {
+        if (Math.abs(driverJoy.getRightYAxis()) > 0.1 && !climberOverride) {
             Climber.retractClimber(driverJoy.getRightTriggerAxis());
             climberRetract = true;
         } else {
@@ -82,6 +98,10 @@ public class DriverControls {
                 Climber.stop();
             }
         }
+    }
+
+    public static boolean getShareButton() {
+        return driverJoy.getShareButton();
     }
 
     public static boolean isOverridingAuto() {

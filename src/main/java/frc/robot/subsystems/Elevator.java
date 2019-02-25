@@ -7,13 +7,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Elevator {
-    private static final CANSparkMax elevator;
+    public static final CANSparkMax elevator;
     private static final CANEncoder elevatorEncoder;
 
-    private static double setPosition, prevPosition, zeroPosition;
+    private static double setPosition, prevPosition;
 
-    private static final double STAGE_THRESHOLD = 0.0;
-    private static final double MAX_POSITION = 47.5;
+    private static final double STAGE_THRESHOLD = 30.0;
+    public static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
 
     public enum Position {
@@ -21,10 +21,10 @@ public class Elevator {
         HATCH_LEVEL_ONE(0.0),
         HATCH_LEVEL_TWO(21.0),
         HATCH_LEVEL_THREE(42.0),
-        CARGO_LEVEL_ONE(0.0),
-        CARGO_LEVEL_TWO(21.0),
-        CARGO_LEVEL_THREE(42.0),
-        CARGO_SHIP(10.0),
+        CARGO_LEVEL_ONE(32.7),
+        CARGO_LEVEL_TWO(21.0), // TODO new position
+        CARGO_LEVEL_THREE(42.0), // TODO new position
+        CARGO_SHIP(17.0),
         ELEVATOR_COLLECT_CARGO(3.9);
 
         double value;
@@ -48,13 +48,15 @@ public class Elevator {
         elevator.getPIDController().setSmartMotionMaxVelocity(15000.0, 0);
         elevator.getPIDController().setSmartMotionMinOutputVelocity(0.1, 0);
 
+        elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
+
         setPID(0.0003, 0.0, 0.0, 0.0);
 
         elevatorEncoder = new CANEncoder(elevator);
 
+        elevator.setEncPosition(0);
         setPosition = elevatorEncoder.getPosition();
         prevPosition = elevatorEncoder.getPosition();
-        zeroPosition = elevatorEncoder.getPosition();
     }
 
     /**
@@ -83,14 +85,14 @@ public class Elevator {
      * @return the set point of the elevator
      */
     public static double getSetPosition() {
-        return setPosition - zeroPosition;
+        return setPosition;
     }
 
     /**
      * @return the position of the elevator
      */
     public static double getPosition() {
-        return elevatorEncoder.getPosition() - zeroPosition;
+        return elevatorEncoder.getPosition();
     }
 
     /**
@@ -98,13 +100,6 @@ public class Elevator {
      */
     public static boolean aboveStageThreshold() {
         return elevatorEncoder.getPosition() > STAGE_THRESHOLD;
-    }
-
-    /**
-     * @return max position accounting for updated zero
-     */
-    public static double getMaxPosition() {
-        return MAX_POSITION + zeroPosition;
     }
 
     /**
@@ -134,7 +129,7 @@ public class Elevator {
      * @param position: desired elevator value
      */
     public static void setPosition(double position) {
-        setPosition = zeroPosition + position;
+        setPosition = position;
         limitPosition();
     }
 
@@ -151,7 +146,7 @@ public class Elevator {
      * Sets the current elevator position to the new zero
      */
     public static void resetEncoder() {
-        zeroPosition = elevatorEncoder.getPosition();
+        elevator.setEncPosition(0);
         setPosition(Position.ELEVATOR_FLOOR);
     }
 
@@ -159,7 +154,7 @@ public class Elevator {
      * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
-        setPosition = Math.max(setPosition, getMaxPosition());
+        setPosition = Math.min(setPosition, MAX_POSITION);
         elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
     }
 
