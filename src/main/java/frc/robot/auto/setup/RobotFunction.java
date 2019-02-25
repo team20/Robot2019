@@ -11,6 +11,7 @@ public abstract class RobotFunction<T> {
      *
      * @param values type differs between functions
      */
+    @SuppressWarnings("unchecked")
     public abstract void collectInputs(T... values);
 
     /**

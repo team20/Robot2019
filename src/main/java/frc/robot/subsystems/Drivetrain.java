@@ -23,7 +23,7 @@ public class Drivetrain {
         backLeft = new VictorSPX(4);
 
         backRight.follow(frontRight);
-        backLeft.follow(backLeft);
+        backLeft.follow(frontLeft);
 
         frontRight.setInverted(false);
         frontLeft.setInverted(false);

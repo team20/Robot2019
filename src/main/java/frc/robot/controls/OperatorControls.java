@@ -3,22 +3,9 @@ package frc.robot.controls;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-import frc.robot.utils.PrettyPrint;
 
-import static frc.robot.subsystems.Arm.Position.ARM_COLLECT_CARGO;
-import static frc.robot.subsystems.Arm.Position.ARM_FLOOR;
-import static frc.robot.subsystems.Arm.Position.CARGO_SHOOT;
-import static frc.robot.subsystems.Arm.Position.PLACING;
-import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_TWO;
-import static frc.robot.subsystems.Elevator.Position.CARGO_SHIP;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_COLLECT_CARGO;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_TWO;
+import static frc.robot.subsystems.Arm.Position.*;
+import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls {
 
@@ -38,10 +25,6 @@ public class OperatorControls {
      * Runs the operator controls
      */
     public static void operatorControls() {
-
-        PrettyPrint.put("Position", Elevator.getPosition());
-        PrettyPrint.put("Arm", Arm.getPosition());
-
         //Elevator Controls
         //override
         if (operatorJoy.getRightStickButton()) {
@@ -55,24 +38,26 @@ public class OperatorControls {
             }
         }
         //positions
-        if (operatorJoy.getLeftYAxis() < 0.1) {
+        if (operatorJoy.getRightYAxis() < 0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(CARGO_LEVEL_ONE);
-            } else if (operatorJoy.getButtonDLeft()) {
-                Elevator.setPosition(CARGO_LEVEL_TWO);
-            } else if (operatorJoy.getButtonDUp()) {
-                Elevator.setPosition(CARGO_LEVEL_THREE);
+//            }
+//            else if (operatorJoy.getButtonDLeft()) {
+//                Elevator.setPosition(CARGO_LEVEL_TWO);
+//            } else if (operatorJoy.getButtonDUp()) {
+//                Elevator.setPosition(CARGO_LEVEL_THREE);
             } else if (operatorJoy.getButtonDRight()) {
                 Elevator.setPosition(CARGO_SHIP);
             }
-        } else if (operatorJoy.getLeftYAxis() > -0.1) {
+        } else if (operatorJoy.getRightYAxis() > -0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(HATCH_LEVEL_ONE);
-            } else if (operatorJoy.getButtonDLeft()) {
-                Elevator.setPosition(HATCH_LEVEL_TWO);
-            } else if (operatorJoy.getButtonDUp()) {
-                Elevator.setPosition(HATCH_LEVEL_THREE);
             }
+//            else if (operatorJoy.getButtonDLeft()) {
+//                Elevator.setPosition(HATCH_LEVEL_TWO);
+//            } else if (operatorJoy.getButtonDUp()) {
+//                Elevator.setPosition(HATCH_LEVEL_THREE);
+//            }
         }
         //encoder reset
         if (operatorJoy.getShareButton()) {
@@ -110,8 +95,8 @@ public class OperatorControls {
         //Intake Controls
         //cargo
         if (operatorJoy.getXButton()) {
-            //Intake.intakeMode(); //TODO enable sensor - not plugged in for initial testing
-            Intake.collectCargo();
+            Intake.intakeMode(); //TODO enable sensor - not plugged in for initial testing
+//            Intake.collectCargo();
         }
         if (operatorJoy.getTriButton()) {
             Intake.outtakeCargo();
