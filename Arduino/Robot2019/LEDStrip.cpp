@@ -5,11 +5,11 @@ Adafruit_NeoPixel LEDStrip::strip;
 const byte LEDStrip::pixelSpacing = 5;
 const uint32_t LEDStrip::off = strip.Color(0, 0, 0);
 const uint32_t LEDStrip::red = strip.Color(255, 0, 0);
-const uint32_t LEDStrip::orange = strip.Color(255, 63, 0);
-const uint32_t LEDStrip::yellow = strip.Color(255, 127, 0);
-const uint32_t LEDStrip::green = strip.Color(0, 255, 0);
-const uint32_t LEDStrip::blue = strip.Color(0, 0, 255);
-const uint32_t LEDStrip::purple = strip.Color(127, 0, 255);
+const uint32_t LEDStrip::orange = strip.Color(255, 0, 31);
+const uint32_t LEDStrip::yellow = strip.Color(255, 0, 127);
+const uint32_t LEDStrip::green = strip.Color(0, 0, 255);
+const uint32_t LEDStrip::blue = strip.Color(0, 255, 0);
+const uint32_t LEDStrip::purple = strip.Color(127, 255, 0);
 const uint32_t LEDStrip::white = strip.Color(255, 255, 255);
 
 int LEDStrip::counter;
