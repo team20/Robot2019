@@ -102,7 +102,9 @@ public class Robot extends TimedRobot {
             Arduino.setDiagnosticPattern(Colors.Orange, 2);
         else
             Arduino.setDiagnosticPattern(null, 0);
-        PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
+        PrettyPrint.put("temp", Elevator.elevator::getMotorTemperature);
+        PrettyPrint.put("neo current", Elevator.elevator::getOutputCurrent);
+//        PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
         PrettyPrint.print();
     }
 

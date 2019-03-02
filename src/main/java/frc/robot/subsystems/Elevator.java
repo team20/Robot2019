@@ -15,17 +15,20 @@ public class Elevator {
     private static final double STAGE_THRESHOLD = 30.0;
     public static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
+    public static final double HATCH_OFFSET = 3.5;
 
     public enum Position {
         ELEVATOR_FLOOR(0.0),
-        HATCH_LEVEL_ONE(0.0),
+        HATCH_LEVEL_ONE(4.1),
         HATCH_LEVEL_TWO(21.0),
         HATCH_LEVEL_THREE(42.0),
-        CARGO_LEVEL_ONE(32.7),
-        CARGO_LEVEL_TWO(21.0), // TODO new position
+        CARGO_LEVEL_ONE(17.0),
+        CARGO_LEVEL_TWO(30.0), // TODO new position
         CARGO_LEVEL_THREE(42.0), // TODO new position
-        CARGO_SHIP(17.0),
-        ELEVATOR_COLLECT_CARGO(3.9);
+        CARGO_SHIP(30.0),
+        ELEVATOR_COLLECT_CARGO(7.16),
+//        ELEVATOR_COLLECT_HATCH(11.5); //top hatch mechanism
+        ELEVATOR_COLLECT_HATCH(HATCH_OFFSET);
 
         double value;
 
@@ -139,8 +142,20 @@ public class Elevator {
      * @param position desired elevator position
      */
     public static void setPosition(Position position) {
-        setPosition(position.value);
+        if(position.name().toLowerCase().contains("hatch")){
+            setPosition(position.value + HATCH_OFFSET);
+        } else {
+            setPosition(position.value);
+        }
     }
+
+    /**
+     * Sets the elevator lower by the hatch offset to drop the hatch panel
+     */
+    public static void dropHatch(){
+        setPosition(setPosition-HATCH_OFFSET);
+    }
+
 
     /**
      * Sets the current elevator position to the new zero
@@ -155,6 +170,7 @@ public class Elevator {
      */
     private static void limitPosition() {
         setPosition = Math.min(setPosition, MAX_POSITION);
+        setPosition = Math.max(setPosition, 0.0);
         elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
     }
 
