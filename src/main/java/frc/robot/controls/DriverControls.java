@@ -41,7 +41,7 @@ public class DriverControls {
             if (!driverJoy.getTriButton()) {
                 linePid.reset();
                 if (Elevator.aboveStageThreshold()) {
-                    if (driverJoy.getCircleButton()) {
+                    if (driverJoy.getSquareButton()) {
                         speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
                         speedRight = driverJoy.getRightTriggerAxis() * 0.25;
                     } else {
@@ -49,7 +49,7 @@ public class DriverControls {
                         speedRight = driverJoy.getRightTriggerAxis() * 0.4;
                     }
                 } else {
-                    if (driverJoy.getCircleButton()) {
+                    if (driverJoy.getSquareButton()) {
                         speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
                         speedRight = driverJoy.getRightTriggerAxis() * 0.4;
                     } else {
@@ -73,7 +73,8 @@ public class DriverControls {
             Intake.stopCargoRollers();
         }
         if (driverJoy.getLeftBumperButton()) {
-            Intake.closeHatch();
+//            Intake.closeHatch();
+            Elevator.dropHatch();
         }
 
         //Climber Controls
@@ -81,10 +82,10 @@ public class DriverControls {
         if (driverJoy.getXButton()) {
             Climber.balanceClimb(0.4);
         } else {
-            climberOverride = driverJoy.getSquareButton(); //was right bumper
+            climberOverride = driverJoy.getCircleButton(); //was right bumper
             if (climberOverride) {
-                Climber.manualClimbFront(-driverJoy.getRightYAxis() + Climber.holdSpeed);
-                Climber.manualClimbBack(-driverJoy.getLeftYAxis() + Climber.holdSpeed);
+                Climber.manualClimbFront(-driverJoy.getRightTriggerAxis());
+                Climber.manualClimbBack(-driverJoy.getLeftTriggerAxis());
             } else {
                 Climber.stop();
             }

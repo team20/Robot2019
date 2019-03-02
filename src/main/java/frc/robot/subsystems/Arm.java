@@ -20,7 +20,8 @@ public class Arm {
         CARGO_SHOOT(-22.38),
         PLACING(-8.98),
         STARTING_CONFIG(-3.5),
-        ARM_COLLECT_CARGO(-48.0);
+        ARM_COLLECT_CARGO(-49.0),
+        DROP_AND_COLLECT_HATCH(-40.0);
 
         double value;
 
