@@ -18,8 +18,8 @@ public class Arm {
     public enum Position {
         ARM_FLOOR(-41.38),
         CARGO_SHOOT(-22.38),
-        PLACING(-8.98),
-        STARTING_CONFIG(-3.5),
+        PLACING(-10.0),
+        STARTING_CONFIG(-5.0),
         ARM_COLLECT_CARGO(-49.0),
         DROP_AND_COLLECT_HATCH(-40.0);
 
