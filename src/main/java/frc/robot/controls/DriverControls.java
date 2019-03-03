@@ -2,10 +2,11 @@ package frc.robot.controls;
 
 import edu.wpi.first.wpilibj.PIDController;
 import frc.robot.subsystems.*;
-import frc.robot.utils.PrettyPrint;
+
+import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
 
 public class DriverControls {
-    private static PS4Controller driverJoy;
+    public static PS4Controller driverJoy;
     private static double speedStraight, speedLeft, speedRight;
     private static boolean climberOverride, climberRetract;
 
@@ -22,7 +23,8 @@ public class DriverControls {
         climberOverride = false;
         climberRetract = false;
 
-        linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid = new PIDController(0.002, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid.setSetpoint(350);
     }
 
     /**
@@ -44,24 +46,33 @@ public class DriverControls {
                     if (driverJoy.getSquareButton()) {
                         speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
                         speedRight = driverJoy.getRightTriggerAxis() * 0.25;
+                        Drivetrain.frontLeft.configOpenloopRamp(0.4);
+                        Drivetrain.frontRight.configOpenloopRamp(0.4);
                     } else {
                         speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
                         speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                        Drivetrain.frontLeft.configOpenloopRamp(0.4);
+                        Drivetrain.frontRight.configOpenloopRamp(0.4);
                     }
                 } else {
                     if (driverJoy.getSquareButton()) {
-                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
-                        speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.6;
+                        speedRight = driverJoy.getRightTriggerAxis() * 0.6;
+                        Drivetrain.frontLeft.configOpenloopRamp(0.0);
+                        Drivetrain.frontRight.configOpenloopRamp(0.0);
                     } else {
                         speedLeft = driverJoy.getLeftTriggerAxis() * 0.75;
                         speedRight = driverJoy.getRightTriggerAxis() * 0.75;
+                        Drivetrain.frontLeft.configOpenloopRamp(0.0);
+                        Drivetrain.frontRight.configOpenloopRamp(0.0);
                     }
                 }
             } else {
-                linePid.enable();
-                speedRight = -LineSensor.getTurnSpeed();
-                speedLeft = LineSensor.getTurnSpeed();
-                PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
+                if (LineSensor.isLineSeen()) {
+                    linePid.enable();
+                    speedRight = -LineSensor.getTurnSpeed();
+                    speedLeft = LineSensor.getTurnSpeed();
+                }
             }
         }
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
@@ -75,12 +86,19 @@ public class DriverControls {
         if (driverJoy.getLeftBumperButton()) {
 //            Intake.closeHatch();
             Elevator.dropHatch();
+        } else {
+            Elevator.setHatchDrop = false;
         }
 
         //Climber Controls
         //extend
         if (driverJoy.getXButton()) {
-            Climber.balanceClimb(0.4);
+            if (!driverJoy.getButtonDUp()) Climber.stop();
+            Climber.balanceClimb(0.8);
+            if (driverJoy.getButtonDUp()) {
+                Climber.manualClimbBoth(.3);
+            }
+            Arm.setPosition(STARTING_CONFIG);
         } else {
             climberOverride = driverJoy.getCircleButton(); //was right bumper
             if (climberOverride) {
@@ -91,7 +109,7 @@ public class DriverControls {
             }
         }
         //retract
-        if (Math.abs(driverJoy.getRightYAxis()) > 0.1 && !climberOverride) {
+        if (Math.abs(driverJoy.getRightYAxis()) > 0.1/* && !climberOverride*/) {
             Climber.retractClimber(driverJoy.getRightTriggerAxis());
             climberRetract = true;
         } else {

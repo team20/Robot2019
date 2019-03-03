@@ -184,7 +184,7 @@ public class Arduino {
         thread.stop();
     }
 
-    private static void read() {
+    public static void read() {
         //get data from Arduino as byte array
         wire.read(address, readData.length, readData);
         //set values from array to variables
@@ -193,7 +193,7 @@ public class Arduino {
 //        distance = readData[2];
     }
 
-    private static void write() {
+    public static void write() {
         //write data to Arduino as byte array
         wire.writeBulk(writeData, writeData.length);
     }

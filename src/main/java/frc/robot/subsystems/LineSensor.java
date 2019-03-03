@@ -12,7 +12,7 @@ public class LineSensor {
     private static final I2C wire;
 
     //threshold for whether lineSeen is true or not
-    private static final int lineSeenThreshold = 3;   //TODO: figure out what this actually is
+    private static final int lineSeenThreshold = 20;
 
     //the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final int address;
@@ -76,7 +76,7 @@ public class LineSensor {
 
     //start thread running
     public static void startThread() {
-        thread.startPeriodic(0.1);
+        thread.startPeriodic(0.15);
     }
 
     //stops thread from running

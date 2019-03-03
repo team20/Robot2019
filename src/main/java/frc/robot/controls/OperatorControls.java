@@ -3,7 +3,6 @@ package frc.robot.controls;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-import frc.robot.utils.PrettyPrint;
 
 import static frc.robot.subsystems.Arm.Position.*;
 import static frc.robot.subsystems.Elevator.Position.*;
@@ -26,8 +25,8 @@ public class OperatorControls {
      * Runs the operator controls
      */
     public static void operatorControls() {
-        PrettyPrint.put("Elevator", Elevator.getPosition());
-        PrettyPrint.put("Arm", Arm.getPosition());
+        // PrettyPrint.put("Elevator", Elevator.getPosition());
+        // PrettyPrint.put("Arm", Arm.getPosition());
         // Elevator Controls
         // override
         if (operatorJoy.getRightStickButton()) {
@@ -41,17 +40,21 @@ public class OperatorControls {
             }
         }
         // positions
-        if (operatorJoy.getRightYAxis() < 0.1) {
+        if (operatorJoy.getRightYAxis() < -0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(CARGO_LEVEL_ONE);
+                Arm.setPosition(ARM_FLOOR);
             } else if (operatorJoy.getButtonDLeft()) {
                 Elevator.setPosition(CARGO_LEVEL_TWO);
+                Arm.setPosition(ARM_FLOOR);
             } else if (operatorJoy.getButtonDUp()) {
                 Elevator.setPosition(CARGO_LEVEL_THREE);
+                Arm.setPosition(CARGO_SHOOT);
             } else if (operatorJoy.getButtonDRight()) {
                 Elevator.setPosition(CARGO_SHIP);
+                Arm.setPosition(ARM_FLOOR);
             }
-        } else if (operatorJoy.getRightYAxis() > -0.1) {
+        } else if (operatorJoy.getRightYAxis() > 0.1) {
             if (operatorJoy.getButtonDDown()) {
                 Elevator.setPosition(HATCH_LEVEL_ONE);
             } else if (operatorJoy.getButtonDLeft()) {
@@ -115,12 +118,16 @@ public class OperatorControls {
         if (operatorJoy.getLeftBumperButton()) {
 //            Intake.openHatch();
 //            Arm.setPosition(DROP_AND_COLLECT_HATCH);
-            Elevator.dropHatch();
-        }   
+//            Elevator.dropHatch();
+            Elevator.placeHatch();
+        } else {
+            Elevator.setHatchPlace = false;
+        }
         if (operatorJoy.getRightBumperButton()) {
 //            Intake.closeHatch();
             Elevator.setPosition(ELEVATOR_FLOOR);
-//            Arm.setPosition(ARM_FLOOR);
+            Arm.setPosition(PLACING);
+            //            Arm.setPosition(ARM_FLOOR);
         }
 
         // Combined Subsystem Controls
