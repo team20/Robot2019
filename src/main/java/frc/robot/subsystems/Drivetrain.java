@@ -2,15 +2,13 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motion.SetValueMotionProfile;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 public class Drivetrain {
     public final static TalonSRX frontRight, frontLeft;
     private final static VictorSPX backRight, backLeft;
-
-    private Drivetrain() {
-    }
 
     /*
      * Initializes and sets up all motors for the drivetrain
@@ -56,6 +54,17 @@ public class Drivetrain {
         } else {
             frontLeft.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
             frontRight.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
+        }
+    }
+
+    public static void setBrakeMode(boolean isBraking) {
+        if (isBraking) {
+            Climber.setStepNum(0);
+            frontLeft.setNeutralMode(NeutralMode.Brake);
+            frontRight.setNeutralMode(NeutralMode.Brake);
+        } else {
+            frontLeft.setNeutralMode(NeutralMode.Coast);
+            frontRight.setNeutralMode(NeutralMode.Coast);
         }
     }
 }
