@@ -7,30 +7,30 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Elevator {
-    public static final CANSparkMax elevator;
+    private static final CANSparkMax elevator;
     private static final CANEncoder elevatorEncoder;
 
     private static double setPosition, prevPosition;
 
     private static final double STAGE_THRESHOLD = 30.0;
-    public static final double MAX_POSITION = 47.5;
+    private static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
-    public static final double HATCH_DROP_OFFSET = 3.2;
-    public static final double HATCH_PLACE_OFFSET = 0.7;
+    private static final double HATCH_DROP_OFFSET = 3.2;
+    private static final double HATCH_PLACE_OFFSET = 0.7;
     public static boolean setHatchDrop, setHatchPlace;
 
     public enum Position {
         ELEVATOR_FLOOR(0.0),
-        HATCH_LEVEL_ONE(3.0),
-        HATCH_LEVEL_TWO(21.0),
-        HATCH_LEVEL_THREE(43.5),
+        HATCH_LEVEL_ONE(1.5), //3.0
+        HATCH_LEVEL_TWO(22.0), //21.0
+        HATCH_LEVEL_THREE(44.5), //43.5
         CARGO_LEVEL_ONE(17.0),
-        CARGO_LEVEL_TWO(39.5), // TODO new position
-        CARGO_LEVEL_THREE(45.0), // TODO new position
+        CARGO_LEVEL_TWO(39.5),
+        CARGO_LEVEL_THREE(45.0),
         CARGO_SHIP(30.0),
         ELEVATOR_COLLECT_CARGO(7.5),
-//        ELEVATOR_COLLECT_HATCH(11.5); //top hatch mechanism
-ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
+        //        ELEVATOR_COLLECT_HATCH(11.5); //top hatch mechanism
+        ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
 
         double value;
 
@@ -147,7 +147,7 @@ ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
      * @param position desired elevator position
      */
     public static void setPosition(Position position) {
-        if(position.name().toLowerCase().contains("hatch")){
+        if (position.name().toLowerCase().contains("hatch")) {
             setPosition(position.value + HATCH_DROP_OFFSET);
         } else {
             setPosition(position.value);
@@ -157,7 +157,7 @@ ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
     /**
      * Sets the elevator lower by the hatch offset to drop the hatch panel
      */
-    public static void dropHatch(){
+    public static void dropHatch() {
         if (!setHatchDrop) {
             setPosition(setPosition - HATCH_DROP_OFFSET);
             setHatchDrop = true;

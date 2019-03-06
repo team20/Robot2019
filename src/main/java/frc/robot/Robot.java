@@ -57,11 +57,8 @@ import frc.robot.auto.AutoModes;
 import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.Arduino;
-import frc.robot.subsystems.LineSensor;
+import frc.robot.subsystems.*;
 import frc.robot.utils.PrettyPrint;
-
-import static frc.robot.subsystems.Arduino.Colors.Green;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -83,8 +80,6 @@ public class Robot extends TimedRobot {
 
         autoSet = false;
 
-        Arduino.setPattern(0);
-        Arduino.write();
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
         Arduino.startThread();
@@ -96,21 +91,17 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
 //        Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
         Arduino.setPattern(2);
-        if (LineSensor.isLineSeen())
-            Arduino.setDiagnosticPattern(Green, 1);
-//         if (Intake.isHatchClosed())
-//             Arduino.setDiagnosticPattern(Colors.Yellow, 1);
-//        else if (Intake.isCargoPresent())
-//            Arduino.setDiagnosticPattern(Colors.Orange, 1);
-//        else if (Intake.intakeRunning())
-//            Arduino.setDiagnosticPattern(Colors.Orange, 2);
+        if (LineSensor.isBroken())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        else if (LineSensor.isLineSeen())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
+        else if (Intake.isCargoPresent())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
+        else if (Intake.intakeRunning())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
         else
             Arduino.setDiagnosticPattern(null, 0);
-        // PrettyPrint.put("temp", Elevator.elevator::getMotorTemperature);
-        // PrettyPrint.put("neo current", Elevator.elevator::getOutputCurrent);
-//        PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
 
-        PrettyPrint.put("LineSensor value", LineSensor.getLinePosition());
         PrettyPrint.print();
     }
 
@@ -120,71 +111,33 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // This is here because autonomous init is not reliable
-        if (!autoSet) {
-            auto.setMode(Mode.CrossLine); // TODO: eventually make auto selection based off of user input to the SmartDashboard
-            switch (auto.getMode()) {
-                case CrossLine:
-                    auto.crossLine();
-                    break;
-                case Align:
-                    auto.align(false);
-                    break;
-                case FullyTeleop:
-                    auto.fullyTeleop();
-                    break;
-                default:
-                    PrettyPrint.once("NO AUTO SELECTED");
-                    break;
-            }
-            autoSet = true;
-        }
-
-        auto.runAuto();
+        DriverControls.driverControls();
+        OperatorControls.operatorControls();
     }
 
     @Override
     public void teleopInit() {
-//        PrettyPrint.put("Elev Pos", Elevator::getPosition);
     }
 
     @Override
     public void teleopPeriodic() {
         DriverControls.driverControls();
         OperatorControls.operatorControls();
-
     }
 
 
     @Override
     public void testInit() {
-
-//        Drivetrain.frontLeft.setSelectedSensorPosition(0);
-//        Drivetrain.frontRight.setSelectedSensorPosition(0);
-//        PrettyPrint.put("L", Drivetrain.frontLeft::getSelectedSensorPosition);
-//        PrettyPrint.put("R", Drivetrain.frontRight::getSelectedSensorPosition);
-//        PrettyPrint.put("Line sensor value", LineSensor::getLinePosition);
-//        PrettyPrint.put("NEO TEMP", Elevator::temp);
-//        PrettyPrint.put("Neo Mode", Elevator.elevator.getIdleMode());
     }
 
     @Override
     public void testPeriodic() {
-//        if (DriverControls.driverJoy.getLeftYAxis() > .1 || DriverControls.driverJoy.getLeftYAxis() < -.1) {
-//            Climber.manualClimbBack(DriverControls.driverJoy.getLeftYAxis());
-//        } else {
-//            Climber.manualClimbBack(0);
-//        }
-//        if (DriverControls.driverJoy.getRightYAxis() > .1 || DriverControls.driverJoy.getRightYAxis() < -.1) {
-//            Climber.manualClimbFront(DriverControls.driverJoy.getRightYAxis());
-//        } else {
-//            Climber.manualClimbFront(0);
-//        }
     }
 
     @Override
     public void disabledInit() {
 //        LineSensor.stopThread();
+        Drivetrain.setBrakeMode(false);
         PrettyPrint.removeAll();
     }
 }

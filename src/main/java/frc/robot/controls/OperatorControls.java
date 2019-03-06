@@ -9,14 +9,14 @@ import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls {
 
-    private static PS4Controller operatorJoy;
+    private static PS4Controller joy;
     private static boolean elevatorOverridden, armOverridden;
 
     /*
      * Initializes the operator controller
      */
     static {
-        operatorJoy = new PS4Controller(1, 3);
+        joy = new PS4Controller(1, 3);
         elevatorOverridden = false;
         armOverridden = false;
     }
@@ -25,12 +25,10 @@ public class OperatorControls {
      * Runs the operator controls
      */
     public static void operatorControls() {
-        // PrettyPrint.put("Elevator", Elevator.getPosition());
-        // PrettyPrint.put("Arm", Arm.getPosition());
         // Elevator Controls
         // override
-        if (operatorJoy.getRightStickButton()) {
-            double speed = operatorJoy.getRightYAxis();
+        if (joy.getRightStickButton()) {
+            double speed = joy.getRightYAxis();
             Elevator.moveSpeed(-speed);
             elevatorOverridden = true;
         } else {
@@ -40,41 +38,41 @@ public class OperatorControls {
             }
         }
         // positions
-        if (operatorJoy.getRightYAxis() < -0.1) {
-            if (operatorJoy.getButtonDDown()) {
+        if (joy.getRightYAxis() < -0.1) {
+            if (joy.getButtonDDown()) {
                 Elevator.setPosition(CARGO_LEVEL_ONE);
                 Arm.setPosition(ARM_FLOOR);
-            } else if (operatorJoy.getButtonDLeft()) {
+            } else if (joy.getButtonDLeft()) {
                 Elevator.setPosition(CARGO_LEVEL_TWO);
                 Arm.setPosition(ARM_FLOOR);
-            } else if (operatorJoy.getButtonDUp()) {
+            } else if (joy.getButtonDUp()) {
                 Elevator.setPosition(CARGO_LEVEL_THREE);
                 Arm.setPosition(CARGO_SHOOT);
-            } else if (operatorJoy.getButtonDRight()) {
+            } else if (joy.getButtonDRight()) {
                 Elevator.setPosition(CARGO_SHIP);
                 Arm.setPosition(ARM_FLOOR);
             }
-        } else if (operatorJoy.getRightYAxis() > 0.1) {
-            if (operatorJoy.getButtonDDown()) {
+        } else if (joy.getRightYAxis() > 0.1) {
+            if (joy.getButtonDDown()) {
                 Elevator.setPosition(HATCH_LEVEL_ONE);
-            } else if (operatorJoy.getButtonDLeft()) {
+            } else if (joy.getButtonDLeft()) {
                 Elevator.setPosition(HATCH_LEVEL_TWO);
-            } else if (operatorJoy.getButtonDUp()) {
+            } else if (joy.getButtonDUp()) {
                 Elevator.setPosition(HATCH_LEVEL_THREE);
-            } else if (operatorJoy.getButtonDRight()){
+            } else if (joy.getButtonDRight()) {
                 Elevator.setPosition(ELEVATOR_COLLECT_HATCH);
 //                Arm.setPosition(DROP_AND_COLLECT_HATCH);  //enable for top hatch mechanism
             }
         }
         // encoder reset
-        if (operatorJoy.getShareButton()) {
+        if (joy.getShareButton()) {
             Elevator.resetEncoder();
         }
 
         // Arm Controls
         // override
-        if (operatorJoy.getLeftStickButton()) {
-            double speed = -operatorJoy.getLeftYAxis();
+        if (joy.getLeftStickButton()) {
+            double speed = -joy.getLeftYAxis();
             Arm.moveSpeed(speed);
             armOverridden = true;
         } else {
@@ -84,88 +82,66 @@ public class OperatorControls {
             }
         }
         // positions
-        if (operatorJoy.getLeftYAxis() < -0.5) {
+        if (joy.getLeftYAxis() < -0.5) {
             Arm.setPosition(CARGO_SHOOT);
-        } else if (operatorJoy.getLeftYAxis() > 0.5) {
+        } else if (joy.getLeftYAxis() > 0.5) {
             Arm.setPosition(ARM_FLOOR);
-        } else if (Math.abs(operatorJoy.getLeftXAxis()) > 0.5) {
+        } else if (Math.abs(joy.getLeftXAxis()) > 0.5) {
             Arm.setPosition(PLACING);
-        } else if (operatorJoy.getSquareButton()) {
+        } else if (joy.getSquareButton()) {
             Arm.setPosition(STARTING_CONFIG);
             Elevator.setPosition(ELEVATOR_FLOOR);
         }
         // encoder reset
-        if (operatorJoy.getOptionsButton()) {
+        if (joy.getOptionsButton()) {
             Arm.resetEncoder();
         }
 
         // Intake Controls
         // cargo
-        if (operatorJoy.getXButton()) {
-            Intake.intakeMode(); // TODO enable sensor - not plugged in for initial testing
-            // Intake.collectCargo();
+        if (joy.getXButton()) {
+            Intake.intakeMode();
         }
-        if (operatorJoy.getTriButton()) {
+        if (joy.getTriButton()) {
             Intake.outtakeCargo();
         }
-        if (operatorJoy.getCircleButton()) {
+        if (joy.getCircleButton()) {
             Intake.stopCargoRollers();
         }
-        if (operatorJoy.getRightTriggerAxis() > 0.5) {
+        if (joy.getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
         }
         // hatch
-        if (operatorJoy.getLeftBumperButton()) {
-//            Intake.openHatch();
-//            Arm.setPosition(DROP_AND_COLLECT_HATCH);
-//            Elevator.dropHatch();
+        if (joy.getLeftBumperButton()) {
             Elevator.placeHatch();
         } else {
             Elevator.setHatchPlace = false;
         }
-        if (operatorJoy.getRightBumperButton()) {
-//            Intake.closeHatch();
+        if (joy.getRightBumperButton()) {
             Elevator.setPosition(ELEVATOR_FLOOR);
             Arm.setPosition(PLACING);
-            //            Arm.setPosition(ARM_FLOOR);
         }
 
         // Combined Subsystem Controls
-        if (operatorJoy.getLeftTriggerAxis() > 0.5) {
+        if (joy.getLeftTriggerAxis() > 0.5) {
             Elevator.setPosition(ELEVATOR_COLLECT_CARGO);
             Arm.setPosition(ARM_COLLECT_CARGO);
         }
 
         // Controller Vibrations
         if (Intake.intakeRunning()) {
-            operatorJoy.setRumble(1.0);
+            joy.setRumble(1.0);
         } else {
-            operatorJoy.setRumble(0.0);
+            joy.setRumble(0.0);
         }
     }
 
     public static boolean isOverridingAuto() {
-        return operatorJoy.getTriButton() || operatorJoy.getSquareButton() || operatorJoy.getCircleButton()
-                || operatorJoy.getXButton() ||
-
-                operatorJoy.getPSButton() || operatorJoy.getShareButton() || operatorJoy.getOptionsButton() ||
-
-                operatorJoy.getButtonDDown() || operatorJoy.getButtonDLeft() || operatorJoy.getButtonDRight()
-                || operatorJoy.getButtonDUp() ||
-
-                operatorJoy.getLeftBumperButton() || Math.abs(operatorJoy.getLeftTriggerAxis()) > .1 ||
-
-                operatorJoy.getRightBumperButton() || Math.abs(operatorJoy.getRightTriggerAxis()) > .1 ||
-
-                operatorJoy.getLeftStickButton() || Math.abs(operatorJoy.getLeftXAxis()) > .1
-                || Math.abs(operatorJoy.getLeftYAxis()) > .1 ||
-
-                operatorJoy.getRightStickButton() || Math.abs(operatorJoy.getRightXAxis()) > .1
-                || Math.abs(operatorJoy.getRightYAxis()) > .1;
+        return joy.anythingPressed();
     }
 
     // TODO determine this button
     public static boolean isStoppingAutoControl() {
-        return operatorJoy.getTrackpadButton();
+        return joy.getTrackpadButton();
     }
 }

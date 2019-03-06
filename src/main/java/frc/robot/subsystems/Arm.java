@@ -7,7 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Arm {
-    public static final CANSparkMax armMotor;
+    private static final CANSparkMax armMotor;
     private static final CANPIDController pidController;
     private static final CANEncoder armEncoder;
 
@@ -41,7 +41,7 @@ public class Arm {
 
         //initialize variables
         armMotor.setEncPosition(0);
-        setPosition = armEncoder.getPosition();
+        setPosition(armEncoder.getPosition());
         prevPosition = 0.0;
 
         //sends corresponding values to the pid controller object
@@ -106,14 +106,14 @@ public class Arm {
     }
 
     /**
-     * @return: the value of the arm encoder
+     * @return the value of the arm encoder
      */
     public static double getSetPosition() {
         return setPosition;
     }
 
     /**
-     * @return: the value of the arm encoder
+     * @return the value of the arm encoder
      */
     public static double getPosition() {
         return armEncoder.getPosition();
