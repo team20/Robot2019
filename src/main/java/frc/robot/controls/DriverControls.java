@@ -65,11 +65,14 @@ public class DriverControls {
             if (!climberOverride) {
                 //line sensor
                 if (joy.getTriButton() && LineSensor.isLineSeen()) {
-                    LineSensor.linePid.enable();
+                    if (!LineSensor.linePid.isEnabled())
+                        LineSensor.linePid.enable();
+                    LineSensor.calculateLinePosition();
                     speedRight = -LineSensor.getTurnSpeed();
                     speedLeft = LineSensor.getTurnSpeed();
                 } else {
-                    LineSensor.linePid.reset();
+                    if (LineSensor.linePid.isEnabled())
+                        LineSensor.linePid.reset();
                     if (Elevator.aboveStageThreshold()) {
                         if (joy.getSquareButton()) {
                             speedLeft = joy.getLeftTriggerAxis() * 0.25;
