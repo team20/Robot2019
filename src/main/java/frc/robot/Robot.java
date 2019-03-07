@@ -73,12 +73,14 @@ public class Robot extends TimedRobot {
     public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
     private boolean autoSet;
+    private boolean inEndOfMatch;
 
     @Override
     public void robotInit() {
         auto = new AutoModes();
 
         autoSet = false;
+        inEndOfMatch = false;
 
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
@@ -89,8 +91,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-//        Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
-        Arduino.setPattern(2);
+        //set pattern of LEDs
+        if (inEndOfMatch)
+            Arduino.setPattern(3);
+        else
+            //the line below has not been fully tested yet (it is for showing the height of the elevator on the LEDs when it is moving)
+            //Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
+            Arduino.setPattern(2);
+        
+        //set diagnostic part of LEDs
         if (LineSensor.isBroken())
             Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
         else if (LineSensor.isLineSeen())
@@ -121,6 +130,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+        if (DriverStation.getInstance().getMatchTime() <= 40 && DriverStation.getInstance().getMatchTime() > 0 && !inEndOfMatch)
+            inEndOfMatch = true;
+        else if (inEndOfMatch)
+            inEndOfMatch = false;
         DriverControls.driverControls();
         OperatorControls.operatorControls();
     }
