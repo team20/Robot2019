@@ -7,20 +7,22 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Arm {
-    private static CANSparkMax armMotor;
-    private static CANPIDController pidController;
-    private static CANEncoder armEncoder;
+    private static final CANSparkMax armMotor;
+    private static final CANPIDController pidController;
+    private static final CANEncoder armEncoder;
 
-    private static double setPosition, prevPosition, zeroPosition;
+    private static double setPosition, prevPosition;
 
     private static final double DEADBAND = 0.3;
 
     public enum Position {
-        ARM_FLOOR(0.0),
-        CARGO_SHOOT(0.0),
-        PLACING(0.0),
-        STARTING_CONFIG(0.0);
-        
+        ARM_FLOOR(-41.38),
+        CARGO_SHOOT(-22.38),
+        PLACING(-10.0),
+        STARTING_CONFIG(-5.0),
+        ARM_COLLECT_CARGO(-49.0),
+        DROP_AND_COLLECT_HATCH(-40.0);
+
         double value;
 
         Position(double position) {
@@ -38,14 +40,14 @@ public class Arm {
         armEncoder = new CANEncoder(armMotor);
 
         //initialize variables
-        setPosition = armEncoder.getPosition();
+        armMotor.setEncPosition(0);
+        setPosition(armEncoder.getPosition());
         prevPosition = 0.0;
-        zeroPosition = 0.0;
 
         //sends corresponding values to the pid controller object
-        pidController.setP(0.001);
+        pidController.setP(0.08);
         pidController.setI(0.0);
-        pidController.setD(0.0);
+        pidController.setD(0.8);
         pidController.setOutputRange(-1.0, 1.0);
     }
 
@@ -55,7 +57,7 @@ public class Arm {
      * @param pos: desired value
      */
     public static void setPosition(double pos) {
-        setPosition = zeroPosition + pos;
+        setPosition = pos;
         pidController.setReference(setPosition, ControlType.kPosition);
     }
 
@@ -63,7 +65,7 @@ public class Arm {
      * Sets the current arm position to the new zero
      */
     public static void resetEncoder() {
-        zeroPosition = armEncoder.getPosition();
+        armMotor.setEncPosition(0);
     }
 
     /**
@@ -104,7 +106,14 @@ public class Arm {
     }
 
     /**
-     * @return: the value of the arm encoder
+     * @return the value of the arm encoder
+     */
+    public static double getSetPosition() {
+        return setPosition;
+    }
+
+    /**
+     * @return the value of the arm encoder
      */
     public static double getPosition() {
         return armEncoder.getPosition();

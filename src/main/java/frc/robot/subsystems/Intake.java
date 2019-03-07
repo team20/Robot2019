@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 
 public class Intake {
-    private static Servo hatch;
-    private static VictorSPX cargo;
-    private static DigitalInput cargoSensor;
+    private static final Servo hatch;
+    private static final VictorSPX cargo;
+    private static final DigitalInput cargoSensor;
     private static boolean intakeRunning;
 
     /*
@@ -26,7 +26,7 @@ public class Intake {
      * Runs the cargo motor at collection speed
      */
     public static void collectCargo() {
-        runCargoMotor(1.0);
+        runCargoMotor(-0.6); // was .75
         intakeRunning = true;
     }
 
@@ -34,7 +34,11 @@ public class Intake {
      * Runs the cargo motor at spitting speed
      */
     public static void spitCargo() {
-        runCargoMotor(-1.0);
+        if(Elevator.aboveStageThreshold()){
+            runCargoMotor(0.7);
+        } else {
+            runCargoMotor(1.0);
+        }
         intakeRunning = true;
     }
 
@@ -42,7 +46,7 @@ public class Intake {
      * Runs the cargo motor at spitting speed
      */
     public static void outtakeCargo() {
-        runCargoMotor(-0.5);
+        runCargoMotor(0.5);
         intakeRunning = true;
     }
 
@@ -67,12 +71,12 @@ public class Intake {
     public static void closeHatch() {
         hatch.set(1);
     }
-    
+
     /**
      * Returns if there is cargo in the intake
      */
     public static boolean isCargoPresent() {
-        return cargoSensor.get();
+        return !cargoSensor.get();
     }
 
     /**
@@ -85,11 +89,10 @@ public class Intake {
     /**
      * Runs the cargo intake until the digital sensor is tripped
      *
-     * @param speed = speed of the cargo motor (-1.0 to 1.0)
      * @return true if a cargo is in the intake
      */
     public static boolean intakeMode() {
-        if (!cargoSensor.get()) {
+        if (cargoSensor.get()) {
             collectCargo();
             return false;
         } else {
@@ -108,7 +111,7 @@ public class Intake {
         intakeRunning = true;
     }
 
-    public static boolean intakeRunning(){
+    public static boolean intakeRunning() {
         return intakeRunning;
     }
 }

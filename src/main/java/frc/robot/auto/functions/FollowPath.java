@@ -18,6 +18,7 @@ import java.util.InputMismatchException;
 
 /**
  * Follows a motion profiling path saved in a csv
+ * <p>{@code values[0]} is the filepath to the spline to be ran</p>
  */
 public class FollowPath extends RobotFunction<String> {
     private final int minPoints = 5;
@@ -36,7 +37,7 @@ public class FollowPath extends RobotFunction<String> {
     /**
      * pushes motion profile points into the drivetrain motors
      *
-     * @param values one String that is the filepath to the spline to be ran
+     * @param values the filepath to the spline to be ran
      */
     @Override
     public void collectInputs(String... values) {
@@ -84,20 +85,20 @@ public class FollowPath extends RobotFunction<String> {
     }
 
     public MotionProfileStatus getLeftStatus() {
-        var status = new MotionProfileStatus();
+        MotionProfileStatus status = new MotionProfileStatus();
         Drivetrain.frontLeft.getMotionProfileStatus(status);
         return status;
     }
 
     public MotionProfileStatus getRightStatus() {
-        var status = new MotionProfileStatus();
+        MotionProfileStatus status = new MotionProfileStatus();
         Drivetrain.frontRight.getMotionProfileStatus(status);
         return status;
     }
 
     private TrajectoryPoint[] fromFile(String filePath) {
-        try (var reader = new BufferedReader(new FileReader(filePath))) {
-            var points = reader
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            TrajectoryPoint[] points = reader
                     .lines()
                     .skip(1)
                     .map(s -> s.split(","))
@@ -106,7 +107,7 @@ public class FollowPath extends RobotFunction<String> {
                             .mapToDouble(Double::parseDouble)
                             .toArray())
                     .map(vals -> {
-                        var p = new TrajectoryPoint();
+                        TrajectoryPoint p = new TrajectoryPoint();
                         p.profileSlotSelect0 = 0;
                         p.position = vals[0];
                         p.velocity = vals[1];

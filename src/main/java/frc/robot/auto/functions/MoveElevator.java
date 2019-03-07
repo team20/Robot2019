@@ -7,6 +7,7 @@ import java.util.InputMismatchException;
 
 /**
  * Moves the elevator to a position
+ * <p>{@code values[0]} is the position of the elevator in ticks</p>
  */
 public class MoveElevator extends RobotFunction<Integer> {
     private int position;
@@ -41,7 +42,7 @@ public class MoveElevator extends RobotFunction<Integer> {
      */
     @Override
     public boolean isFinished() {
-        return !Elevator.isMoving();
+        return Elevator.doneMoving();
     }
 
     /**

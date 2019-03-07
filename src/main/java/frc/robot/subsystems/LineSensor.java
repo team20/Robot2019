@@ -1,23 +1,20 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.utils.PrettyPrint;
 
 public class LineSensor {
-    public static PIDSource pidSource;
-    public static PIDOutput pidOutput;
+    public static final PIDController linePid;
+    public static final PIDSource pidSource;
+    public static final PIDOutput pidOutput;
     //separate thread for data collection and calculations
-    private static Notifier thread;
+    private static final Notifier thread;
     //I2C communication protocol
-    private static I2C wire;
+    private static final I2C wire;
 
     //threshold for whether lineSeen is true or not
-    private static final int lineSeenThreshold = 100;   //TODO: figure out what this actually is
+    private static final int lineSeenThreshold = 20;
 
     //the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final int address;
@@ -54,15 +51,22 @@ public class LineSensor {
             }
         };
         pidOutput = output -> turnSpeed = output;
+        pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
+
+        linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid.setSetpoint(350);
 
         thread = new Notifier(LineSensor::updateLinePosition);
-        pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 9;
         wire = new I2C(Port.kOnboard, address);
 
         rawSensorData = new byte[16];
         sensorData = new int[8];
         turnSpeed = 0;
+    }
+
+    public static boolean isBroken() {
+        return total == 0;
     }
 
     public static boolean isLineSeen() {
@@ -73,13 +77,17 @@ public class LineSensor {
         return linePosition;
     }
 
+    public static int getTotal() {
+        return total;
+    }
+
     public static double getTurnSpeed() {
         return turnSpeed;
     }
 
-    //start thread running once every [ms] milliseconds
-    public static void startThread(int ms) {
-        thread.startPeriodic((double) ms / 1000);
+    //start thread running
+    public static void startThread() {
+        thread.startPeriodic(0.15);
     }
 
     //stops thread from running
@@ -89,7 +97,6 @@ public class LineSensor {
 
     //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all
     private static void updateLinePosition() {
-        // wire.read(address, rawSensorData.length, rawSensorData);
         wire.readOnly(rawSensorData, rawSensorData.length);
         //store useful data from sensor in [sensorData]
         for (int i = 0; i < sensorData.length; i++)
@@ -102,7 +109,9 @@ public class LineSensor {
         }
         if (total != 0)
             linePosition = weightedTotal / total;
-        else
-            PrettyPrint.error("LINE SENSOR NEEDS TO BE RESET");
+         for (int data : sensorData)
+            System.out.print(data + "\t");
+         System.out.println();
+
     }
 }

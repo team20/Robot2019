@@ -40,7 +40,7 @@ import static java.lang.Math.min;
  * <p>| Navx angle = 120 | Other way = 120 | constant = 120 |</p>
  */
 public class PrettyPrint {
-    private static int messageLength = 5;
+    private static int messageLength = 7;
     private static int frequency = 1;
     private static int count = 0;
 
@@ -76,6 +76,8 @@ public class PrettyPrint {
 
     /**
      * print an error message in an easily viewable way
+     * <p>
+     * CURRENTLY THIS THROWS AN ERROR DON'T USE
      */
     public static void error(String errMessage) {
         errors.add(errMessage);
@@ -111,6 +113,7 @@ public class PrettyPrint {
 
     /**
      * how many characters wide each value will be
+     * default is 1
      */
     public static void setMessageLength(int messageLength) {
         PrettyPrint.messageLength = messageLength;
@@ -125,11 +128,8 @@ public class PrettyPrint {
         for (String errorMessage : errors) {
             for (int i = 0; i < 70; i++) System.out.print("-");
             System.out.println();
-            for (int i = 0; i < 70; i++) System.out.print(" ");
             System.out.println();
             System.out.println(errorMessage);
-            for (int i = 0; i < 70; i++) System.out.print(" ");
-            System.out.println();
             for (int i = 0; i < 70; i++) System.out.print("-");
             System.out.println();
         }
@@ -138,8 +138,8 @@ public class PrettyPrint {
         count = 0;
 
         System.out.print("|");
-        values.forEach((str, valSup) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(valSup)));
-        tempValues.forEach((str, val) -> System.out.printf(" %s = %-" + messageLength + "s |", str, val));
+        values.forEach((str, valSup) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(valSup.get())));
+        tempValues.forEach((str, val) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(val)));
         for (String message : tempMessages) {
             System.out.printf(" %s |", message);
         }
@@ -153,8 +153,8 @@ public class PrettyPrint {
     /**
      * utility method to ensure that each value is the same num of characters to maintain table's vertical straightness
      */
-    private static String shortened(Supplier<Object> valSup) {
-        String valStr = valSup.get().toString();
+    private static String shortened(Object val) {
+        String valStr = val.toString();
         return valStr.substring(0, min(valStr.length(), messageLength));
     }
 }
