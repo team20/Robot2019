@@ -156,7 +156,17 @@ void LEDStrip::chasing() {
 //}
 
 void LEDStrip::greenFlowing() {
-  //TODO: make this
+  if (millis() - mainTimeStamp >= 15) {
+    mainTimeStamp = millis();
+    if (counter < strip.numPixels() * 2 + 1) {
+      if (counter < strip.numPixels())
+        strip.setPixelColor(counter, green);
+      else
+        strip.setPixelColor(strip.numPixels() - (counter - strip.numPixels()), off);
+      counter ++;
+    } else
+      counter = 0;
+  }
 }
 
 void LEDStrip::elevator(byte height) {
@@ -169,7 +179,7 @@ void LEDStrip::elevator(byte height) {
 }
 
 void LEDStrip::diagnosticSolid() {
-  for (byte i = 12; i < 15; i ++)
+  for (byte i = 11; i < 15; i ++)
     strip.setPixelColor(i, diagnosticColor);
 }
 
@@ -178,6 +188,6 @@ void LEDStrip::diagnosticBlinking() {
     diagnosticTimeStamp = millis();
     diagnosticOn = !diagnosticOn;
   }
-  for (byte i = 12; i < 15; i ++)
+  for (byte i = 11; i < 15; i ++)
     strip.setPixelColor(i, diagnosticOn ? diagnosticColor : off);
 }

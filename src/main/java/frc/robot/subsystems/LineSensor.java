@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.I2C.Port;
-import frc.robot.utils.PrettyPrint;
 
 public class LineSensor {
     public static final PIDController linePid;
@@ -50,13 +49,17 @@ public class LineSensor {
                 return linePosition;
             }
         };
-        pidOutput = output -> turnSpeed = output;
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
 
+        pidOutput = output -> turnSpeed = output;
+
         linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid.setInputRange(0, 700);
+        linePid.setOutputRange(-1, 1);
+        linePid.setContinuous(false);
         linePid.setSetpoint(350);
 
-        thread = new Notifier(LineSensor::updateLinePosition);
+        thread = new Notifier(LineSensor::requestSensorData);
         address = 9;
         wire = new I2C(Port.kOnboard, address);
 
@@ -65,39 +68,13 @@ public class LineSensor {
         turnSpeed = 0;
     }
 
-    public static boolean isBroken() {
-        return total == 0;
-    }
-
-    public static boolean isLineSeen() {
-        return total > lineSeenThreshold;
-    }
-
-    public static double getLinePosition() {
-        return linePosition;
-    }
-
-    public static int getTotal() {
-        return total;
-    }
-
-    public static double getTurnSpeed() {
-        return turnSpeed;
-    }
-
-    //start thread running
-    public static void startThread() {
-        thread.startPeriodic(0.15);
-    }
-
-    //stops thread from running
-    public static void stopThread() {
-        thread.stop();
-    }
-
-    //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all
-    private static void updateLinePosition() {
+    //send a read sensor data via I2C
+    private static void requestSensorData() {
         wire.readOnly(rawSensorData, rawSensorData.length);
+    }
+
+    //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about halfway down the page)
+    public static void calculateLinePosition() {
         //store useful data from sensor in [sensorData]
         for (int i = 0; i < sensorData.length; i++)
             sensorData[i] = rawSensorData[i * 2];
@@ -109,9 +86,31 @@ public class LineSensor {
         }
         if (total != 0)
             linePosition = weightedTotal / total;
-         for (int data : sensorData)
-            System.out.print(data + "\t");
-         System.out.println();
+    }
 
+    public static int getTotal() {
+        return total;
+    }
+
+    public static boolean isLineSeen() {
+        return total > lineSeenThreshold;
+    }
+
+    public static boolean isBroken() {
+        return total == 0;
+    }
+
+    public static double getTurnSpeed() {
+        return turnSpeed;
+    }
+
+    //start thread running
+    public static void startThread() {
+        thread.startPeriodic(0.02);
+    }
+
+    //stops thread from running
+    public static void stopThread() {
+        thread.stop();
     }
 }
