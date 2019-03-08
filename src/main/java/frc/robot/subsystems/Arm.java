@@ -7,7 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Arm {
-    private static final CANSparkMax armMotor;
+    public static final CANSparkMax armMotor;
     private static final CANPIDController pidController;
     private static final CANEncoder armEncoder;
 
@@ -20,7 +20,7 @@ public class Arm {
         CARGO_SHOOT(-22.38),
         PLACING(-10.0),
         STARTING_CONFIG(-5.0),
-        ARM_COLLECT_CARGO(-49.0),
+        ARM_COLLECT_CARGO(-49.3),
         DROP_AND_COLLECT_HATCH(-40.0);
 
         double value;
