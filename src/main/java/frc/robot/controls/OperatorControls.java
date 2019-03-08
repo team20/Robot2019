@@ -25,6 +25,7 @@ public class OperatorControls {
      * Runs the operator controls
      */
     public static void operatorControls() {
+        // PrettyPrint.put("current", Elevator.getCurrent());
         // Elevator Controls
         // override
         if (joy.getRightStickButton()) {
@@ -38,7 +39,17 @@ public class OperatorControls {
             }
         }
         // positions
-        if (joy.getRightYAxis() < -0.1) {
+        if (joy.getRightYAxis() > 0.5) {
+            if (joy.getButtonDDown()) {
+                Elevator.setPosition(HATCH_LEVEL_ONE);
+            } else if (joy.getButtonDLeft()) {
+                Elevator.setPosition(HATCH_LEVEL_TWO);
+            } else if (joy.getButtonDUp()) {
+                Elevator.setPosition(HATCH_LEVEL_THREE);
+            } else if (joy.getButtonDRight()) {
+                Elevator.setPosition(ELEVATOR_COLLECT_HATCH);
+            }
+        } else if (joy.getRightYAxis() < -0.5) {
             if (joy.getButtonDDown()) {
                 Elevator.setPosition(CARGO_LEVEL_ONE);
                 Arm.setPosition(ARM_FLOOR);
@@ -51,17 +62,6 @@ public class OperatorControls {
             } else if (joy.getButtonDRight()) {
                 Elevator.setPosition(CARGO_SHIP);
                 Arm.setPosition(ARM_FLOOR);
-            }
-        } else if (joy.getRightYAxis() > 0.1) {
-            if (joy.getButtonDDown()) {
-                Elevator.setPosition(HATCH_LEVEL_ONE);
-            } else if (joy.getButtonDLeft()) {
-                Elevator.setPosition(HATCH_LEVEL_TWO);
-            } else if (joy.getButtonDUp()) {
-                Elevator.setPosition(HATCH_LEVEL_THREE);
-            } else if (joy.getButtonDRight()) {
-                Elevator.setPosition(ELEVATOR_COLLECT_HATCH);
-//                Arm.setPosition(DROP_AND_COLLECT_HATCH);  //enable for top hatch mechanism
             }
         }
         // encoder reset

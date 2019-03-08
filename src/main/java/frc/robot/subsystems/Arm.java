@@ -11,7 +11,7 @@ public class Arm {
     private static final CANPIDController pidController;
     private static final CANEncoder armEncoder;
 
-    private static double setPosition, prevPosition;
+    private static double setPosition, prevPosition, zeroPosition;
 
     private static final double DEADBAND = 0.3;
 
@@ -34,6 +34,7 @@ public class Arm {
      * Initializes all necessary objects and variables
      */
     static {
+        System.out.println("Arm Init\n\n\n\n");
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
         pidController = armMotor.getPIDController();
@@ -42,6 +43,7 @@ public class Arm {
         //initialize variables
         armMotor.setEncPosition(0);
         setPosition(armEncoder.getPosition());
+        zeroPosition = 0.0;
         prevPosition = 0.0;
 
         //sends corresponding values to the pid controller object
@@ -57,7 +59,7 @@ public class Arm {
      * @param pos: desired value
      */
     public static void setPosition(double pos) {
-        setPosition = pos;
+        setPosition = pos + zeroPosition;
         pidController.setReference(setPosition, ControlType.kPosition);
     }
 
@@ -65,7 +67,8 @@ public class Arm {
      * Sets the current arm position to the new zero
      */
     public static void resetEncoder() {
-        armMotor.setEncPosition(0);
+//        armMotor.setEncPosition(0);
+        zeroPosition = armEncoder.getPosition();
     }
 
     /**
@@ -93,7 +96,7 @@ public class Arm {
      * Stops the arm from moving
      */
     public static void stop() {
-        setPosition(armEncoder.getPosition());
+        setPosition(getPosition());
     }
 
     /**
@@ -109,7 +112,7 @@ public class Arm {
      * @return the value of the arm encoder
      */
     public static double getSetPosition() {
-        return setPosition;
+        return setPosition - zeroPosition;
     }
 
     /**

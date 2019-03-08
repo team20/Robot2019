@@ -54,10 +54,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.auto.AutoModes;
-import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LineSensor;
 import frc.robot.utils.PrettyPrint;
 
 /**
@@ -87,6 +89,7 @@ public class Robot extends TimedRobot {
         Arduino.startThread();
         LineSensor.startThread();
         Arduino.setDiagnosticPattern(null, 0);
+        Drivetrain.setBrakeMode(false);
     }
 
     @Override
@@ -100,11 +103,12 @@ public class Robot extends TimedRobot {
             Arduino.setPattern(2);
         
         //set diagnostic part of LEDs
-        if (LineSensor.isBroken())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
-        else if (LineSensor.isLineSeen())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
-        else if (Intake.isCargoPresent())
+        // if (LineSensor.isBroken())
+            // Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        // else if (LineSensor.isLineSeen())
+            // Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
+        // else 
+        if (Intake.isCargoPresent())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
@@ -132,8 +136,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         if (DriverStation.getInstance().getMatchTime() <= 40 && DriverStation.getInstance().getMatchTime() > 0 && !inEndOfMatch)
             inEndOfMatch = true;
-        else if (inEndOfMatch)
-            inEndOfMatch = false;
+        // else if (inEndOfMatch)
+        //     inEndOfMatch = false;
         DriverControls.driverControls();
         OperatorControls.operatorControls();
     }
@@ -151,6 +155,7 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
 //        LineSensor.stopThread();
         Drivetrain.setBrakeMode(false);
+        inEndOfMatch = false;
         PrettyPrint.removeAll();
     }
 }

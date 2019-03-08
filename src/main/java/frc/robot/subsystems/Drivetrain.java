@@ -62,9 +62,13 @@ public class Drivetrain {
             Climber.setStepNum(0);
             frontLeft.setNeutralMode(NeutralMode.Brake);
             frontRight.setNeutralMode(NeutralMode.Brake);
+            backLeft.setNeutralMode(NeutralMode.Brake);
+            backRight.setNeutralMode(NeutralMode.Brake);
         } else {
             frontLeft.setNeutralMode(NeutralMode.Coast);
             frontRight.setNeutralMode(NeutralMode.Coast);
+            backLeft.setNeutralMode(NeutralMode.Brake);
+            backRight.setNeutralMode(NeutralMode.Brake);
         }
     }
 }

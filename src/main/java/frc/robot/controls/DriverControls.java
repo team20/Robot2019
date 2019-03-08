@@ -65,11 +65,11 @@ public class DriverControls {
             if (!climberOverride) {
                 //line sensor
                 if (joy.getTriButton() && LineSensor.isLineSeen()) {
-                    if (!LineSensor.linePid.isEnabled())
-                        LineSensor.linePid.enable();
-                    LineSensor.calculateLinePosition();
-                    speedRight = -LineSensor.getTurnSpeed();
-                    speedLeft = LineSensor.getTurnSpeed();
+                    // if (!LineSensor.linePid.isEnabled())
+                    //     LineSensor.linePid.enable();
+                    // LineSensor.calculateLinePosition();
+                    // speedRight = -LineSensor.getTurnSpeed();
+                    // speedLeft = LineSensor.getTurnSpeed();
                 } else {
                     if (LineSensor.linePid.isEnabled())
                         LineSensor.linePid.reset();
