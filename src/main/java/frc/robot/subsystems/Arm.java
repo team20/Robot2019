@@ -17,7 +17,7 @@ public class Arm {
 
     public enum Position {
         ARM_FLOOR(-41.38),
-        CARGO_SHOOT(-22.38),
+        CARGO_SHOOT(-22.38), // TODO smaller angle here and higher elev
         PLACING(-10.0),
         STARTING_CONFIG(-5.0),
         ARM_COLLECT_CARGO(-49.3),
@@ -34,7 +34,7 @@ public class Arm {
      * Initializes all necessary objects and variables
      */
     static {
-        System.out.println("Arm Init\n\n\n\n");
+        System.out.println("Arm Init");
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
         pidController = armMotor.getPIDController();
@@ -45,6 +45,8 @@ public class Arm {
         setPosition(armEncoder.getPosition());
         zeroPosition = 0.0;
         prevPosition = 0.0;
+
+        armMotor.setSmartCurrentLimit(40); // TODO 40 or 30
 
         //sends corresponding values to the pid controller object
         pidController.setP(0.08);

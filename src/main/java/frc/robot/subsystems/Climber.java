@@ -6,7 +6,10 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
 import frc.robot.controls.DriverControls;
 import frc.robot.utils.PrettyPrint;
@@ -31,6 +34,8 @@ public class Climber {
      * Initializes and sets up all motors and PID Controllers
      */
     static {
+        PrettyPrint.once("Climber init");
+
         // Declare motors
         back = new CANSparkMax(7, MotorType.kBrushless);
         back.setInverted(true);

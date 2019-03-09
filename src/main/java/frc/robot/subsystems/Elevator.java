@@ -5,6 +5,7 @@ import com.revrobotics.CANPIDController.AccelStrategy;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
+import frc.robot.utils.PrettyPrint;
 
 public class Elevator {
     private static final CANSparkMax elevator;
@@ -26,8 +27,8 @@ public class Elevator {
         HATCH_LEVEL_THREE(44.5), //43.5
         CARGO_LEVEL_ONE(17.0),
         CARGO_LEVEL_TWO(39.5),
-        CARGO_LEVEL_THREE(45.5),
-        CARGO_SHIP(30.0),
+        CARGO_LEVEL_THREE(45.5), // TODO increase this and decrease arm rotation
+        CARGO_SHIP(29.3), // TODO was 30.0
         ELEVATOR_COLLECT_CARGO(7.8),
         //        ELEVATOR_COLLECT_HATCH(11.5); //top hatch mechanism
         ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
@@ -44,6 +45,7 @@ public class Elevator {
      * encoder
      */
     static {
+        PrettyPrint.once("Elevator Init");
         elevator = new CANSparkMax(5, MotorType.kBrushless);
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
