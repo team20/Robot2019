@@ -188,4 +188,35 @@ public class PS4Controller {
     public double getRumble() {
         return rumble;
     }
+
+    public boolean anythingPressed() {
+        return getTriButton() ||
+                getSquareButton() ||
+                getCircleButton() ||
+                getXButton() ||
+
+                getPSButton() ||
+                getShareButton() ||
+                getOptionsButton() ||
+
+                getButtonDDown() ||
+                getButtonDLeft() ||
+                getButtonDRight() ||
+                getButtonDUp() ||
+
+                getLeftBumperButton() ||
+                Math.abs(getLeftTriggerAxis()) > .1 ||
+
+                getRightBumperButton() ||
+                Math.abs(getRightTriggerAxis()) > .1 ||
+
+                getLeftStickButton() ||
+                Math.abs(getLeftXAxis()) > .1 ||
+                Math.abs(getLeftYAxis()) > .1 ||
+
+                getRightStickButton() ||
+                Math.abs(getRightXAxis()) > .1 ||
+                Math.abs(getRightYAxis()) > .1;
+
+    }
 }

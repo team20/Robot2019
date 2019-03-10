@@ -53,13 +53,15 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.AutoModes;
-import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.Arduino.Colors;
 import frc.robot.utils.PrettyPrint;
+
+import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
+import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -74,89 +76,85 @@ public class Robot extends TimedRobot {
     public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
     private boolean autoSet;
+    private boolean inEndOfMatch;
+
+    private double startTime;
 
     @Override
     public void robotInit() {
         auto = new AutoModes();
 
         autoSet = false;
+        inEndOfMatch = false;
 
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
         Arduino.startThread();
-        LineSensor.startThread();
+        // LineSensor.startThread();
         Arduino.setDiagnosticPattern(null, 0);
+        Drivetrain.setBrakeMode(false);
     }
 
     @Override
     public void robotPeriodic() {
-//        Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
-        Arduino.setPattern(2);
-        if (LineSensor.isLineSeen())
-            Arduino.setDiagnosticPattern(Colors.Green, 1);
-//         if (Intake.isHatchClosed())
-//             Arduino.setDiagnosticPattern(Colors.Yellow, 1);
-        else if (Intake.isCargoPresent())
-            Arduino.setDiagnosticPattern(Colors.Orange, 1);
+        //set pattern of LEDs
+        if (inEndOfMatch)
+            Arduino.setPattern(3);
+        else
+            //the line below has not been fully tested yet (it is for showing the height of the elevator on the LEDs when it is moving)
+            //Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
+            Arduino.setPattern(2);
+
+        //set diagnostic part of LEDs
+        // if (LineSensor.isBroken())
+        // Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        // else if (LineSensor.isLineSeen())
+        // Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
+        // else 
+        if (Intake.isCargoPresent())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
-            Arduino.setDiagnosticPattern(Colors.Orange, 2);
+            Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
         else
             Arduino.setDiagnosticPattern(null, 0);
-        PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
+
+        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
+        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
+        PrettyPrint.put("Elev Pos", Elevator.getPosition());
+        PrettyPrint.put("Arm Amps", Arm.getPosition());
+        PrettyPrint.put("Arm Pos", Arm.getPosition());
         PrettyPrint.print();
     }
 
     @Override
     public void autonomousInit() {
+        Arm.setPosition(STARTING_CONFIG);
+        Elevator.setPosition(ELEVATOR_FLOOR);
     }
 
     @Override
     public void autonomousPeriodic() {
-        // This is here because autonomous init is not reliable
-        if (!autoSet) {
-            auto.setMode(Mode.CrossLine); // TODO: eventually make auto selection based off of user input to the SmartDashboard
-            switch (auto.getMode()) {
-                case CrossLine:
-                    auto.crossLine();
-                    break;
-                case Align:
-                    auto.align(false);
-                    break;
-                case FullyTeleop:
-                    auto.fullyTeleop();
-                    break;
-                default:
-                    PrettyPrint.once("NO AUTO SELECTED");
-                    break;
-            }
-            autoSet = true;
-        }
-
-        auto.runAuto();
+        DriverControls.driverControls();
+        OperatorControls.operatorControls();
     }
 
     @Override
     public void teleopInit() {
-//        PrettyPrint.put("Elev Pos", Elevator::getPosition);
+        startTime = Timer.getFPGATimestamp();
     }
 
     @Override
     public void teleopPeriodic() {
+        if (Timer.getFPGATimestamp() - startTime >= 135 - 40) {
+            inEndOfMatch = true;
+        }
         DriverControls.driverControls();
         OperatorControls.operatorControls();
-
     }
 
 
     @Override
     public void testInit() {
-        Drivetrain.frontLeft.setSelectedSensorPosition(0);
-        Drivetrain.frontRight.setSelectedSensorPosition(0);
-//        PrettyPrint.put("L", Drivetrain.frontLeft::getSelectedSensorPosition);
-//        PrettyPrint.put("R", Drivetrain.frontRight::getSelectedSensorPosition);
-        PrettyPrint.put("Line sensor value", LineSensor::getLinePosition);
-//        PrettyPrint.put("NEO TEMP", Elevator::temp);
-        PrettyPrint.put("Neo Mode", Elevator.elevator.getIdleMode());
     }
 
     @Override
@@ -166,6 +164,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
 //        LineSensor.stopThread();
+        Drivetrain.setBrakeMode(false);
+        inEndOfMatch = false;
         PrettyPrint.removeAll();
     }
 }

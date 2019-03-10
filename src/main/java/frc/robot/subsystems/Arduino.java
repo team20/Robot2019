@@ -15,7 +15,7 @@ public class Arduino {
 
     //colors for diagnostic LED signals
     public enum Colors {
-        Red, Orange, Yellow, Green, Blue, Purple
+        Red, Orange, Yellow, Green, Blue, Purple, None
     }
 
     //I2C port to use with Arduino
@@ -81,8 +81,8 @@ public class Arduino {
 //            }
 //        };
         thread = new Notifier(() -> {
-            read();
             write();
+//            read();
         });
 //        pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
         address = 1;
@@ -163,6 +163,9 @@ public class Arduino {
                 case Purple:
                     writeData[2] = 5;
                     break;
+                case None:
+                default:
+                    break;
             }
         }
         writeData[3] = (byte) pattern;
@@ -184,7 +187,7 @@ public class Arduino {
         thread.stop();
     }
 
-    private static void read() {
+    public static void read() {
         //get data from Arduino as byte array
         wire.read(address, readData.length, readData);
         //set values from array to variables
@@ -193,7 +196,7 @@ public class Arduino {
 //        distance = readData[2];
     }
 
-    private static void write() {
+    public static void write() {
         //write data to Arduino as byte array
         wire.writeBulk(writeData, writeData.length);
     }

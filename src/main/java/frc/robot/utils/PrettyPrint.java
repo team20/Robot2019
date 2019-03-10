@@ -153,8 +153,8 @@ public class PrettyPrint {
     /**
      * utility method to ensure that each value is the same num of characters to maintain table's vertical straightness
      */
-    private static String shortened(Object valSup) {
-        String valStr = valSup.toString();
+    private static String shortened(Object val) {
+        String valStr = val.toString();
         return valStr.substring(0, min(valStr.length(), messageLength));
     }
 }

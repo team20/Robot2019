@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.I2C.Port;
 
 public class LineSensor {
+    public static final PIDController linePid;
     public static final PIDSource pidSource;
     public static final PIDOutput pidOutput;
     //separate thread for data collection and calculations
@@ -12,7 +13,7 @@ public class LineSensor {
     private static final I2C wire;
 
     //threshold for whether lineSeen is true or not
-    private static final int lineSeenThreshold = 3;   //TODO: figure out what this actually is
+    private static final int lineSeenThreshold = 20;
 
     //the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final int address;
@@ -28,8 +29,6 @@ public class LineSensor {
     private static int linePosition;
     //the speed for the robot to adjust its angle at
     private static double turnSpeed;
-
-    private static boolean success;
 
     static {
         pidSource = new PIDSource() {
@@ -50,10 +49,17 @@ public class LineSensor {
                 return linePosition;
             }
         };
+        pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
+
         pidOutput = output -> turnSpeed = output;
 
-        thread = new Notifier(LineSensor::updateLinePosition);
-        pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
+        linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid.setInputRange(0, 700);
+        linePid.setOutputRange(-1, 1);
+        linePid.setContinuous(false);
+        linePid.setSetpoint(350);
+
+        thread = new Notifier(LineSensor::requestSensorData);
         address = 9;
         wire = new I2C(Port.kOnboard, address);
 
@@ -62,32 +68,13 @@ public class LineSensor {
         turnSpeed = 0;
     }
 
-    public static boolean isLineSeen() {
-        return total > lineSeenThreshold;
+    //send a read sensor data via I2C
+    private static void requestSensorData() {
+        wire.readOnly(rawSensorData, rawSensorData.length);
     }
 
-    public static double getLinePosition() {
-        return linePosition;
-    }
-
-    public static double getTurnSpeed() {
-        return turnSpeed;
-    }
-
-    //start thread running
-    public static void startThread() {
-        thread.startPeriodic(0.1);
-    }
-
-    //stops thread from running
-    public static void stopThread() {
-        thread.stop();
-    }
-
-    //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all
-    private static void updateLinePosition() {
-        // wire.read(address, rawSensorData.length, rawSensorData);
-        success = wire.readOnly(rawSensorData, rawSensorData.length);
+    //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about halfway down the page)
+    public static void calculateLinePosition() {
         //store useful data from sensor in [sensorData]
         for (int i = 0; i < sensorData.length; i++)
             sensorData[i] = rawSensorData[i * 2];
@@ -99,12 +86,31 @@ public class LineSensor {
         }
         if (total != 0)
             linePosition = weightedTotal / total;
-//        else
-//            PrettyPrint.error("LINE SENSOR NEEDS TO BE RESET");
-//         System.out.println("total: " + total + "\tweightedTotal: " + weightedTotal);
-//         for (int data : sensorData)
-//            System.out.print(data + "\t");
-//         System.out.print("success: " + !success);
-//         System.out.println();
+    }
+
+    public static int getTotal() {
+        return total;
+    }
+
+    public static boolean isLineSeen() {
+        return total > lineSeenThreshold;
+    }
+
+    public static boolean isBroken() {
+        return total == 0;
+    }
+
+    public static double getTurnSpeed() {
+        return turnSpeed;
+    }
+
+    //start thread running
+    public static void startThread() {
+        thread.startPeriodic(0.02);
+    }
+
+    //stops thread from running
+    public static void stopThread() {
+        thread.stop();
     }
 }

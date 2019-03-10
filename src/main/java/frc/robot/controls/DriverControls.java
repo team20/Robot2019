@@ -1,28 +1,23 @@
 package frc.robot.controls;
 
-import edu.wpi.first.wpilibj.PIDController;
 import frc.robot.subsystems.*;
-import frc.robot.utils.PrettyPrint;
 
 public class DriverControls {
-    private static PS4Controller driverJoy;
+    private static PS4Controller joy;
     private static double speedStraight, speedLeft, speedRight;
-    private static boolean climberOverride, climberRetract;
-
-    private static final PIDController linePid;
+    private static boolean climberOverride, climberRetract, climbingMode;
 
     /*
      * Initializes the driver controller
      */
     static {
-        driverJoy = new PS4Controller(0, 2);
+        joy = new PS4Controller(0, 2);
         speedStraight = 0;
         speedLeft = 0;
         speedRight = 0;
         climberOverride = false;
         climberRetract = false;
-
-        linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        climbingMode = false;
     }
 
     /**
@@ -30,112 +25,144 @@ public class DriverControls {
      */
     public static void driverControls() {
 
-        //Drivetrain Controls
-        if (Math.abs(driverJoy.getLeftYAxis()) > 0.1) {
-            speedStraight = -driverJoy.getLeftYAxis();
-        } else {
-            speedStraight = 0.0;
-        }
+        if (joy.getButtonDRight()) climbingMode = true;
+        if (joy.getButtonDLeft()) climbingMode = false;
 
-        if (!climberOverride) {
-            if (!driverJoy.getTriButton()) {
-                linePid.reset();
-                if (Elevator.aboveStageThreshold()) {
-                    if (driverJoy.getCircleButton()) {
-                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.25;
-                        speedRight = driverJoy.getRightTriggerAxis() * 0.25;
-                    } else {
-                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
-                        speedRight = driverJoy.getRightTriggerAxis() * 0.4;
-                    }
+        if (climbingMode) {
+            if (joy.getRightTriggerAxis() > .2) {
+                speedStraight = joy.getRightTriggerAxis();
+                speedLeft = 0;
+                speedRight = 0;
+            } else if (joy.getLeftTriggerAxis() < 0.2) {
+                speedStraight = 0.0;
+            }
+            if (joy.getLeftTriggerAxis() > .2) {
+                speedStraight = -joy.getLeftTriggerAxis();
+                speedLeft = 0;
+                speedRight = 0;
+            } else if (joy.getRightTriggerAxis() < 0.2) {
+                speedStraight = 0.0;
+            }
+
+            if (joy.getRightYAxis() > .1 || joy.getRightYAxis() < -.1) {
+                Climber.manualClimbFront(-joy.getRightYAxis());
+            } else {
+                Climber.manualClimbFront(0.0);
+            }
+            if (joy.getLeftYAxis() > .1 || joy.getLeftYAxis() < -.1) {
+                Climber.manualClimbBack(-joy.getLeftYAxis());
+            } else {
+                Climber.manualClimbBack(0.0);
+            }
+        } else {
+            //Drivetrain Controls
+            if (Math.abs(joy.getLeftYAxis()) > 0.1) {
+                speedStraight = -joy.getLeftYAxis();
+            } else {
+                speedStraight = 0.0;
+            }
+
+            if (!climberOverride) {
+                //line sensor
+                if (joy.getTriButton()/* && LineSensor.isLineSeen()*/) {
+                    // if (!LineSensor.linePid.isEnabled())
+                    //     LineSensor.linePid.enable();
+                    // LineSensor.calculateLinePosition();
+                    // speedRight = -LineSensor.getTurnSpeed();
+                    // speedLeft = LineSensor.getTurnSpeed();
                 } else {
-                    if (driverJoy.getCircleButton()) {
-                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.4;
-                        speedRight = driverJoy.getRightTriggerAxis() * 0.4;
+                    if (LineSensor.linePid.isEnabled())
+                        LineSensor.linePid.reset();
+                    if (Elevator.aboveStageThreshold()) {
+                        if (joy.getSquareButton()) {
+                            speedLeft = joy.getLeftTriggerAxis() * 0.25;
+                            speedRight = joy.getRightTriggerAxis() * 0.25;
+                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
+                            Drivetrain.frontRight.configOpenloopRamp(0.4);
+                        } else {
+                            speedLeft = joy.getLeftTriggerAxis() * 0.4;
+                            speedRight = joy.getRightTriggerAxis() * 0.4;
+                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
+                            Drivetrain.frontRight.configOpenloopRamp(0.4);
+                        }
                     } else {
-                        speedLeft = driverJoy.getLeftTriggerAxis() * 0.75;
-                        speedRight = driverJoy.getRightTriggerAxis() * 0.75;
+                        if (joy.getSquareButton()) {
+                            speedLeft = joy.getLeftTriggerAxis() * 0.6;
+                            speedRight = joy.getRightTriggerAxis() * 0.6;
+                            Drivetrain.frontLeft.configOpenloopRamp(0.0);
+                            Drivetrain.frontRight.configOpenloopRamp(0.0);
+                        } else {
+                            speedLeft = joy.getLeftTriggerAxis() * 0.75;
+                            speedRight = joy.getRightTriggerAxis() * 0.75;
+                            Drivetrain.frontLeft.configOpenloopRamp(0.0);
+                            Drivetrain.frontRight.configOpenloopRamp(0.0);
+                        }
                     }
                 }
+            }
+
+            //Climber Controls
+            //extend
+            if (!joy.getXButton()) {
+                if (Climber.getBackEncPosition() < 20)
+                    Arduino.setDiagnosticPattern(Arduino.Colors.Purple, 1);
+
+                climberOverride = joy.getCircleButton(); //was right bumper
+                if (climberOverride) {
+                    Climber.manualClimbFront(-joy.getRightTriggerAxis());
+                    Climber.manualClimbBack(-joy.getLeftTriggerAxis());
+                } else {
+                    Climber.stop();
+                }
+            }
+            //retract
+            if (Math.abs(joy.getRightYAxis()) > 0.1) {
+                Climber.retractClimber(joy.getRightTriggerAxis());
+                climberRetract = true;
             } else {
-                linePid.enable();
-                speedRight = -LineSensor.getTurnSpeed();
-                speedLeft = LineSensor.getTurnSpeed();
-                PrettyPrint.put("Line sensor value", LineSensor.getLinePosition());
+                if (climberRetract) {
+                    Climber.stop();
+                }
             }
         }
+
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
 
+        if (joy.getXButton()) {
+            Climber.balanceClimb(1.0);
+        }
+
         //Intake Controls
-        if (driverJoy.getRightBumperButton()) {
+        if (joy.getRightBumperButton()) {
             Intake.spitCargo();
         } else {
             Intake.stopCargoRollers();
         }
-        if (driverJoy.getLeftBumperButton()) {
-            Intake.closeHatch();
+        if (joy.getLeftBumperButton()) {
+            Elevator.dropHatch();
+        } else {
+            Elevator.setHatchDrop = false;
         }
 
-        //Climber Controls
-        //extend
-        if (driverJoy.getXButton()) {
-            Climber.balanceClimb(0.4);
-        } else {
-            climberOverride = driverJoy.getSquareButton(); //was right bumper
-            if (climberOverride) {
-                Climber.manualClimbFront(-driverJoy.getRightYAxis() + Climber.holdSpeed);
-                Climber.manualClimbBack(-driverJoy.getLeftYAxis() + Climber.holdSpeed);
-            } else {
-                Climber.stop();
-            }
+        if (joy.getOptionsButton()) {
+            Drivetrain.setBrakeMode(true);
         }
-        //retract
-        if (Math.abs(driverJoy.getRightYAxis()) > 0.1 && !climberOverride) {
-            Climber.retractClimber(driverJoy.getRightTriggerAxis());
-            climberRetract = true;
-        } else {
-            if (climberRetract) {
-                Climber.stop();
-            }
+
+        if (joy.getShareButton()) {
+            Drivetrain.setBrakeMode(false);
         }
     }
 
     public static boolean getShareButton() {
-        return driverJoy.getShareButton();
+        return joy.getShareButton();
     }
 
     public static boolean isOverridingAuto() {
-        return driverJoy.getTriButton() ||
-                driverJoy.getSquareButton() ||
-                driverJoy.getCircleButton() ||
-                driverJoy.getXButton() ||
-
-                driverJoy.getPSButton() ||
-                driverJoy.getShareButton() ||
-                driverJoy.getOptionsButton() ||
-
-                driverJoy.getButtonDDown() ||
-                driverJoy.getButtonDLeft() ||
-                driverJoy.getButtonDRight() ||
-                driverJoy.getButtonDUp() ||
-
-                driverJoy.getLeftBumperButton() ||
-                Math.abs(driverJoy.getLeftTriggerAxis()) > .1 ||
-
-                driverJoy.getRightBumperButton() ||
-                Math.abs(driverJoy.getRightTriggerAxis()) > .1 ||
-
-                driverJoy.getLeftStickButton() ||
-                Math.abs(driverJoy.getLeftXAxis()) > .1 ||
-                Math.abs(driverJoy.getLeftYAxis()) > .1 ||
-
-                driverJoy.getRightStickButton() ||
-                Math.abs(driverJoy.getRightXAxis()) > .1 ||
-                Math.abs(driverJoy.getRightYAxis()) > .1;
+        return joy.anythingPressed();
     }
 
     // TODO this button
     public static boolean isStoppingAutoControl() {
-        return driverJoy.getTrackpadButton();
+        return joy.getTrackpadButton();
     }
 }
