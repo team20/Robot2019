@@ -125,13 +125,17 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         Arm.setPosition(STARTING_CONFIG);
         Elevator.setPosition(ELEVATOR_FLOOR);
-        PrettyPrint.once("MATCH STARTING");
     }
 
     @Override
     public void autonomousPeriodic() {
         DriverControls.driverControls();
         OperatorControls.operatorControls();
+        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
+        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
+        PrettyPrint.put("Elev Pos", Elevator.getPosition());
+        PrettyPrint.put("Arm Amps", Arm.getPosition());
+        PrettyPrint.put("Arm Pos", Arm.getPosition());
     }
 
     @Override
@@ -141,14 +145,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-//        if (DriverStation.getInstance().getMatchTime() <= 40 && DriverStation.getInstance().getMatchTime() > 0 && !inEndOfMatch)
         if (Timer.getFPGATimestamp() - startTime >= 135 - 40) {
             inEndOfMatch = true;
         }
         DriverControls.driverControls();
         OperatorControls.operatorControls();
-        PrettyPrint.put("Neo Amps", Arm.armMotor.getOutputCurrent());
-        PrettyPrint.put("Neo Temp", Arm.armMotor.getMotorTemperature());
     }
 
 

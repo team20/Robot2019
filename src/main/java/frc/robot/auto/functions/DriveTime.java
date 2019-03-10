@@ -50,7 +50,7 @@ public class DriveTime extends RobotFunction<Double> {
             startTime = Timer.getFPGATimestamp();
             setStartTime = true;
         }
-        PrettyPrint.put("Drivetrain Time Elapsed", Timer.getFPGATimestamp() - startTime);
+        PrettyPrint.put("DriveTime Elapsed", Timer.getFPGATimestamp() - startTime);
         if (Math.abs(Timer.getFPGATimestamp() - startTime) < time) {
             Drivetrain.drive(speed, 0.0, 0.0);
         } else {

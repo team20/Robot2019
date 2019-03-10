@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import frc.robot.utils.PrettyPrint;
 
 public class Intake {
     private static final Servo hatch;
@@ -16,8 +15,6 @@ public class Intake {
      * Initializes and sets up all motors for the intake
      */
     static {
-        PrettyPrint.once("Intake Init");
-
         hatch = new Servo(0);
         cargo = new VictorSPX(9);
         cargoSensor = new DigitalInput(0);
@@ -37,7 +34,7 @@ public class Intake {
      * Runs the cargo motor at spitting speed
      */
     public static void spitCargo() {
-        if(Elevator.aboveStageThreshold()){
+        if (Elevator.aboveStageThreshold()) {
             runCargoMotor(0.7);
         } else {
             runCargoMotor(1.0);
