@@ -6,10 +6,12 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
 import frc.robot.controls.DriverControls;
-import frc.robot.utils.PrettyPrint;
 
 public class Climber {
     private static final CANSparkMax back;
@@ -80,7 +82,6 @@ public class Climber {
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
-        PrettyPrint.put("stepNum", stepNum);
         switch (stepNum) {
             case 0:     //climbing straight up
                 if (getBackEncPosition() > backHab3Height || DriverControls.getShareButton()) {
@@ -97,19 +98,12 @@ public class Climber {
                     stepNum = 2;
                 }
 
-                if (Robot.gyro.getPitch() < -10) {
-                    PrettyPrint.once("On target");
-                }
-
                 front.set(ControlMode.PercentOutput, speed + balancePidOutput);
                 back.set(neoSpeedEqualizingCoefficient * (speed - balancePidOutput));
                 break;
             case 2:
                 manualClimbBack(holdSpeed);
                 manualClimbFront(holdSpeed);
-
-                PrettyPrint.put("Front", front.getSelectedSensorPosition());
-                PrettyPrint.put("Back", backEnc.getPosition());
                 break;
         }
     }
