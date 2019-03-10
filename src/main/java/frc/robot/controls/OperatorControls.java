@@ -25,7 +25,6 @@ public class OperatorControls {
      * Runs the operator controls
      */
     public static void operatorControls() {
-        // PrettyPrint.put("current", Elevator.getCurrent());
         // Elevator Controls
         // override
         if (joy.getRightStickButton()) {

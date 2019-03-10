@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import frc.robot.utils.PrettyPrint;
 
 public class Drivetrain {
     public final static TalonSRX frontRight, frontLeft;
@@ -15,8 +14,6 @@ public class Drivetrain {
      * Initializes and sets up all motors for the drivetrain
      */
     static {
-        PrettyPrint.once("Drivetrain Int");
-
         frontRight = new TalonSRX(1);
         frontLeft = new TalonSRX(2);
 

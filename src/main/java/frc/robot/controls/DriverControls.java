@@ -64,7 +64,7 @@ public class DriverControls {
 
             if (!climberOverride) {
                 //line sensor
-                if (joy.getTriButton() && LineSensor.isLineSeen()) {
+                if (joy.getTriButton()/* && LineSensor.isLineSeen()*/) {
                     // if (!LineSensor.linePid.isEnabled())
                     //     LineSensor.linePid.enable();
                     // LineSensor.calculateLinePosition();
