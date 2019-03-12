@@ -20,11 +20,8 @@ public class Climber {
     private static double holdSpeed = .08; // TODO make this much smaller
 
     private static final double kP = 0.065, kI = 0, kD = 0;
-    private static final double neoSpeedEqualizingCoefficient = .43;
     private static final double backHab3Height = 138.5;
-
-    private Climber() {
-    }
+    private static final double frontHab3Height = 138.5; // TODO front climb height
 
     /*
      * Initializes and sets up all motors and PID Controllers
@@ -100,9 +97,19 @@ public class Climber {
                 front.set(speed + balancePidOutput);
                 back.set(speed - balancePidOutput);
                 break;
-            case 2:
+            case 2: // TODO more climbing steps
+                //drive forward
                 manualClimbBack(holdSpeed);
                 manualClimbFront(holdSpeed);
+                break;
+            case 3:
+                // retract front leg
+                break;
+            case 4:
+                // drive forward
+                break;
+            case 5:
+                // retract back leg while driving forward slightly
                 break;
         }
     }
@@ -126,8 +133,8 @@ public class Climber {
     }
 
     public static void manualClimbBoth(double speed) {
-        manualClimbFront(speed * 1.2);
-        manualClimbBack(speed * neoSpeedEqualizingCoefficient);
+        manualClimbFront(speed);
+        manualClimbBack(speed);
     }
 
     /**
