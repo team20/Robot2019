@@ -16,7 +16,6 @@ import frc.robot.controls.DriverControls;
 public class Climber {
     private static final CANSparkMax back;
     private static final CANEncoder backEnc;
-    private static final TalonSRX front;
     private static final PIDController PID;
     private static double balancePidOutput;
     private static int stepNum = 0;
