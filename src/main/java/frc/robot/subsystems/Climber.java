@@ -16,12 +16,18 @@ public class Climber {
     private static final CANEncoder backEnc, frontEnc;
     private static final PIDController PID;
     private static double balancePidOutput;
-    private static int stepNum = 0;
-    private static double holdSpeed = .08; // TODO make this much smaller
 
+    private static int stepNum = 0;
+    private static double dtStartPosition;
+
+    private static final double holdSpeed = .08; // TODO make this much smaller
     private static final double kP = 0.065, kI = 0, kD = 0;
+
     private static final double backHab3Height = 138.5;
-    private static final double frontHab3Height = 138.5; // TODO front climb height
+    private static final double frontHab3Height = 138.5; // TODO front 3 climb height
+
+    private static final double frontHab2Height = 30; // TODO level two climb heights
+    private static final double backHab2Height = 30; // TODO level two climb heights
 
     /*
      * Initializes and sets up all motors and PID Controllers
@@ -77,12 +83,12 @@ public class Climber {
      *
      * @param speed: the speed at which to climb
      */
-    public static void balanceClimb(double speed) {
+    public static void climbLevelThree(double speed) {
         switch (stepNum) {
             case 0:     //climbing straight up
                 if (getBackEncPosition() > backHab3Height || DriverControls.getShareButton()) {
                     PID.setSetpoint(-10);
-                    stepNum = 1;
+                    stepNum++;
                 }
 
                 front.set(speed + balancePidOutput);
@@ -91,25 +97,109 @@ public class Climber {
                 break;
             case 1:     //tilting forwards
                 if (Robot.gyro.getPitch() < -10) {
-                    stepNum = 2;
+                    stepNum++;
                 }
 
                 front.set(speed + balancePidOutput);
                 back.set(speed - balancePidOutput);
                 break;
-            case 2: // TODO more climbing steps
-                //drive forward
-                manualClimbBack(holdSpeed);
-                manualClimbFront(holdSpeed);
+            case 2:     //drive forward
+                // TODO how to determine if front wheels are on
+                final double currentDriving = 90;
+                if (Drivetrain.frontRight.getOutputCurrent() >= currentDriving &&
+                        Drivetrain.frontLeft.getOutputCurrent() >= currentDriving) {
+                    stepNum++;
+                }
+
+                Drivetrain.drive(.2, 0, 0);
+                back.set(holdSpeed);
+                front.set(holdSpeed);
                 break;
-            case 3:
-                // retract front leg
+            case 3:     // retract front leg
+                if (frontEnc.getPosition() <= 2) { // TODO retracted position
+                    stepNum++;
+                }
+
+                front.set(-1); //TODO PID?
                 break;
-            case 4:
-                // drive forward
+            case 4:     // drive forward:
+                // TODO how to determine if wheels are on? current again, but higher?
+//                if ()
+
+                front.set(holdSpeed);
+                Drivetrain.drive(.2, 0, 0);
                 break;
-            case 5:
-                // retract back leg while driving forward slightly
+            case 5:     // retract back leg while driving forward slightly
+                if (backEnc.getPosition() <= 2) {
+                    stepNum++;
+                }
+
+                back.set(-1); // TODO PID?
+                Drivetrain.drive(.1, 0, 0);
+                break;
+            case 6:     // DONE
+                stepNum++;
+                manualClimbBoth(0);
+                break;
+        }
+    }
+
+    /**
+     * Climb to level two autonomously
+     */
+    public static void climbLevelTwo() {
+        switch (stepNum) {
+            case 0:     // Raise front legs
+                if (frontEnc.getPosition() >= frontHab2Height) {
+                    dtStartPosition = Drivetrain.getEncoderPosition();
+                    stepNum++;
+                }
+
+                front.set(1); // TODO PID?
+                break;
+            case 1:     // Drive front wheels onto platform
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 2000) { // TODO distance
+                    stepNum++;
+                }
+
+                front.set(0);
+                Drivetrain.drive(.2, 0, 0);
+                break;
+            case 2:     // Raise back leg/retract front leg
+                if (backEnc.getPosition() >= backHab2Height) {
+                    if (frontEnc.getPosition() <= 2) {
+                        dtStartPosition = Drivetrain.getEncoderPosition();
+                        stepNum++;
+                    } else {
+                        back.set(0);
+                    }
+                } else {
+                    if (frontEnc.getPosition() <= 2) {
+                        front.set(0);
+                    }
+                }
+
+                Drivetrain.drive(0, 0, 0);
+                back.set(1); // TODO PID?
+                front.set(-1);
+                break;
+            case 3:     // Drive onto platform
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 5000) { // TODO distance
+                    stepNum++;
+                }
+
+                back.set(0);
+                Drivetrain.drive(.2, 0, 0);
+                break;
+            case 4:     // Retract back leg
+                if (backEnc.getPosition() <= 2) {
+                    stepNum++;
+                }
+
+                back.set(-1); // TODO PID?
+                break;
+            case 5:     // DONE
+                back.set(0);
                 break;
         }
     }
@@ -133,8 +223,8 @@ public class Climber {
     }
 
     public static void manualClimbBoth(double speed) {
-        manualClimbFront(speed);
-        manualClimbBack(speed);
+        front.set(speed);
+        back.set(speed);
     }
 
     /**
@@ -145,9 +235,9 @@ public class Climber {
     public static void retractClimber(double speed) {
         if (stepNum == 2) {
             if (frontEnc.getPosition() < 2000) {
-                manualClimbFront(speed);
+                front.set(-speed);
             } else {
-                manualClimbBack(speed);
+                back.set(-speed);
             }
         }
     }

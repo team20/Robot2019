@@ -129,7 +129,7 @@ public class DriverControls {
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
 
         if (joy.getXButton()) {
-            Climber.balanceClimb(1.0); // TODO make this much smaller
+            Climber.climbLevelThree(1.0); // TODO make this much smaller
         }
 
         //Intake Controls
