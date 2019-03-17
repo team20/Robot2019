@@ -60,7 +60,7 @@ public class OperatorControls {
                 Arm.setPosition(CARGO_SHOOT);
             } else if (joy.getButtonDRight()) {
                 Elevator.setPosition(CARGO_SHIP);
-                Arm.setPosition(ARM_FLOOR);
+                Arm.setPosition(CARGO_SHIP_ANGLE);
             }
         }
         // encoder reset

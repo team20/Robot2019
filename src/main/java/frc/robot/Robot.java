@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
         Arduino.startThread();
-        // LineSensor.startThread();
+        LineSensor.startThread();
         Arduino.setDiagnosticPattern(null, 0);
         Drivetrain.setBrakeMode(false);
     }
@@ -106,23 +106,24 @@ public class Robot extends TimedRobot {
             Arduino.setPattern(2);
 
         //set diagnostic part of LEDs
-        // if (LineSensor.isBroken())
-        // Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
-        // else if (LineSensor.isLineSeen())
-        // Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
-        // else 
-        if (Intake.isCargoPresent())
+        if (LineSensor.isBroken())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        else if (LineSensor.isLineSeen())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
+        else if (Intake.isCargoPresent())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
         else
             Arduino.setDiagnosticPattern(null, 0);
 
-        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
-        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
-        PrettyPrint.put("Elev Pos", Elevator.getPosition());
-        PrettyPrint.put("Arm Amps", Arm.getPosition());
-        PrettyPrint.put("Arm Pos", Arm.getPosition());
+//        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
+//        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
+//        PrettyPrint.put("Elev Pos", Elevator.getPosition());
+//        PrettyPrint.put("Arm Amps", Arm.getPosition());
+//        PrettyPrint.put("Arm Pos", Arm.getPosition());
+
+        PrettyPrint.setFrequency(2);
         PrettyPrint.print();
     }
 
@@ -134,6 +135,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
+        PrettyPrint.put("Elev % out", Elevator.percentOutput());
+        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
+        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
+        PrettyPrint.put("Elev Max Accel", Elevator.elevator.getPIDController().getSmartMotionMaxAccel(0));
+//        PrettyPrint.put("line sensor total", LineSensor.getTotal());
+//        PrettyPrint.put("line position", LineSensor.getLinePosition());
+//        PrettyPrint.put("turn speed", LineSensor.getTurnSpeed());
+
         DriverControls.driverControls();
         OperatorControls.operatorControls();
     }

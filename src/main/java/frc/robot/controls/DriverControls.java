@@ -1,11 +1,15 @@
 package frc.robot.controls;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.*;
 
 public class DriverControls {
     private static PS4Controller joy;
     private static double speedStraight, speedLeft, speedRight;
     private static boolean climberOverride, climberRetract, climbingMode;
+    private static NetworkTableEntry cameraSelector;
+    private static boolean camIsMain;
 
     /*
      * Initializes the driver controller
@@ -18,6 +22,8 @@ public class DriverControls {
         climberOverride = false;
         climberRetract = false;
         climbingMode = false;
+        cameraSelector = NetworkTableInstance.getDefault().getEntry("stream"); //TODO
+        camIsMain = true;
     }
 
     /**
@@ -64,12 +70,12 @@ public class DriverControls {
 
             if (!climberOverride) {
                 //line sensor
-                if (joy.getTriButton()/* && LineSensor.isLineSeen()*/) {
-                    // if (!LineSensor.linePid.isEnabled())
-                    //     LineSensor.linePid.enable();
-                    // LineSensor.calculateLinePosition();
-                    // speedRight = -LineSensor.getTurnSpeed();
-                    // speedLeft = LineSensor.getTurnSpeed();
+                if (joy.getTriButton() && LineSensor.isLineSeen()) {
+                    if (!LineSensor.linePid.isEnabled())
+                        LineSensor.linePid.enable();
+//                     LineSensor.calculateLinePosition();
+                    speedRight = -LineSensor.getTurnSpeed();
+                    speedLeft = LineSensor.getTurnSpeed();
                 } else {
                     if (LineSensor.linePid.isEnabled())
                         LineSensor.linePid.reset();
@@ -77,13 +83,13 @@ public class DriverControls {
                         if (joy.getSquareButton()) {
                             speedLeft = joy.getLeftTriggerAxis() * 0.25;
                             speedRight = joy.getRightTriggerAxis() * 0.25;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
-                            Drivetrain.frontRight.configOpenloopRamp(0.4);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.45);
+                            Drivetrain.frontRight.configOpenloopRamp(0.45);
                         } else {
                             speedLeft = joy.getLeftTriggerAxis() * 0.4;
                             speedRight = joy.getRightTriggerAxis() * 0.4;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
-                            Drivetrain.frontRight.configOpenloopRamp(0.4);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.45);
+                            Drivetrain.frontRight.configOpenloopRamp(0.45);
                         }
                     } else {
                         if (joy.getSquareButton()) {
@@ -101,12 +107,18 @@ public class DriverControls {
                 }
             }
 
+            //Camera Controls
+            if (joy.getRightYAxis() < -.2) {
+                camIsMain = true;
+            } else if (joy.getRightYAxis() > .2) {
+                camIsMain = false;
+            }
+
+            cameraSelector.setDouble(camIsMain ? 0 : 1);
+
             //Climber Controls
             //extend
             if (!joy.getXButton()) {
-                if (Climber.getBackEncPosition() < 20)
-                    Arduino.setDiagnosticPattern(Arduino.Colors.Purple, 1);
-
                 climberOverride = joy.getCircleButton(); //was right bumper
                 if (climberOverride) {
                     Climber.manualClimbFront(-joy.getRightTriggerAxis());

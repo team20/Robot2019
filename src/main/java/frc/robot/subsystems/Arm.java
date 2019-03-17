@@ -17,11 +17,12 @@ public class Arm {
 
     public enum Position {
         ARM_FLOOR(-41.38),
-        CARGO_SHOOT(-24.0),
+        CARGO_SHOOT(-28.9),
         PLACING(-10.0),
         STARTING_CONFIG(-5.0),
         ARM_COLLECT_CARGO(-49.3),
-        DROP_AND_COLLECT_HATCH(-40.0);
+        DROP_AND_COLLECT_HATCH(-40.0),
+        CARGO_SHIP_ANGLE(-51.14);
 
         double value;
 

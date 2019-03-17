@@ -51,7 +51,9 @@ public class LineSensor {
         };
         pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
 
-        pidOutput = output -> turnSpeed = output;
+        pidOutput = (double output) -> {
+            turnSpeed = output;
+        };
 
         linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
         linePid.setInputRange(0, 700);
@@ -59,7 +61,10 @@ public class LineSensor {
         linePid.setContinuous(false);
         linePid.setSetpoint(350);
 
-        thread = new Notifier(LineSensor::requestSensorData);
+        thread = new Notifier(() -> {
+            requestSensorData();
+            calculateLinePosition();
+        });
         address = 9;
         wire = new I2C(Port.kOnboard, address);
 
@@ -98,6 +103,10 @@ public class LineSensor {
 
     public static boolean isBroken() {
         return total == 0;
+    }
+
+    public static int getLinePosition() {
+        return linePosition;
     }
 
     public static double getTurnSpeed() {

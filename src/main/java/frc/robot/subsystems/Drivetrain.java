@@ -71,4 +71,8 @@ public class Drivetrain {
             backRight.setNeutralMode(NeutralMode.Brake);
         }
     }
+
+    public static double getEncoderPosition() {
+        return (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2.0;
+    }
 }

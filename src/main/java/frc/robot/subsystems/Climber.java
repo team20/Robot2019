@@ -20,11 +20,15 @@ public class Climber {
     private static final PIDController PID;
     private static double balancePidOutput;
     private static int stepNum = 0;
-    private static double holdSpeed = .08;
+    private static double dtStartPosition = 0;
 
+    private static final double holdSpeed = 0.08;
     private static final double kP = 0.065, kI = 0, kD = 0;
-    private static final double neoSpeedEqualizingCoefficient = .43;
+
+    private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
     private static final double backHab3Height = 138.5;
+    private static final double frontHab2Height = 30000;
+    private static final double backHab2Height = 30;
 
     private Climber() {
     }
@@ -107,6 +111,67 @@ public class Climber {
                 break;
         }
     }
+
+    /**
+     * Climb to level two autonomously
+     */
+    public static void climbLevelTwo() {
+        switch (stepNum) {
+            case 0:     // Raise front legs
+                if (front.getSelectedSensorPosition() >= frontHab2Height) {
+                    dtStartPosition = Drivetrain.getEncoderPosition();
+                    stepNum++;
+                }
+
+                manualClimbFront(1); // TODO PID?
+                break;
+            case 1:     // Drive front wheels onto platform
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 2000) { // TODO distance
+                    stepNum++;
+                }
+
+                manualClimbFront(0);
+                Drivetrain.drive(.2, 0, 0);
+                break;
+            case 2:     // Raise back leg/retract front leg
+                if (backEnc.getPosition() >= backHab2Height) {
+                    if (front.getSelectedSensorPosition() <= 2000) {
+                        dtStartPosition = Drivetrain.getEncoderPosition();
+                        stepNum++;
+                    } else {
+                        back.set(0);
+                    }
+                } else {
+                    if (front.getSelectedSensorPosition() <= 2000) {
+                        manualClimbFront(0);
+                    }
+                }
+
+                Drivetrain.drive(0, 0, 0);
+                back.set(1); // TODO PID?
+                manualClimbFront(-1);
+                break;
+            case 3:     // Drive onto platform
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 5000) { // TODO distance
+                    stepNum++;
+                }
+
+                back.set(0);
+                Drivetrain.drive(.2, 0, 0);
+                break;
+            case 4:     // Retract back leg
+                if (backEnc.getPosition() <= 2) {
+                    stepNum++;
+                }
+
+                back.set(-1); // TODO PID?
+                break;
+            case 5:     // DONE
+                back.set(0);
+                break;
+        }
+    }
+
 
     /**
      * Climb without gyro assistance

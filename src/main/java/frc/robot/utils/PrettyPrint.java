@@ -107,7 +107,7 @@ public class PrettyPrint {
     /**
      * values will be printed once every <i>frequency</i> iterations. default is 1. set to a higher value to prevent spam, at the cost of missing some data
      */
-    public void setFrequency(int frequency) {
+    public static void setFrequency(int frequency) {
         PrettyPrint.frequency = frequency;
     }
 
