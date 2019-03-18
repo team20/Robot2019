@@ -106,14 +106,14 @@ public class Robot extends TimedRobot {
             Arduino.setPattern(2);
 
         //set diagnostic part of LEDs
-        if (LineSensor.isBroken())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
-        else if (LineSensor.isLineSeen())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
-        else if (Intake.isCargoPresent())
+        if (Intake.isCargoPresent())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
+        else if (LineSensor.isBroken())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        else if (LineSensor.isLineSeen())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
         else
             Arduino.setDiagnosticPattern(null, 0);
 
@@ -131,17 +131,18 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         Arm.setPosition(STARTING_CONFIG);
         Elevator.setPosition(ELEVATOR_FLOOR);
+        Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
     }
 
     @Override
     public void autonomousPeriodic() {
-        PrettyPrint.put("Elev % out", Elevator.percentOutput());
-        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
-        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
-        PrettyPrint.put("Elev Max Accel", Elevator.elevator.getPIDController().getSmartMotionMaxAccel(0));
 //        PrettyPrint.put("line sensor total", LineSensor.getTotal());
 //        PrettyPrint.put("line position", LineSensor.getLinePosition());
 //        PrettyPrint.put("turn speed", LineSensor.getTurnSpeed());
+
+        PrettyPrint.put("Front Pos", Climber.getFrontEncPosition());
+        PrettyPrint.put("Back Pos", Climber.getBackEncPosition());
+        PrettyPrint.put("DT Pos", Drivetrain.getEncoderPosition());
 
         DriverControls.driverControls();
         OperatorControls.operatorControls();
@@ -150,6 +151,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         startTime = Timer.getFPGATimestamp();
+        Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
     }
 
     @Override

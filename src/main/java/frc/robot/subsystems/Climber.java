@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
 import frc.robot.controls.DriverControls;
+import frc.robot.utils.PrettyPrint;
 
 public class Climber {
     private static final CANSparkMax back;
@@ -27,8 +28,9 @@ public class Climber {
 
     private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
     private static final double backHab3Height = 138.5;
-    private static final double frontHab2Height = 30000;
-    private static final double backHab2Height = 30;
+    private static final double frontHab2Height = 73000;
+    private static final double backHab2Height = 58;
+    private static boolean firstTime = true;
 
     private Climber() {
     }
@@ -116,57 +118,74 @@ public class Climber {
      * Climb to level two autonomously
      */
     public static void climbLevelTwo() {
+        PrettyPrint.put("Step", stepNum);
+        if (firstTime) {
+            firstTime = false;
+            front.setSelectedSensorPosition(0);
+            back.setEncPosition(0);
+        }
         switch (stepNum) {
             case 0:     // Raise front legs
+                manualClimbFront(.5);
+
                 if (front.getSelectedSensorPosition() >= frontHab2Height) {
                     dtStartPosition = Drivetrain.getEncoderPosition();
                     stepNum++;
                 }
-
-                manualClimbFront(1); // TODO PID?
                 break;
             case 1:     // Drive front wheels onto platform
-                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 2000) { // TODO distance
+                manualClimbFront(0);
+                Drivetrain.drive(0.7, 0, 0);
+
+                PrettyPrint.put("Forwards traveled", Drivetrain.getEncoderPosition() - dtStartPosition);
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 85) {
                     stepNum++;
                 }
-
-                manualClimbFront(0);
-                Drivetrain.drive(.2, 0, 0);
                 break;
             case 2:     // Raise back leg/retract front leg
+                Drivetrain.drive(0, 0, 0);
+                back.set(.5);
+                manualClimbFront(-.5);
+
                 if (backEnc.getPosition() >= backHab2Height) {
-                    if (front.getSelectedSensorPosition() <= 2000) {
+                    if (front.getSelectedSensorPosition() <= 4000) {
                         dtStartPosition = Drivetrain.getEncoderPosition();
                         stepNum++;
                     } else {
                         back.set(0);
                     }
                 } else {
-                    if (front.getSelectedSensorPosition() <= 2000) {
+                    if (front.getSelectedSensorPosition() <= 4000) {
                         manualClimbFront(0);
                     }
                 }
 
-                Drivetrain.drive(0, 0, 0);
-                back.set(1); // TODO PID?
-                manualClimbFront(-1);
                 break;
             case 3:     // Drive onto platform
-                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 5000) { // TODO distance
+                back.set(0);
+                PrettyPrint.put("Vel", Drivetrain.getEncoderVelocity());
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 100) {
+                    Drivetrain.drive(.2, 0, 0);
+                } else {
+                    Drivetrain.drive(.5, 0, 0);
+                }
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 140) {
                     stepNum++;
                 }
-
-                back.set(0);
-                Drivetrain.drive(.2, 0, 0);
                 break;
             case 4:     // Retract back leg
-                if (backEnc.getPosition() <= 2) {
+                back.set(-.5);
+//                if (backEnc.getPosition() <= 9) {
+//                    Drivetrain.drive(.3, 0, 0);
+//                } else {
+                Drivetrain.drive(.05, 0, 0);
+//                }
+                if (backEnc.getPosition() <= 4) {
                     stepNum++;
                 }
-
-                back.set(-1); // TODO PID?
                 break;
             case 5:     // DONE
+                Drivetrain.drive(0.3, 0, 0);
                 back.set(0);
                 break;
         }

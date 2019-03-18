@@ -28,6 +28,9 @@ public class Drivetrain {
 
         backRight.setInverted(false);
         backLeft.setInverted(false);
+
+        frontLeft.setSelectedSensorPosition(0);
+        frontRight.setSelectedSensorPosition(0);
     }
 
     /**
@@ -74,5 +77,9 @@ public class Drivetrain {
 
     public static double getEncoderPosition() {
         return (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2.0;
+    }
+
+    public static double getEncoderVelocity() {
+        return (frontLeft.getSelectedSensorVelocity() + frontRight.getSelectedSensorVelocity()) / 2.0;
     }
 }

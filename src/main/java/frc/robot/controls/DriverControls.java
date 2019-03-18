@@ -73,35 +73,38 @@ public class DriverControls {
                 if (joy.getTriButton() && LineSensor.isLineSeen()) {
                     if (!LineSensor.linePid.isEnabled())
                         LineSensor.linePid.enable();
-//                     LineSensor.calculateLinePosition();
-                    speedRight = -LineSensor.getTurnSpeed();
-                    speedLeft = LineSensor.getTurnSpeed();
+                    if (!LineSensor.isBroken()) {
+                        speedRight = -LineSensor.getTurnSpeed();
+                        speedLeft = LineSensor.getTurnSpeed();
+                    } else
+                        joy.setRumble(1);
                 } else {
+                    joy.setRumble(0);
                     if (LineSensor.linePid.isEnabled())
                         LineSensor.linePid.reset();
                     if (Elevator.aboveStageThreshold()) {
                         if (joy.getSquareButton()) {
                             speedLeft = joy.getLeftTriggerAxis() * 0.25;
                             speedRight = joy.getRightTriggerAxis() * 0.25;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.45);
-                            Drivetrain.frontRight.configOpenloopRamp(0.45);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.5); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.5); //shh don't tell victor
                         } else {
                             speedLeft = joy.getLeftTriggerAxis() * 0.4;
                             speedRight = joy.getRightTriggerAxis() * 0.4;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.45);
-                            Drivetrain.frontRight.configOpenloopRamp(0.45);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.5); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.5); //shh don't tell victor
                         }
                     } else {
                         if (joy.getSquareButton()) {
                             speedLeft = joy.getLeftTriggerAxis() * 0.6;
                             speedRight = joy.getRightTriggerAxis() * 0.6;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.0);
-                            Drivetrain.frontRight.configOpenloopRamp(0.0);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.1); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.1); //shh don't tell victor
                         } else {
                             speedLeft = joy.getLeftTriggerAxis() * 0.75;
                             speedRight = joy.getRightTriggerAxis() * 0.75;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.0);
-                            Drivetrain.frontRight.configOpenloopRamp(0.0);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.1); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.1); //shh don't tell victor
                         }
                     }
                 }
@@ -127,6 +130,8 @@ public class DriverControls {
                     Climber.stop();
                 }
             }
+
+
             //retract
             if (Math.abs(joy.getRightYAxis()) > 0.1) {
                 Climber.retractClimber(joy.getRightTriggerAxis());
@@ -140,8 +145,13 @@ public class DriverControls {
 
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
 
+        // Auto Climb
         if (joy.getXButton()) {
             Climber.balanceClimb(1.0);
+        }
+
+        if (joy.getButtonDUp()) {
+            Climber.climbLevelTwo();
         }
 
         //Intake Controls

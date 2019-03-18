@@ -21,8 +21,9 @@ public class Elevator {
     private static final double HATCH_PLACE_OFFSET = 1.2; //0.7
 
     private static final double highAccel = 30000;
-    private static final double mediumAccel = 17000;
-    private static final double lowAccel = 12000;
+    private static final double mediumAccel = 13000;
+    private static final double slowMediumAccel = 11000;
+    private static final double lowAccel = 7000;
 
     private static final double velocity = 30000;
 
@@ -61,7 +62,8 @@ public class Elevator {
         elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
         elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
         elevator.getPIDController().setSmartMotionMaxVelocity(velocity, 0);
-        elevator.getPIDController().setSmartMotionMinOutputVelocity(0.1, 0);
+        elevator.getPIDController().setSmartMotionMinOutputVelocity(.01, 0);
+        elevator.enableVoltageCompensation(12.54);
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
 
@@ -159,17 +161,21 @@ public class Elevator {
      * @param position: desired elevator value
      */
     public static void setPosition(double position) {
-        elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
         if (position < getPosition()) {
-            elevator.getPIDController().setSmartMotionMaxVelocity(velocity, 0);
-            elevator.getPIDController().setSmartMotionMaxAccel(mediumAccel, 0);
-            if (getPosition() - setPosition < 25)
-                elevator.getPIDController().setSmartMotionMaxAccel(lowAccel, 0);
-        } else {
-            elevator.getPIDController().setSmartMotionMaxVelocity(velocity, 0);
+            elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
+            if (getPosition() - setPosition < 25) {
+                if (getPosition() - setPosition < 4) {
+                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
+                } else {
+                    elevator.getPIDController().setSmartMotionMaxAccel(lowAccel, 0);
+                }
+            }
+        } else if (position > getPosition()) {
             if (setPosition - getPosition() < 25) {
                 elevator.getPIDController().setSmartMotionMaxAccel(mediumAccel, 0);
             }
+        } else {
+            elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
         }
 
         setPosition = position + zeroPosition;
