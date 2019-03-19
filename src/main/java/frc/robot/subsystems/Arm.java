@@ -29,11 +29,12 @@ public class Arm {
         Position(double position) {
             value = position;
         }
-    }
 
+    }
     /*
      * Initializes all necessary objects and variables
      */
+
     static {
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
@@ -49,12 +50,11 @@ public class Arm {
         armMotor.setSmartCurrentLimit(40);
 
         //sends corresponding values to the pid controller object
-        pidController.setP(0.08);
+        pidController.setP(0.075); // was .08
         pidController.setI(0.0);
         pidController.setD(0.8);
         pidController.setOutputRange(-1.0, 1.0);
     }
-
     /**
      * Sets the value of the elevator
      *
@@ -85,7 +85,7 @@ public class Arm {
     /**
      * @return true if the arm is within deadband of its set value
      */
-    public static boolean armDoneMoving() {
+    public static boolean doneMoving() {
         if (Math.abs(armEncoder.getPosition() - prevPosition) > DEADBAND) {
             prevPosition = armEncoder.getPosition();
             return true;

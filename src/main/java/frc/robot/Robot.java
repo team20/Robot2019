@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
             Arduino.setDiagnosticPattern(null, 0);
 
 //        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
-//        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
+        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
 //        PrettyPrint.put("Elev Pos", Elevator.getPosition());
 //        PrettyPrint.put("Arm Amps", Arm.getPosition());
 //        PrettyPrint.put("Arm Pos", Arm.getPosition());

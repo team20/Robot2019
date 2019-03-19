@@ -10,6 +10,7 @@ public class DriverControls {
     private static boolean climberOverride, climberRetract, climbingMode;
     private static NetworkTableEntry cameraSelector;
     private static boolean camIsMain;
+    private static boolean climbingLevelThree = true;
 
     /*
      * Initializes the driver controller
@@ -150,8 +151,12 @@ public class DriverControls {
             Climber.balanceClimb(1.0);
         }
 
-        if (joy.getButtonDUp()) {
+        if (joy.getButtonDDown()) {
             Climber.climbLevelTwo();
+        }
+
+        if (joy.getTrackpadButton() && joy.getShareButton()) {
+            Climber.setStepNum(0);
         }
 
         //Intake Controls
