@@ -17,22 +17,24 @@ public class Arm {
 
     public enum Position {
         ARM_FLOOR(-41.38),
-        CARGO_SHOOT(-24.0),
+        CARGO_SHOOT(-28.9),
         PLACING(-10.0),
         STARTING_CONFIG(-5.0),
         ARM_COLLECT_CARGO(-49.3),
-        DROP_AND_COLLECT_HATCH(-40.0);
+        DROP_AND_COLLECT_HATCH(-40.0),
+        CARGO_SHIP_ANGLE(-51.14);
 
         double value;
 
         Position(double position) {
             value = position;
         }
-    }
 
+    }
     /*
      * Initializes all necessary objects and variables
      */
+
     static {
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
@@ -48,12 +50,11 @@ public class Arm {
         armMotor.setSmartCurrentLimit(40);
 
         //sends corresponding values to the pid controller object
-        pidController.setP(0.08);
+        pidController.setP(0.075); // was .08
         pidController.setI(0.0);
         pidController.setD(0.8);
         pidController.setOutputRange(-1.0, 1.0);
     }
-
     /**
      * Sets the value of the elevator
      *
@@ -84,7 +85,7 @@ public class Arm {
     /**
      * @return true if the arm is within deadband of its set value
      */
-    public static boolean armDoneMoving() {
+    public static boolean doneMoving() {
         if (Math.abs(armEncoder.getPosition() - prevPosition) > DEADBAND) {
             prevPosition = armEncoder.getPosition();
             return true;

@@ -13,7 +13,7 @@ public class LineSensor {
     private static final I2C wire;
 
     //threshold for whether lineSeen is true or not
-    private static final int lineSeenThreshold = 20;
+    private static final int lineSeenThreshold = 30;
 
     //the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final int address;
@@ -53,13 +53,16 @@ public class LineSensor {
 
         pidOutput = output -> turnSpeed = output;
 
-        linePid = new PIDController(0.001, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid = new PIDController(0.001, 0.0, 0.0, LineSensor.pidSource, LineSensor.pidOutput);
         linePid.setInputRange(0, 700);
         linePid.setOutputRange(-1, 1);
         linePid.setContinuous(false);
         linePid.setSetpoint(350);
 
-        thread = new Notifier(LineSensor::requestSensorData);
+        thread = new Notifier(() -> {
+            requestSensorData();
+            calculateLinePosition();
+        });
         address = 9;
         wire = new I2C(Port.kOnboard, address);
 
@@ -100,13 +103,17 @@ public class LineSensor {
         return total == 0;
     }
 
+    public static int getLinePosition() {
+        return linePosition;
+    }
+
     public static double getTurnSpeed() {
         return turnSpeed;
     }
 
     //start thread running
     public static void startThread() {
-        thread.startPeriodic(0.02);
+        thread.startPeriodic(0.05);
     }
 
     //stops thread from running
