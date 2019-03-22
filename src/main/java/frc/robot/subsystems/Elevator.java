@@ -29,6 +29,9 @@ public class Elevator {
 
     public static boolean setHatchDrop, setHatchPlace;
 
+    /**
+     * Positions of elevator
+     */
     public enum Position {
         ELEVATOR_FLOOR(0.0),
         HATCH_LEVEL_ONE(1.5), //3.0
@@ -50,7 +53,7 @@ public class Elevator {
 
     }
 
-    /*
+    /**
      * Initializes the elevator motor, sets PID values, and zeros the elevator
      * encoder
      */

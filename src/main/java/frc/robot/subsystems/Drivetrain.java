@@ -10,7 +10,7 @@ public class Drivetrain {
     public final static TalonSRX frontRight, frontLeft;
     private final static VictorSPX backRight, backLeft;
 
-    /*
+    /**
      * Initializes and sets up all motors for the drivetrain
      */
     static {
@@ -60,6 +60,11 @@ public class Drivetrain {
         }
     }
 
+    /**
+     * 2 in brake for normal, all for climbing
+     *
+     * @param isBraking if true all are in brake mode
+     */
     public static void setBrakeMode(boolean isBraking) {
         if (isBraking) {
             Climber.setStepNum(0);

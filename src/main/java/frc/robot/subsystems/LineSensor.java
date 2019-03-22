@@ -71,12 +71,16 @@ public class LineSensor {
         turnSpeed = 0;
     }
 
-    //send a read sensor data via I2C
+    /**
+     * send a read sensor data via I2C
+     */
     private static void requestSensorData() {
         wire.readOnly(rawSensorData, rawSensorData.length);
     }
 
-    //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about halfway down the page)
+    /**
+     * calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about halfway down the page)
+     */
     public static void calculateLinePosition() {
         //store useful data from sensor in [sensorData]
         for (int i = 0; i < sensorData.length; i++)
@@ -111,12 +115,16 @@ public class LineSensor {
         return turnSpeed;
     }
 
-    //start thread running
+    /**
+     * start thread running
+     */
     public static void startThread() {
         thread.startPeriodic(0.05);
     }
 
-    //stops thread from running
+    /**
+     * stops thread from running
+     */
     public static void stopThread() {
         thread.stop();
     }
