@@ -18,9 +18,9 @@ public class Elevator {
     private static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
     private static final double HATCH_DROP_OFFSET = 3.2;
-    private static final double HATCH_PLACE_OFFSET = 1.2; //0.7
+    private static final double HATCH_PLACE_OFFSET = 1.5; //1.2
 
-    private static final double highAccel = 30000;
+    private static final double highAccel = 20000;
     private static final double mediumAccel = 10000; // was 13000
     private static final double slowMediumAccel = 8000; // was 11000
     private static final double lowAccel = 4000; // was 7000
@@ -176,6 +176,8 @@ public class Elevator {
         } else if (targetPosition > getPosition()) { // up
             if (targetPosition - getPosition() < 25) { // up medium
                 elevator.getPIDController().setSmartMotionMaxAccel(mediumAccel, 0);
+            } else {
+                elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
             }
         } else {
             elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);

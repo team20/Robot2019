@@ -135,10 +135,10 @@ public class Climber {
                 break;
             case 1:     // Drive front wheels onto platform
                 manualClimbFront(0);
-                Drivetrain.drive(0.7, 0, 0);
+                Drivetrain.drive(0.5, 0, 0);
 
                 PrettyPrint.put("Forwards traveled", Drivetrain.getEncoderPosition() - dtStartPosition);
-                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 85) {
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 120) { // was 85
                     stepNum++;
                 }
                 break;
@@ -167,7 +167,7 @@ public class Climber {
                 if (Drivetrain.getEncoderPosition() - dtStartPosition >= 100) {
                     Drivetrain.drive(.2, 0, 0);
                 } else {
-                    Drivetrain.drive(.5, 0, 0);
+                    Drivetrain.drive(.4, 0, 0);
                 }
                 if (Drivetrain.getEncoderPosition() - dtStartPosition >= 140) {
                     stepNum++;
