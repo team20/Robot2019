@@ -27,7 +27,7 @@ public class Climber {
     private static final double kP = 0.065, kI = 0, kD = 0;
 
     private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
-    private static final double backHab3Height = 138.5;
+    public static final double backHab3Height = 138.5;
     private static final double frontHab2Height = 73000;
     private static final double backHab2Height = 58;
     private static boolean firstTime = true;

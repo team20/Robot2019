@@ -168,9 +168,9 @@ public class Elevator {
             elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
             if (getPosition() - targetPosition < 25) { // down medium
                 if (getPosition() - targetPosition < 4) { // down short
-                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
-                } else {
                     elevator.getPIDController().setSmartMotionMaxAccel(lowAccel, 0);
+                } else {
+                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
                 }
             }
         } else if (targetPosition > getPosition()) { // up
