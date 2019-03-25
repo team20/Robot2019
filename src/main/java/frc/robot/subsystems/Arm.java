@@ -19,7 +19,7 @@ public class Arm {
         ARM_FLOOR(-41.38),
         CARGO_SHOOT(-28.9),
         PLACING(-9.5),
-        STARTING_CONFIG(-5.0),
+        STARTING_CONFIG(-4.0),
         ARM_COLLECT_CARGO(-49.3),
         DROP_AND_COLLECT_HATCH(-40.0),
         CARGO_SHIP_ANGLE(-51.14);
@@ -29,12 +29,11 @@ public class Arm {
         Position(double position) {
             value = position;
         }
-
     }
-    /*
+
+    /**
      * Initializes all necessary objects and variables
      */
-
     static {
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
