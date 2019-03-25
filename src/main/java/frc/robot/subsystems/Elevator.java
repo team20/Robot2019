@@ -18,17 +18,20 @@ public class Elevator {
     private static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
     private static final double HATCH_DROP_OFFSET = 3.2;
-    private static final double HATCH_PLACE_OFFSET = 1.2; //0.7
+    private static final double HATCH_PLACE_OFFSET = 1.5; //1.2
 
     private static final double highAccel = 30000;
-    private static final double mediumAccel = 13000;
-    private static final double slowMediumAccel = 11000;
-    private static final double lowAccel = 7000;
+    private static final double mediumAccel = 10000; // was 13000
+    private static final double slowMediumAccel = 6000; // was 11000
+    private static final double lowAccel = 3000; // was 7000
 
     private static final double velocity = 30000;
 
     public static boolean setHatchDrop, setHatchPlace;
 
+    /**
+     * Positions of elevator
+     */
     public enum Position {
         ELEVATOR_FLOOR(0.0),
         HATCH_LEVEL_ONE(1.5), //3.0
@@ -50,7 +53,7 @@ public class Elevator {
 
     }
 
-    /*
+    /**
      * Initializes the elevator motor, sets PID values, and zeros the elevator
      * encoder
      */
@@ -67,7 +70,7 @@ public class Elevator {
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
 
-        elevator.setSmartCurrentLimit(70);
+        elevator.setSmartCurrentLimit(60);
 
         setPID(0.0003, 0.0, 0.0, 0.0);
 
@@ -158,27 +161,29 @@ public class Elevator {
     /**
      * Sets the elevator to the entered value
      *
-     * @param position: desired elevator value
+     * @param targetPosition: desired elevator value
      */
-    public static void setPosition(double position) {
-        if (position < getPosition()) {
+    public static void setPosition(double targetPosition) {
+        if (targetPosition < getPosition()) { // down
             elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
-            if (getPosition() - setPosition < 25) {
-                if (getPosition() - setPosition < 4) {
-                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
-                } else {
+            if (getPosition() - targetPosition < 25) { // down medium
+                if (getPosition() - targetPosition < 4) { // down short
                     elevator.getPIDController().setSmartMotionMaxAccel(lowAccel, 0);
+                } else {
+                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
                 }
             }
-        } else if (position > getPosition()) {
-            if (setPosition - getPosition() < 25) {
+        } else if (targetPosition > getPosition()) { // up
+            if (targetPosition - getPosition() < 25) { // up medium
                 elevator.getPIDController().setSmartMotionMaxAccel(mediumAccel, 0);
+            } else {
+                elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
             }
         } else {
             elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
         }
 
-        setPosition = position + zeroPosition;
+        setPosition = targetPosition + zeroPosition;
         limitPosition();
         setHatchDrop = false;
         setHatchPlace = false;

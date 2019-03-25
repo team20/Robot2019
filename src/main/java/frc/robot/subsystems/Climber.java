@@ -27,7 +27,7 @@ public class Climber {
     private static final double kP = 0.065, kI = 0, kD = 0;
 
     private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
-    private static final double backHab3Height = 138.5;
+    public static final double backHab3Height = 138.5;
     private static final double frontHab2Height = 73000;
     private static final double backHab2Height = 58;
     private static boolean firstTime = true;
@@ -135,10 +135,10 @@ public class Climber {
                 break;
             case 1:     // Drive front wheels onto platform
                 manualClimbFront(0);
-                Drivetrain.drive(0.7, 0, 0);
+                Drivetrain.drive(0.5, 0, 0);
 
                 PrettyPrint.put("Forwards traveled", Drivetrain.getEncoderPosition() - dtStartPosition);
-                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 85) {
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 120) { // was 85
                     stepNum++;
                 }
                 break;
@@ -167,7 +167,7 @@ public class Climber {
                 if (Drivetrain.getEncoderPosition() - dtStartPosition >= 100) {
                     Drivetrain.drive(.2, 0, 0);
                 } else {
-                    Drivetrain.drive(.5, 0, 0);
+                    Drivetrain.drive(.4, 0, 0);
                 }
                 if (Drivetrain.getEncoderPosition() - dtStartPosition >= 140) {
                     stepNum++;

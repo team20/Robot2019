@@ -42,7 +42,7 @@ public class MoveArm extends RobotFunction<Double> {
      */
     @Override
     public boolean isFinished() {
-        return Arm.armDoneMoving();
+        return Arm.doneMoving();
     }
 
     /**

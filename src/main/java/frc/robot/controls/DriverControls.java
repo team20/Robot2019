@@ -61,6 +61,10 @@ public class DriverControls {
             } else {
                 Climber.manualClimbBack(0.0);
             }
+
+            if (Climber.getBackEncPosition() > Climber.backHab3Height / 2) {
+                speedStraight = Math.min(speedStraight, 0.5);
+            }
         } else {
             //Drivetrain Controls
             if (Math.abs(joy.getLeftYAxis()) > 0.1) {
@@ -71,15 +75,7 @@ public class DriverControls {
 
             if (!climberOverride) {
                 //line sensor
-                if (joy.getTriButton() && LineSensor.isLineSeen()) {
-                    if (!LineSensor.linePid.isEnabled())
-                        LineSensor.linePid.enable();
-                    if (!LineSensor.isBroken()) {
-                        speedRight = -LineSensor.getTurnSpeed();
-                        speedLeft = LineSensor.getTurnSpeed();
-                    } else
-                        joy.setRumble(1);
-                } else {
+                if (!joy.getTriButton() || !LineSensor.isLineSeen()) {
                     joy.setRumble(0);
                     if (LineSensor.linePid.isEnabled())
                         LineSensor.linePid.reset();
@@ -108,6 +104,14 @@ public class DriverControls {
                             Drivetrain.frontRight.configOpenloopRamp(0.1); //shh don't tell victor
                         }
                     }
+                } else {
+                    if (!LineSensor.linePid.isEnabled())
+                        LineSensor.linePid.enable();
+                    if (!LineSensor.isBroken()) {
+                        speedRight -= LineSensor.getTurnSpeed();
+                        speedLeft += LineSensor.getTurnSpeed();
+                    } else
+                        joy.setRumble(1);
                 }
             }
 
