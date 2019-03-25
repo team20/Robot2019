@@ -10,7 +10,7 @@ public class Drivetrain {
     public final static TalonSRX frontRight, frontLeft;
     private final static VictorSPX backRight, backLeft;
 
-    /*
+    /**
      * Initializes and sets up all motors for the drivetrain
      */
     static {
@@ -28,6 +28,9 @@ public class Drivetrain {
 
         backRight.setInverted(false);
         backLeft.setInverted(false);
+
+        frontLeft.setSelectedSensorPosition(0);
+        frontRight.setSelectedSensorPosition(0);
     }
 
     /**
@@ -57,6 +60,11 @@ public class Drivetrain {
         }
     }
 
+    /**
+     * 2 in brake for normal, all for climbing
+     *
+     * @param isBraking if true all are in brake mode
+     */
     public static void setBrakeMode(boolean isBraking) {
         if (isBraking) {
             Climber.setStepNum(0);
@@ -70,5 +78,13 @@ public class Drivetrain {
             backLeft.setNeutralMode(NeutralMode.Brake);
             backRight.setNeutralMode(NeutralMode.Brake);
         }
+    }
+
+    public static double getEncoderPosition() {
+        return (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2.0;
+    }
+
+    public static double getEncoderVelocity() {
+        return (frontLeft.getSelectedSensorVelocity() + frontRight.getSelectedSensorVelocity()) / 2.0;
     }
 }

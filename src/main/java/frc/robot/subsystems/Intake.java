@@ -11,7 +11,7 @@ public class Intake {
     private static final DigitalInput cargoSensor;
     private static boolean intakeRunning;
 
-    /*
+    /**
      * Initializes and sets up all motors for the intake
      */
     static {
