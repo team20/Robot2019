@@ -152,7 +152,7 @@ public class DriverControls {
 
         // Auto Climb
         if (joy.getXButton()) {
-            Climber.balanceClimb(1.0);
+            Climber.climbLevelThree(1.0); // TODO make this much smaller
         }
 
         if (joy.getButtonDDown()) {
