@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
 import frc.robot.controls.DriverControls;
+import frc.robot.utils.PrettyPrint;
 
 public class Climber {
     private static final CANSparkMax back, front;
@@ -27,13 +28,9 @@ public class Climber {
     private static final double frontHab3Height = 138.5; // TODO front 3 climb height
 
     private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
-    public static final double backHab3Height = 138.5;
-    private static final double frontHab2Height = 73000;
+    private static final double frontHab2Height = 73000; // todo
     private static final double backHab2Height = 58;
     private static boolean firstTime = true;
-
-    private static final double frontHab2Height = 30; // TODO level two climb heights
-    private static final double backHab2Height = 30; // TODO level two climb heights
 
     /*
      * Initializes and sets up all motors and PID Controllers
@@ -153,7 +150,7 @@ public class Climber {
     /**
      * Climb to level two autonomously
      */
-    public static void climbLevelTwo() {
+    public static void climbLevelThree() {
         switch (stepNum) {
             case 0:     // Raise front legs
                 if (frontEnc.getPosition() >= frontHab2Height) {
@@ -171,28 +168,28 @@ public class Climber {
                 front.set(0);
                 Drivetrain.drive(.2, 0, 0);
                 break;
-            case 2:     // Raise back leg/retract front leg
-                if (backEnc.getPosition() >= backHab2Height) {
-                    if (frontEnc.getPosition() <= 2) {
-                        dtStartPosition = Drivetrain.getEncoderPosition();
-                        stepNum++;
-                    } else {
-                        back.set(0);
-                    }
-                } else {
-                    if (frontEnc.getPosition() <= 2) {
-                        front.set(0);
-                    }
-                }
-
-                Drivetrain.drive(0, 0, 0);
-                back.set(1); // TODO PID?
-                front.set(-1);
-                break;
             case 2:
                 manualClimbBack(holdSpeed);
                 manualClimbFront(holdSpeed);
                 break;
+//            case 2:     // Raise back leg/retract front leg
+//                if (backEnc.getPosition() >= backHab2Height) {
+//                    if (frontEnc.getPosition() <= 2) {
+//                        dtStartPosition = Drivetrain.getEncoderPosition();
+//                        stepNum++;
+//                    } else {
+//                        back.set(0);
+//                    }
+//                } else {
+//                    if (frontEnc.getPosition() <= 2) {
+//                        front.set(0);
+//                    }
+//                }
+//
+//                Drivetrain.drive(0, 0, 0);
+//                back.set(1); // TODO PID?
+//                front.set(-1);
+//                break;
         }
     }
 
@@ -203,14 +200,14 @@ public class Climber {
         PrettyPrint.put("Step", stepNum);
         if (firstTime) {
             firstTime = false;
-            front.setSelectedSensorPosition(0);
+            front.setEncPosition(0);
             back.setEncPosition(0);
         }
         switch (stepNum) {
             case 0:     // Raise front legs
                 manualClimbFront(.5);
 
-                if (front.getSelectedSensorPosition() >= frontHab2Height) {
+                if (frontEnc.getPosition() >= frontHab2Height) {
                     dtStartPosition = Drivetrain.getEncoderPosition();
                     stepNum++;
                 }
@@ -230,14 +227,14 @@ public class Climber {
                 manualClimbFront(-.5);
 
                 if (backEnc.getPosition() >= backHab2Height) {
-                    if (front.getSelectedSensorPosition() <= 4000) {
+                    if (frontEnc.getPosition() <= 4000) {
                         dtStartPosition = Drivetrain.getEncoderPosition();
                         stepNum++;
                     } else {
                         back.set(0);
                     }
                 } else {
-                    if (front.getSelectedSensorPosition() <= 4000) {
+                    if (frontEnc.getPosition() <= 4000) {
                         manualClimbFront(0);
                     }
                 }
