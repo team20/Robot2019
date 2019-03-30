@@ -29,7 +29,7 @@ public class OperatorControls {
         // override
         if (joy.getRightStickButton()) {
             double speed = joy.getRightYAxis();
-            Elevator.moveSpeed(-speed);
+            Elevator.moveSpeed(-speed / 2);
             elevatorOverridden = true;
         } else {
             if (elevatorOverridden) {
@@ -72,7 +72,7 @@ public class OperatorControls {
         // override
         if (joy.getLeftStickButton()) {
             double speed = -joy.getLeftYAxis();
-            Arm.moveSpeed(speed);
+            Arm.moveSpeed(speed / 2);
             armOverridden = true;
         } else {
             if (armOverridden) {

@@ -49,9 +49,7 @@ package frc.robot;
  * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNXKK0Okkxxddddool:,'.......'',:lx0NWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  */
 
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.AutoModes;
@@ -73,7 +71,7 @@ import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
 public class Robot extends TimedRobot {
     private AutoModes auto;
 
-    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
+//    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
     private boolean autoSet;
     private boolean inEndOfMatch;
@@ -137,13 +135,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-//        PrettyPrint.put("line sensor total", LineSensor.getTotal());
-//        PrettyPrint.put("line position", LineSensor.getLinePosition());
-//        PrettyPrint.put("turn speed", LineSensor.getTurnSpeed());
-
-        PrettyPrint.put("Front Pos", Climber.getFrontEncPosition());
-        PrettyPrint.put("Back Pos", Climber.getBackEncPosition());
-        PrettyPrint.put("DT Pos", Drivetrain.getEncoderPosition());
+        PrettyPrint.put("Amps", Elevator.getCurrent());
+        PrettyPrint.put("Vel", Elevator.getVelocity());
+        PrettyPrint.put("Temp", Elevator.getTemperature());
 
         DriverControls.driverControls();
         OperatorControls.operatorControls();
