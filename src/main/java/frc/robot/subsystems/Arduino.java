@@ -85,7 +85,7 @@ public class Arduino {
 //            read();
         });
 //        pidSource.setPIDSourceType(PIDSourceType.kDisplacement);
-        address = 1;
+        address = 0x1;
         wire = new I2C(Port.kOnboard, address);
 
         writeData = new byte[6];
@@ -198,7 +198,7 @@ public class Arduino {
 
     public static void write() {
         //write data to Arduino as byte array
-        wire.writeBulk(writeData, writeData.length);
+        wire.writeBulk(writeData);
     }
 
 //    public static void setAuto(int a) {

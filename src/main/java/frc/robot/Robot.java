@@ -110,8 +110,8 @@ public class Robot extends TimedRobot {
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
-//        else if (LineSensor.isBroken())
-//            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+       else if (LineSensor.isBroken())
+           Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
         else if (LineSensor.isLineSeen())
             Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
         else
