@@ -7,18 +7,31 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
 public class Elevator {
-    private static final CANSparkMax elevator;
+    public static final CANSparkMax elevator;
     private static final CANEncoder elevatorEncoder;
 
-    private static double setPosition, prevPosition;
+    private static double setPosition, prevPosition, zeroPosition;
+    private static double prevVelocity, currentVelocity;
+    private static double currentAcceleration;
 
     private static final double STAGE_THRESHOLD = 30.0;
     private static final double MAX_POSITION = 47.5;
     private static final double DEADBAND = 0.5;
     private static final double HATCH_DROP_OFFSET = 3.2;
-    private static final double HATCH_PLACE_OFFSET = 0.7;
+    private static final double HATCH_PLACE_OFFSET = 1.5; //1.2
+
+    private static final double highAccel = 30000;
+    private static final double mediumAccel = 10000; // was 13000
+    private static final double slowMediumAccel = 6000; // was 11000
+    private static final double lowAccel = 3000; // was 7000
+
+    private static final double velocity = 30000;
+
     public static boolean setHatchDrop, setHatchPlace;
 
+    /**
+     * Positions of elevator
+     */
     public enum Position {
         ELEVATOR_FLOOR(0.0),
         HATCH_LEVEL_ONE(1.5), //3.0
@@ -26,9 +39,9 @@ public class Elevator {
         HATCH_LEVEL_THREE(44.5), //43.5
         CARGO_LEVEL_ONE(17.0),
         CARGO_LEVEL_TWO(39.5),
-        CARGO_LEVEL_THREE(45.0),
-        CARGO_SHIP(30.0),
-        ELEVATOR_COLLECT_CARGO(7.5),
+        CARGO_LEVEL_THREE(46.5),
+        CARGO_SHIP(33.0), //29.0 // TODO was 30.0
+        ELEVATOR_COLLECT_CARGO(6.8),
         //        ELEVATOR_COLLECT_HATCH(11.5); //top hatch mechanism
         ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
 
@@ -37,9 +50,10 @@ public class Elevator {
         Position(double position) {
             value = position;
         }
+
     }
 
-    /*
+    /**
      * Initializes the elevator motor, sets PID values, and zeros the elevator
      * encoder
      */
@@ -48,12 +62,15 @@ public class Elevator {
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
         elevator.getPIDController().setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-        elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.0, 0);
-        elevator.getPIDController().setSmartMotionMaxAccel(8000.0, 0);
-        elevator.getPIDController().setSmartMotionMaxVelocity(15000.0, 0);
-        elevator.getPIDController().setSmartMotionMinOutputVelocity(0.1, 0);
+        elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
+        elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
+        elevator.getPIDController().setSmartMotionMaxVelocity(velocity, 0);
+        elevator.getPIDController().setSmartMotionMinOutputVelocity(.01, 0);
+        elevator.enableVoltageCompensation(12.54);
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
+
+        elevator.setSmartCurrentLimit(60);
 
         setPID(0.0003, 0.0, 0.0, 0.0);
 
@@ -62,6 +79,8 @@ public class Elevator {
         elevator.setEncPosition(0);
         setPosition = elevatorEncoder.getPosition();
         prevPosition = elevatorEncoder.getPosition();
+        zeroPosition = elevatorEncoder.getPosition();
+        prevVelocity = 0;
 
         setHatchDrop = false;
         setHatchPlace = false;
@@ -86,28 +105,36 @@ public class Elevator {
      * sets the elevator set value to its current value
      */
     public static void stop() {
-        setPosition(elevatorEncoder.getPosition());
+        setPosition = elevatorEncoder.getPosition();
+        setPosition(setPosition);
+    }
+
+    /**
+     * sets the elevator set value to its current value
+     */
+    public static double getCurrent() {
+        return elevator.getOutputCurrent();
     }
 
     /**
      * @return the set point of the elevator
      */
     public static double getSetPosition() {
-        return setPosition;
+        return setPosition - zeroPosition;
     }
 
     /**
      * @return the position of the elevator
      */
     public static double getPosition() {
-        return elevatorEncoder.getPosition();
+        return elevatorEncoder.getPosition() - zeroPosition;
     }
 
     /**
      * @return true if the elevator is above the stationary stage
      */
     public static boolean aboveStageThreshold() {
-        return elevatorEncoder.getPosition() > STAGE_THRESHOLD;
+        return elevatorEncoder.getPosition() > STAGE_THRESHOLD + zeroPosition;
     }
 
     /**
@@ -134,11 +161,32 @@ public class Elevator {
     /**
      * Sets the elevator to the entered value
      *
-     * @param position: desired elevator value
+     * @param targetPosition: desired elevator value
      */
-    public static void setPosition(double position) {
-        setPosition = position;
+    public static void setPosition(double targetPosition) {
+        if (targetPosition < getPosition()) { // down
+            elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
+            if (getPosition() - targetPosition < 25) { // down medium
+                if (getPosition() - targetPosition < 4) { // down short
+                    elevator.getPIDController().setSmartMotionMaxAccel(lowAccel, 0);
+                } else {
+                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
+                }
+            }
+        } else if (targetPosition > getPosition()) { // up
+            if (targetPosition - getPosition() < 25) { // up medium
+                elevator.getPIDController().setSmartMotionMaxAccel(mediumAccel, 0);
+            } else {
+                elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
+            }
+        } else {
+            elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
+        }
+
+        setPosition = targetPosition + zeroPosition;
         limitPosition();
+        setHatchDrop = false;
+        setHatchPlace = false;
     }
 
     /**
@@ -159,7 +207,8 @@ public class Elevator {
      */
     public static void dropHatch() {
         if (!setHatchDrop) {
-            setPosition(setPosition - HATCH_DROP_OFFSET);
+            setPosition -= HATCH_DROP_OFFSET;
+            setPosition(setPosition);
             setHatchDrop = true;
         }
     }
@@ -169,7 +218,8 @@ public class Elevator {
      */
     public static void placeHatch() {
         if (!setHatchPlace) {
-            setPosition(setPosition - HATCH_PLACE_OFFSET);
+            setPosition -= HATCH_PLACE_OFFSET;
+            setPosition(setPosition);
             setHatchPlace = true;
         }
     }
@@ -179,20 +229,38 @@ public class Elevator {
      * Sets the current elevator position to the new zero
      */
     public static void resetEncoder() {
-        elevator.setEncPosition(0);
-        setPosition(Position.ELEVATOR_FLOOR);
+//        elevator.setEncPosition(0);
+        zeroPosition = elevatorEncoder.getPosition();
+        setPosition = Position.ELEVATOR_FLOOR.value;
+        setPosition(setPosition);
     }
 
     /**
      * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
-        setPosition = Math.min(setPosition, MAX_POSITION);
-        setPosition = Math.max(setPosition, 0.0);
+        setPosition = Math.min(setPosition, MAX_POSITION + zeroPosition);
+        setPosition = Math.max(setPosition, zeroPosition);
         elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
     }
 
     public static double getVelocity() {
-        return elevatorEncoder.getVelocity();
+        prevVelocity = currentVelocity;
+        currentVelocity = elevatorEncoder.getVelocity();
+//        if (currentVelocity > elevator.getPIDController().getSmartMotionMaxVelocity(0) * .9) PrettyPrint.once("ABOVE 90%");
+        return currentVelocity;
+    }
+
+    public static double getAcceleration() {
+        currentAcceleration = (currentVelocity - prevVelocity) / .02;
+        return currentAcceleration;
+    }
+
+    public static double getTemperature() {
+        return elevator.getMotorTemperature();
+    }
+
+    public static double percentOutput() {
+        return elevator.getAppliedOutput();
     }
 }

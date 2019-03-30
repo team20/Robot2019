@@ -6,7 +6,10 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import frc.robot.Robot;
 import frc.robot.controls.DriverControls;
 import frc.robot.utils.PrettyPrint;
@@ -18,11 +21,16 @@ public class Climber {
     private static final PIDController PID;
     private static double balancePidOutput;
     private static int stepNum = 0;
-    private static double holdSpeed = .08;
+    private static double dtStartPosition = 0;
 
+    private static final double holdSpeed = 0.08;
     private static final double kP = 0.065, kI = 0, kD = 0;
-    private static final double neoSpeedEqualizingCoefficient = .43;
-    private static final double backHab3Height = 138.5;
+
+    private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
+    public static final double backHab3Height = 138.5;
+    private static final double frontHab2Height = 73000;
+    private static final double backHab2Height = 58;
+    private static boolean firstTime = true;
 
     private Climber() {
     }
@@ -80,7 +88,6 @@ public class Climber {
      * @param speed: the speed at which to climb
      */
     public static void balanceClimb(double speed) {
-        PrettyPrint.put("stepNum", stepNum);
         switch (stepNum) {
             case 0:     //climbing straight up
                 if (getBackEncPosition() > backHab3Height || DriverControls.getShareButton()) {
@@ -97,22 +104,93 @@ public class Climber {
                     stepNum = 2;
                 }
 
-                if (Robot.gyro.getPitch() < -10) {
-                    PrettyPrint.once("On target");
-                }
-
                 front.set(ControlMode.PercentOutput, speed + balancePidOutput);
                 back.set(neoSpeedEqualizingCoefficient * (speed - balancePidOutput));
                 break;
             case 2:
                 manualClimbBack(holdSpeed);
                 manualClimbFront(holdSpeed);
-
-                PrettyPrint.put("Front", front.getSelectedSensorPosition());
-                PrettyPrint.put("Back", backEnc.getPosition());
                 break;
         }
     }
+
+    /**
+     * Climb to level two autonomously
+     */
+    public static void climbLevelTwo() {
+        PrettyPrint.put("Step", stepNum);
+        if (firstTime) {
+            firstTime = false;
+            front.setSelectedSensorPosition(0);
+            back.setEncPosition(0);
+        }
+        switch (stepNum) {
+            case 0:     // Raise front legs
+                manualClimbFront(.5);
+
+                if (front.getSelectedSensorPosition() >= frontHab2Height) {
+                    dtStartPosition = Drivetrain.getEncoderPosition();
+                    stepNum++;
+                }
+                break;
+            case 1:     // Drive front wheels onto platform
+                manualClimbFront(0);
+                Drivetrain.drive(0.5, 0, 0);
+
+                PrettyPrint.put("Forwards traveled", Drivetrain.getEncoderPosition() - dtStartPosition);
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 120) { // was 85
+                    stepNum++;
+                }
+                break;
+            case 2:     // Raise back leg/retract front leg
+                Drivetrain.drive(0, 0, 0);
+                back.set(.5);
+                manualClimbFront(-.5);
+
+                if (backEnc.getPosition() >= backHab2Height) {
+                    if (front.getSelectedSensorPosition() <= 4000) {
+                        dtStartPosition = Drivetrain.getEncoderPosition();
+                        stepNum++;
+                    } else {
+                        back.set(0);
+                    }
+                } else {
+                    if (front.getSelectedSensorPosition() <= 4000) {
+                        manualClimbFront(0);
+                    }
+                }
+
+                break;
+            case 3:     // Drive onto platform
+                back.set(0);
+                PrettyPrint.put("Vel", Drivetrain.getEncoderVelocity());
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 100) {
+                    Drivetrain.drive(.2, 0, 0);
+                } else {
+                    Drivetrain.drive(.4, 0, 0);
+                }
+                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 140) {
+                    stepNum++;
+                }
+                break;
+            case 4:     // Retract back leg
+                back.set(-.5);
+//                if (backEnc.getPosition() <= 9) {
+//                    Drivetrain.drive(.3, 0, 0);
+//                } else {
+                Drivetrain.drive(.05, 0, 0);
+//                }
+                if (backEnc.getPosition() <= 4) {
+                    stepNum++;
+                }
+                break;
+            case 5:     // DONE
+                Drivetrain.drive(0.3, 0, 0);
+                back.set(0);
+                break;
+        }
+    }
+
 
     /**
      * Climb without gyro assistance

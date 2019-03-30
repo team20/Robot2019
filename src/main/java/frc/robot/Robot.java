@@ -53,12 +53,15 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.AutoModes;
-import frc.robot.auto.AutoModes.Mode;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.*;
 import frc.robot.utils.PrettyPrint;
+
+import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
+import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -75,6 +78,8 @@ public class Robot extends TimedRobot {
     private boolean autoSet;
     private boolean inEndOfMatch;
 
+    private double startTime;
+
     @Override
     public void robotInit() {
         auto = new AutoModes();
@@ -87,6 +92,7 @@ public class Robot extends TimedRobot {
         Arduino.startThread();
         LineSensor.startThread();
         Arduino.setDiagnosticPattern(null, 0);
+        Drivetrain.setBrakeMode(false);
     }
 
     @Override
@@ -98,42 +104,62 @@ public class Robot extends TimedRobot {
             //the line below has not been fully tested yet (it is for showing the height of the elevator on the LEDs when it is moving)
             //Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
             Arduino.setPattern(2);
-        
+
         //set diagnostic part of LEDs
-        if (LineSensor.isBroken())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
-        else if (LineSensor.isLineSeen())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
-        else if (Intake.isCargoPresent())
+        if (Intake.isCargoPresent())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
+//        else if (LineSensor.isBroken())
+//            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        else if (LineSensor.isLineSeen())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
         else
             Arduino.setDiagnosticPattern(null, 0);
 
+//        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
+//        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
+//        PrettyPrint.put("Elev Pos", Elevator.getPosition());
+//        PrettyPrint.put("Arm Amps", Arm.getPosition());
+//        PrettyPrint.put("Arm Pos", Arm.getPosition());
+
+        PrettyPrint.setFrequency(2);
         PrettyPrint.print();
     }
 
     @Override
     public void autonomousInit() {
+        Arm.setPosition(STARTING_CONFIG);
+        Elevator.setPosition(ELEVATOR_FLOOR);
+        Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
     }
+
 
     @Override
     public void autonomousPeriodic() {
+//        PrettyPrint.put("line sensor total", LineSensor.getTotal());
+//        PrettyPrint.put("line position", LineSensor.getLinePosition());
+//        PrettyPrint.put("turn speed", LineSensor.getTurnSpeed());
+
+        PrettyPrint.put("Front Pos", Climber.getFrontEncPosition());
+        PrettyPrint.put("Back Pos", Climber.getBackEncPosition());
+        PrettyPrint.put("DT Pos", Drivetrain.getEncoderPosition());
+
         DriverControls.driverControls();
         OperatorControls.operatorControls();
     }
 
     @Override
     public void teleopInit() {
+        startTime = Timer.getFPGATimestamp();
+        Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
     }
 
     @Override
     public void teleopPeriodic() {
-        if (DriverStation.getInstance().getMatchTime() <= 40 && DriverStation.getInstance().getMatchTime() > 0 && !inEndOfMatch)
+        if (Timer.getFPGATimestamp() - startTime >= 135 - 40) {
             inEndOfMatch = true;
-        else if (inEndOfMatch)
-            inEndOfMatch = false;
+        }
         DriverControls.driverControls();
         OperatorControls.operatorControls();
     }
@@ -151,6 +177,7 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
 //        LineSensor.stopThread();
         Drivetrain.setBrakeMode(false);
+        inEndOfMatch = false;
         PrettyPrint.removeAll();
     }
 }

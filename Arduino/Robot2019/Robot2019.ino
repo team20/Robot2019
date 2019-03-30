@@ -6,9 +6,9 @@
 
 #include "I2C.h"
 #include "LEDStrip.h"
-#include "PixyCam.h"
-#include "LineFollower.h"
-#include "Ultrasonic.h"
+//#include "PixyCam.h"
+//#include "LineFollower.h"
+//#include "Ultrasonic.h"
 
 void setup() {
   Serial.begin(9600);
@@ -28,5 +28,5 @@ void loop() {
 //    LineFollower::updateLineData();
 //  if (I2C::getUltrasonicState())
 //    Ultrasonic::updateDistance();
-  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
+//  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
 }

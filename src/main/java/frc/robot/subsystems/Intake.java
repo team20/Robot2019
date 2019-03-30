@@ -11,7 +11,7 @@ public class Intake {
     private static final DigitalInput cargoSensor;
     private static boolean intakeRunning;
 
-    /*
+    /**
      * Initializes and sets up all motors for the intake
      */
     static {
@@ -34,7 +34,7 @@ public class Intake {
      * Runs the cargo motor at spitting speed
      */
     public static void spitCargo() {
-        if(Elevator.aboveStageThreshold()){
+        if (Elevator.aboveStageThreshold()) {
             runCargoMotor(0.7);
         } else {
             runCargoMotor(1.0);
