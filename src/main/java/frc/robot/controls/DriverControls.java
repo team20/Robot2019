@@ -83,25 +83,25 @@ public class DriverControls {
                         if (joy.getSquareButton()) {
                             speedLeft = joy.getLeftTriggerAxis() * 0.25;
                             speedRight = joy.getRightTriggerAxis() * 0.25;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.5); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.5); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
                         } else {
                             speedLeft = joy.getLeftTriggerAxis() * 0.4;
                             speedRight = joy.getRightTriggerAxis() * 0.4;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.5); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.5); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
                         }
                     } else {
                         if (joy.getSquareButton()) {
                             speedLeft = joy.getLeftTriggerAxis() * 0.6;
                             speedRight = joy.getRightTriggerAxis() * 0.6;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.1); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.1); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.15); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
                         } else {
                             speedLeft = joy.getLeftTriggerAxis() * 0.75;
                             speedRight = joy.getRightTriggerAxis() * 0.75;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.1); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.1); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.15); //shh don't tell victor
+                            Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
                         }
                     }
                 } else {
@@ -152,7 +152,7 @@ public class DriverControls {
 
         // Auto Climb
         if (joy.getXButton()) {
-            Climber.climbLevelThree(1.0); // TODO make this much smaller
+            Climber.climbLevelThree(1.0);
         }
 
         if (joy.getButtonDDown()) {

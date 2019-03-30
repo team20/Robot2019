@@ -20,10 +20,10 @@ public class Elevator {
     private static final double HATCH_DROP_OFFSET = 3.2;
     private static final double HATCH_PLACE_OFFSET = 1.5; //1.2
 
-    private static final double highAccel = 30000;
-    private static final double mediumAccel = 10000; // was 13000
-    private static final double slowMediumAccel = 6000; // was 11000
-    private static final double lowAccel = 3000; // was 7000
+//    private static final double highAccel = 30000;
+//    private static final double mediumAccel = 10000; // was 13000
+//    private static final double slowMediumAccel = 6000; // was 11000
+//    private static final double lowAccel = 3000; // was 7000
 
     private static final double velocity = 30000;
 
@@ -62,17 +62,17 @@ public class Elevator {
         elevator.setInverted(false);
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
         elevator.getPIDController().setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-        elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
-        elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
+        elevator.getPIDController().setSmartMotionMaxAccel(30000, 0);
         elevator.getPIDController().setSmartMotionMaxVelocity(velocity, 0);
-        elevator.getPIDController().setSmartMotionMinOutputVelocity(.01, 0);
-        elevator.enableVoltageCompensation(12.54);
+        elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
+        elevator.getPIDController().setSmartMotionMinOutputVelocity(0.01, 0);
+        elevator.enableVoltageCompensation(12.00);
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
 
         elevator.setSmartCurrentLimit(60);
 
-        setPID(0.0003, 0.0, 0.0, 0.0);
+        setPID(0.000_18, 0.0, 0.001_00, 0.0); //.0003
 
         elevatorEncoder = new CANEncoder(elevator);
 
@@ -165,22 +165,23 @@ public class Elevator {
      */
     public static void setPosition(double targetPosition) {
         if (targetPosition < getPosition()) { // down
-            elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
             if (getPosition() - targetPosition < 25) { // down medium
                 if (getPosition() - targetPosition < 4) { // down short
-                    elevator.getPIDController().setSmartMotionMaxAccel(lowAccel, 0);
+                    elevator.getPIDController().setSmartMotionMaxAccel(5000, 0);
                 } else {
-                    elevator.getPIDController().setSmartMotionMaxAccel(slowMediumAccel, 0);
+                    elevator.getPIDController().setSmartMotionMaxAccel(15000, 0);
                 }
+            } else { // down big
+                elevator.getPIDController().setSmartMotionMaxAccel(20000, 0);
             }
         } else if (targetPosition > getPosition()) { // up
             if (targetPosition - getPosition() < 25) { // up medium
-                elevator.getPIDController().setSmartMotionMaxAccel(mediumAccel, 0);
-            } else {
-                elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(30000, 0);
+            } else { // up high
+                elevator.getPIDController().setSmartMotionMaxAccel(40000, 0);
             }
         } else {
-            elevator.getPIDController().setSmartMotionMaxAccel(highAccel, 0);
+            elevator.getPIDController().setSmartMotionMaxAccel(40000, 0);
         }
 
         setPosition = targetPosition + zeroPosition;

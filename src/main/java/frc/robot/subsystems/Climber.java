@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import frc.robot.Robot;
-import frc.robot.controls.DriverControls;
 import frc.robot.utils.PrettyPrint;
 
 public class Climber {
@@ -24,15 +22,15 @@ public class Climber {
     private static final double holdSpeed = .08; // TODO make this much smaller
     private static final double kP = 0.065, kI = 0, kD = 0;
 
-    private static final double backHab3Height = 138.5;
-    private static final double frontHab3Height = 138.5; // TODO front 3 climb height
+    public static final double backHab3Height = 138.8;
+    public static final double frontHab3Height = 130; // TODO front 3 climb height
 
-    private static final double neoSpeedEqualizingCoefficient = 0.75; //0.43
-    private static final double frontHab2Height = 73000; // todo
+    private static final double frontEqualizingCoefficient = 0.75;
+    private static final double frontHab2Height = 58;
     private static final double backHab2Height = 58;
     private static boolean firstTime = true;
 
-    /*
+    /**
      * Initializes and sets up all motors and PID Controllers
      */
     static {
@@ -42,7 +40,7 @@ public class Climber {
         backEnc = new CANEncoder(back);
 
         front = new CANSparkMax(8, MotorType.kBrushless);
-        front.setInverted(true);
+        front.setInverted(false);
         frontEnc = new CANEncoder(front);
 
         // Declare PID Output
@@ -61,7 +59,8 @@ public class Climber {
 
             @Override
             public double pidGet() {
-                return Robot.gyro.getPitch();
+                return 0;
+//                return Robot.gyro.getPitch();
             }
         };
 
@@ -89,7 +88,7 @@ public class Climber {
     public static void climbLevelThree(double speed) {
         switch (stepNum) {
             case 0:     //climbing straight up
-                if (getBackEncPosition() > backHab3Height || DriverControls.getShareButton()) {
+                if (getBackEncPosition() > backHab3Height) {
                     PID.setSetpoint(-10);
                     stepNum++;
                 }
@@ -99,96 +98,29 @@ public class Climber {
 
                 break;
             case 1:     //tilting forwards
-                if (Robot.gyro.getPitch() < -10) {
+                if (getBackEncPosition() - getFrontEncPosition() >= 35) { //TODO
                     stepNum++;
                 }
 
                 front.set(speed + balancePidOutput);
                 back.set(speed - balancePidOutput);
                 break;
-            case 2:     //drive forward
-                // TODO how to determine if front wheels are on
-                final double currentDriving = 90;
-                if (Drivetrain.frontRight.getOutputCurrent() >= currentDriving &&
-                        Drivetrain.frontLeft.getOutputCurrent() >= currentDriving) {
-                    stepNum++;
-                }
-
-                Drivetrain.drive(.2, 0, 0);
-                back.set(holdSpeed);
-                front.set(holdSpeed);
-                break;
-            case 3:     // retract front leg
-                if (frontEnc.getPosition() <= 2) { // TODO retracted position
-                    stepNum++;
-                }
-
-                front.set(-1); //TODO PID?
-                break;
-            case 4:     // drive forward:
-                // TODO how to determine if wheels are on? current again, but higher?
-//                if ()
-
-                front.set(holdSpeed);
-                Drivetrain.drive(.2, 0, 0);
-                break;
-            case 5:     // retract back leg while driving forward slightly
-                if (backEnc.getPosition() <= 2) {
-                    stepNum++;
-                }
-
-                back.set(-1); // TODO PID?
-                Drivetrain.drive(.1, 0, 0);
-                break;
-            case 6:     // DONE
-                stepNum++;
-                manualClimbBoth(0);
-                break;
-        }
-    }
-
-    /**
-     * Climb to level two autonomously
-     */
-    public static void climbLevelThree() {
-        switch (stepNum) {
-            case 0:     // Raise front legs
-                if (frontEnc.getPosition() >= frontHab2Height) {
-                    dtStartPosition = Drivetrain.getEncoderPosition();
-                    stepNum++;
-                }
-
-                front.set(1); // TODO PID?
-                break;
-            case 1:     // Drive front wheels onto platform
-                if (Drivetrain.getEncoderPosition() - dtStartPosition >= 2000) { // TODO distance
-                    stepNum++;
-                }
-
-                front.set(0);
-                Drivetrain.drive(.2, 0, 0);
-                break;
             case 2:
-                manualClimbBack(holdSpeed);
                 manualClimbFront(holdSpeed);
+                manualClimbBack(holdSpeed);
                 break;
-//            case 2:     // Raise back leg/retract front leg
-//                if (backEnc.getPosition() >= backHab2Height) {
-//                    if (frontEnc.getPosition() <= 2) {
-//                        dtStartPosition = Drivetrain.getEncoderPosition();
-//                        stepNum++;
-//                    } else {
-//                        back.set(0);
-//                    }
-//                } else {
-//                    if (frontEnc.getPosition() <= 2) {
-//                        front.set(0);
-//                    }
-//                }
+//            case 2:
 //
-//                Drivetrain.drive(0, 0, 0);
-//                back.set(1); // TODO PID?
-//                front.set(-1);
+//                manualClimbFront(-1);
+//                manualClimbBack(holdSpeed);
+//
+//                if (getBackEncPosition() < 5) {
+//                    stepNum++;
+//                }
+//                break;
+//            case 3:
+//                manualClimbFront(0);
+//                manualClimbBack(0);
 //                break;
         }
     }
