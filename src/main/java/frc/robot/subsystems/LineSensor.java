@@ -1,6 +1,11 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.I2C.Port;
 
 public class LineSensor {
