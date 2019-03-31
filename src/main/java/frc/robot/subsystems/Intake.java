@@ -54,7 +54,7 @@ public class Intake {
      * Stops the cargo motor
      */
     public static void stopCargoRollers() {
-        runCargoMotor(0.0);
+        runCargoMotor(-0.07);
         intakeRunning = false;
     }
 

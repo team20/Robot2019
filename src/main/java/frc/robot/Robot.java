@@ -49,17 +49,22 @@ package frc.robot;
  * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNXKK0Okkxxddddool:,'.......'',:lx0NWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  */
 
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.AutoModes;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LineSensor;
 import frc.robot.utils.PrettyPrint;
 
+import static frc.robot.subsystems.Arduino.Colors.Green;
+import static frc.robot.subsystems.Arduino.Colors.Orange;
 import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
 import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
 
@@ -73,7 +78,7 @@ import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
 public class Robot extends TimedRobot {
     private AutoModes auto;
 
-    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
+//    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
     private boolean autoSet;
     private boolean inEndOfMatch;
@@ -101,6 +106,7 @@ public class Robot extends TimedRobot {
         if (inEndOfMatch)
             Arduino.setPattern(3);
         else
+            // TODO
             //the line below has not been fully tested yet (it is for showing the height of the elevator on the LEDs when it is moving)
             //Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
             Arduino.setPattern(2);
@@ -110,8 +116,8 @@ public class Robot extends TimedRobot {
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
         else if (Intake.intakeRunning())
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
-       else if (LineSensor.isBroken())
-           Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+        else if (LineSensor.isBroken())
+            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
         else if (LineSensor.isLineSeen())
             Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
         else
@@ -123,7 +129,6 @@ public class Robot extends TimedRobot {
 //        PrettyPrint.put("Arm Amps", Arm.getPosition());
 //        PrettyPrint.put("Arm Pos", Arm.getPosition());
 
-        PrettyPrint.setFrequency(2);
         PrettyPrint.print();
     }
 
@@ -137,13 +142,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-//        PrettyPrint.put("line sensor total", LineSensor.getTotal());
-//        PrettyPrint.put("line position", LineSensor.getLinePosition());
-//        PrettyPrint.put("turn speed", LineSensor.getTurnSpeed());
-
-        PrettyPrint.put("Front Pos", Climber.getFrontEncPosition());
-        PrettyPrint.put("Back Pos", Climber.getBackEncPosition());
-        PrettyPrint.put("DT Pos", Drivetrain.getEncoderPosition());
+        PrettyPrint.put("Amps", Elevator.getCurrent());
+        PrettyPrint.put("Vel", Elevator.getVelocity());
+        PrettyPrint.put("Temp", Elevator.getTemperature());
 
         DriverControls.driverControls();
         OperatorControls.operatorControls();
