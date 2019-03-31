@@ -31,7 +31,7 @@ public class Arm {
         }
     }
 
-    /**
+    /*
      * Initializes all necessary objects and variables
      */
     static {
@@ -54,6 +54,7 @@ public class Arm {
         pidController.setD(0.8);
         pidController.setOutputRange(-1.0, 1.0);
     }
+
     /**
      * Sets the value of the elevator
      *
