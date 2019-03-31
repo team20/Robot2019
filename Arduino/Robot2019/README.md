@@ -30,7 +30,7 @@
     * `0`: no
     * `1`: yes
 * `1`: X-value of coordinates of object to turn to
-    * integer value from `0` to `315` in color mode and `0` to `78` in line mode
+    * integer value from `0` to `315`
 ## `if` Loops
 ### What is an `if` loop?
 An `if` loop yields essentially the same result as a `for` loop but instead of automatically running every iteration consecutively, only one iteration is run every time it is called. This allows for multiple things that require `for` loops to run at the same time (not really, just alternating really fast) on a single thread (because the Arduino only has one). It is used in our Arduino code so that one Arduino can handle the LEDs and the Pixy2 camera at the same time. 
