@@ -1,63 +1,65 @@
 package frc.robot.controls;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LineSensor;
 
-public class DriverControls {
-    private static PS4Controller joy;
-    private static double speedStraight, speedLeft, speedRight;
-    private static boolean climberOverride, climberRetract, climbingMode;
-    private static NetworkTableEntry cameraSelector;
-    private static boolean camIsMain;
-    private static boolean climbingLevelThree = true;
+public class DriverControls extends PS4Controller {
+    private static DriverControls singletonInstance = new DriverControls(0, 2);
 
-    /*
-     * Initializes the driver controller
+    private double speedStraight, speedLeft, speedRight;
+    private boolean climberOverride, climberRetract, climbingMode;
+    private NetworkTableEntry cameraSelector;
+    private boolean camIsMain;
+    private boolean climbingLevelThree = true;
+
+    public static void driverControls() {
+        singletonInstance.controls();
+    }
+
+    /**
+     * Initializes the controller
+     *
+     * @param portMain   :   main port of the controller
+     * @param portRumble : port with external PS4 drivers
      */
-    static {
-        joy = new PS4Controller(0, 2);
-        speedStraight = 0;
-        speedLeft = 0;
-        speedRight = 0;
-        climberOverride = false;
-        climberRetract = false;
-        climbingMode = false;
-        cameraSelector = NetworkTableInstance.getDefault().getEntry("stream"); //TODO
-        camIsMain = true;
+    private DriverControls(int portMain, int portRumble) {
+        super(portMain, portRumble);
     }
 
     /**
      * Runs the driver controls
      */
-    public static void driverControls() {
-
-        if (joy.getButtonDRight()) climbingMode = true;
-        if (joy.getButtonDLeft()) climbingMode = false;
+    private void controls() {
+        if (getButtonDRight()) climbingMode = true;
+        if (getButtonDLeft()) climbingMode = false;
 
         if (climbingMode) {
-            if (joy.getRightTriggerAxis() > .2) {
-                speedStraight = joy.getRightTriggerAxis();
+            if (getRightTriggerAxis() > .2) {
+                speedStraight = getRightTriggerAxis();
                 speedLeft = 0;
                 speedRight = 0;
-            } else if (joy.getLeftTriggerAxis() < 0.2) {
+            } else if (getLeftTriggerAxis() < 0.2) {
                 speedStraight = 0.0;
             }
-            if (joy.getLeftTriggerAxis() > .2) {
-                speedStraight = -joy.getLeftTriggerAxis();
+            if (getLeftTriggerAxis() > .2) {
+                speedStraight = -getLeftTriggerAxis();
                 speedLeft = 0;
                 speedRight = 0;
-            } else if (joy.getRightTriggerAxis() < 0.2) {
+            } else if (getRightTriggerAxis() < 0.2) {
                 speedStraight = 0.0;
             }
 
-            if (joy.getRightYAxis() > .1 || joy.getRightYAxis() < -.1) {
-                Climber.manualClimbFront(-joy.getRightYAxis());
+            if (getRightYAxis() > .1 || getRightYAxis() < -.1) {
+                Climber.manualClimbFront(-getRightYAxis());
             } else {
                 Climber.manualClimbFront(0.0);
             }
-            if (joy.getLeftYAxis() > .1 || joy.getLeftYAxis() < -.1) {
-                Climber.manualClimbBack(-joy.getLeftYAxis());
+            if (getLeftYAxis() > .1 || getLeftYAxis() < -.1) {
+                Climber.manualClimbBack(-getLeftYAxis());
             } else {
                 Climber.manualClimbBack(0.0);
             }
@@ -67,39 +69,39 @@ public class DriverControls {
             }
         } else {
             //Drivetrain Controls
-            if (Math.abs(joy.getLeftYAxis()) > 0.1) {
-                speedStraight = -joy.getLeftYAxis();
+            if (Math.abs(getLeftYAxis()) > 0.1) {
+                speedStraight = -getLeftYAxis();
             } else {
                 speedStraight = 0.0;
             }
 
             if (!climberOverride) {
                 //line sensor
-                if (!joy.getTriButton() || !LineSensor.isLineSeen()) {
-                    joy.setRumble(0);
+                if (!getTriButton() || !LineSensor.isLineSeen()) {
+                    setRumble(0);
                     if (LineSensor.linePid.isEnabled())
                         LineSensor.linePid.reset();
                     if (Elevator.aboveStageThreshold()) {
-                        if (joy.getSquareButton()) {
-                            speedLeft = joy.getLeftTriggerAxis() * 0.25;
-                            speedRight = joy.getRightTriggerAxis() * 0.25;
+                        if (getSquareButton()) {
+                            speedLeft = getLeftTriggerAxis() * 0.25;
+                            speedRight = getRightTriggerAxis() * 0.25;
                             Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
                             Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
                         } else {
-                            speedLeft = joy.getLeftTriggerAxis() * 0.4;
-                            speedRight = joy.getRightTriggerAxis() * 0.4;
+                            speedLeft = getLeftTriggerAxis() * 0.4;
+                            speedRight = getRightTriggerAxis() * 0.4;
                             Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
                             Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
                         }
                     } else {
-                        if (joy.getSquareButton()) {
-                            speedLeft = joy.getLeftTriggerAxis() * 0.6;
-                            speedRight = joy.getRightTriggerAxis() * 0.6;
+                        if (getSquareButton()) {
+                            speedLeft = getLeftTriggerAxis() * 0.6;
+                            speedRight = getRightTriggerAxis() * 0.6;
                             Drivetrain.frontLeft.configOpenloopRamp(0.15); //shh don't tell victor
                             Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
                         } else {
-                            speedLeft = joy.getLeftTriggerAxis() * 0.75;
-                            speedRight = joy.getRightTriggerAxis() * 0.75;
+                            speedLeft = getLeftTriggerAxis() * 0.75;
+                            speedRight = getRightTriggerAxis() * 0.75;
                             Drivetrain.frontLeft.configOpenloopRamp(0.15); //shh don't tell victor
                             Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
                         }
@@ -111,14 +113,14 @@ public class DriverControls {
                         speedRight -= LineSensor.getTurnSpeed();
                         speedLeft += LineSensor.getTurnSpeed();
                     } else
-                        joy.setRumble(1);
+                        setRumble(1);
                 }
             }
 
             //Camera Controls
-            if (joy.getRightYAxis() < -.2) {
+            if (getRightYAxis() < -.2) {
                 camIsMain = true;
-            } else if (joy.getRightYAxis() > .2) {
+            } else if (getRightYAxis() > .2) {
                 camIsMain = false;
             }
 
@@ -126,11 +128,11 @@ public class DriverControls {
 
             //Climber Controls
             //extend
-            if (!joy.getXButton()) {
-                climberOverride = joy.getCircleButton(); //was right bumper
+            if (!getXButton()) {
+                climberOverride = getCircleButton(); //was right bumper
                 if (climberOverride) {
-                    Climber.manualClimbFront(-joy.getRightTriggerAxis());
-                    Climber.manualClimbBack(-joy.getLeftTriggerAxis());
+                    Climber.manualClimbFront(-getRightTriggerAxis());
+                    Climber.manualClimbBack(-getLeftTriggerAxis());
                 } else {
                     Climber.stop();
                 }
@@ -138,8 +140,8 @@ public class DriverControls {
 
 
             //retract
-            if (Math.abs(joy.getRightYAxis()) > 0.1) {
-                Climber.retractClimber(joy.getRightTriggerAxis());
+            if (Math.abs(getRightYAxis()) > 0.1) {
+                Climber.retractClimber(getRightTriggerAxis());
                 climberRetract = true;
             } else {
                 if (climberRetract) {
@@ -151,49 +153,45 @@ public class DriverControls {
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
 
         // Auto Climb
-        if (joy.getXButton()) {
+        if (getXButton()) {
             Climber.climbLevelThree(1.0);
         }
 
-        if (joy.getButtonDDown()) {
+        if (getButtonDDown()) {
             Climber.climbLevelTwo();
         }
 
-        if (joy.getTrackpadButton() && joy.getShareButton()) {
+        if (getTrackpadButton() && getShareButton()) {
             Climber.setStepNum(0);
         }
 
         //Intake Controls
-        if (joy.getRightBumperButton()) {
+        if (getRightBumperButton()) {
             Intake.spitCargo();
         } else {
             Intake.stopCargoRollers();
         }
-        if (joy.getLeftBumperButton()) {
+        if (getLeftBumperButton()) {
             Elevator.dropHatch();
         } else {
             Elevator.setHatchDrop = false;
         }
 
-        if (joy.getOptionsButton()) {
+        if (getOptionsButton()) {
             Drivetrain.setBrakeMode(true);
         }
 
-        if (joy.getShareButton()) {
+        if (getShareButton()) {
             Drivetrain.setBrakeMode(false);
         }
     }
 
-    public static boolean getShareButton() {
-        return joy.getShareButton();
-    }
-
     public static boolean isOverridingAuto() {
-        return joy.anythingPressed();
+        return singletonInstance.anythingPressed();
     }
 
     // TODO this button
     public static boolean isStoppingAutoControl() {
-        return joy.getTrackpadButton();
+        return singletonInstance.getTrackpadButton();
     }
 }
