@@ -15,14 +15,14 @@ class I2C {
     static byte getDiagnosticPattern();
     static byte getPixyCamState();
     static bool getLineFollowerState();
-    static bool getUltrasonicState();
-    static void setWriteData(bool objInView, byte angle, byte distance);
+//    static bool getUltrasonicState();
+    static void setWriteData(bool objInView, byte angle);
 
   private:
     //data received from RoboRio
-    static byte readData[6];
+    static byte readData[5];
     //data to send to RoboRio
-    static byte writeData[3];
+    static byte writeData[2];
 };
 
 #endif
