@@ -1,9 +1,7 @@
 package frc.robot.auto.functions;
 
-import edu.wpi.first.wpilibj.PIDController;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.LineSensor;
 import frc.robot.utils.PrettyPrint;
 
 import java.util.InputMismatchException;
@@ -13,11 +11,6 @@ import java.util.InputMismatchException;
  * <p>if {@code values[0]} is true, {@code Align} skips the turn to target phase</p>
  */
 public class Align extends RobotFunction<Boolean> {
-    private PIDController
-//            anglePid,
-//            speedPid,
-            linePid;
-
     private int
             step,
             prevStep;
@@ -27,10 +20,6 @@ public class Align extends RobotFunction<Boolean> {
             finished;
 
     public Align() {
-//        anglePid = new PIDController(0.012, 0.001, 0.04, Arduino.pidSource, Arduino.pidOutput);
-//        speedPid = new PIDController(0.02, 0, 0.05, Arduino.pidSource, Arduino.pidOutput);
-        linePid = new PIDController(0.002, 0, 0, LineSensor.pidSource, LineSensor.pidOutput);
-
         step = 0;
         prevStep = -1;
         autoChanged = true;
@@ -115,7 +104,7 @@ public class Align extends RobotFunction<Boolean> {
         Drivetrain.drive(0, 0, 0);
 //        anglePid.reset();
 //        speedPid.reset();
-        linePid.reset();
+        // linePid.reset();
         PrettyPrint.once("ALIGN DONE");
     }
 

@@ -6,27 +6,20 @@
 
 #include "I2C.h"
 #include "LEDStrip.h"
-//#include "PixyCam.h"
-//#include "LineFollower.h"
+#include "PixyCam.h"
 //#include "Ultrasonic.h"
 
 void setup() {
   Serial.begin(9600);
   Serial.println("program started");
-  I2C::initialize(1);
+  I2C::initialize(0x1);
   LEDStrip::initialize(6, 15, 255);
-//  PixyCam::initialize();
-//  LineFollower::initialize();
+  PixyCam::initialize();
 //  Ultrasonic::initialize();
 }
 
 void loop() {
-//  Serial.print(I2C::getAllianceColor()); Serial.print("\t"); Serial.print(I2C::getPattern()); Serial.print("\t"); Serial.print(I2C::getDiagnosticColor()); Serial.print("\t"); Serial.println(I2C::getDiagnosticPattern());
   LEDStrip::updateDisplay(I2C::getAllianceColor(), I2C::getPattern(), I2C::getDiagnosticColor(), I2C::getDiagnosticPattern());
-//  PixyCam::refresh(2);    //I2C::getPixyCamState());
-//  if (I2C::getLineFollowerState())
-//    LineFollower::updateLineData();
-//  if (I2C::getUltrasonicState())
-//    Ultrasonic::updateDistance();
-//  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue(), Ultrasonic::getDistance());
+  PixyCam::refresh(I2C::getPixyCamState());
+  I2C::setWriteData(PixyCam::getObjInView(), PixyCam::getXValue());
 }
