@@ -49,9 +49,9 @@ public class Arm {
         armMotor.setSmartCurrentLimit(40);
 
         //sends corresponding values to the pid controller object
-        pidController.setP(0.065); // was .08 then was .075
+        pidController.setP(0.08);
         pidController.setI(0.0);
-        pidController.setD(0.8);
+        pidController.setD(2.0);
         pidController.setOutputRange(-1.0, 1.0);
     }
 
