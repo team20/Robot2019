@@ -1,7 +1,7 @@
 #include "I2C.h"
 
-byte I2C::readData[6];
-byte I2C::writeData[3];
+byte I2C::readData[5];
+byte I2C::writeData[2];
 
 void I2C::initialize(byte address) {
   Wire.begin(address);
@@ -14,9 +14,8 @@ void I2C::initialize(byte address) {
 }
 
 void I2C::receiveEvent() {
-  //for every byte received...
+  //get bytes of data
   for (byte i = 0; Wire.available() > 0 && i < sizeof(readData) / sizeof(byte); i ++)
-    //store it in readData[]
     readData[i] = Wire.read();
 }
 
@@ -45,12 +44,12 @@ byte I2C::getPixyCamState() {
   return readData[4];
 }
 
-bool I2C::getUltrasonicState() {
-  return readData[5] == 1;
-}
+//bool I2C::getUltrasonicState() {
+//  return readData[5] == 1;
+//}
 
-void I2C::setWriteData(bool objInView, byte xValue, byte distance) {
+void I2C::setWriteData(bool objInView, byte xValue) {
   writeData[0] = objInView ? 1 : 0;
   writeData[1] = xValue;
-  writeData[2] = distance;
+//  writeData[2] = distance;
 }
