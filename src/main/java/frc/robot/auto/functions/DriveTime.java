@@ -52,9 +52,9 @@ public class DriveTime extends RobotFunction<Double> {
         }
         PrettyPrint.put("DriveTime Elapsed", Timer.getFPGATimestamp() - startTime);
         if (Math.abs(Timer.getFPGATimestamp() - startTime) < time) {
-            Drivetrain.drive(speed, 0.0, 0.0);
+            Drivetrain.drive(speed);
         } else {
-            Drivetrain.drive(0.0, 0.0, 0.0);
+            Drivetrain.drive(0.0);
             isFinished = true;
         }
     }
@@ -72,7 +72,7 @@ public class DriveTime extends RobotFunction<Double> {
      */
     @Override
     public void stop() {
-        Drivetrain.drive(0.0, 0.0, 0.0);
+        Drivetrain.drive(0.0);
     }
 
 }

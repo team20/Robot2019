@@ -1,18 +1,13 @@
 package frc.robot.controls;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LineSensor;
+import frc.robot.subsystems.*;
 
 public class DriverControls extends PS4Controller {
     private static DriverControls singletonInstance = new DriverControls(0, 2);
 
     private double speedStraight, speedLeft, speedRight;
     private boolean climberOverride, climberRetract, climbingMode;
-    private NetworkTableEntry cameraSelector;
+    //    private NetworkTableEntry cameraSelector;
     private boolean camIsMain;
     private boolean climbingLevelThree = true;
 
@@ -54,14 +49,15 @@ public class DriverControls extends PS4Controller {
             }
 
             if (getRightYAxis() > .1 || getRightYAxis() < -.1) {
-                Climber.manualClimbFront(-getRightYAxis());
+                Climber.front.set(-getRightYAxis());
             } else {
-                Climber.manualClimbFront(0.0);
+                Climber.front.set(0.0);
             }
             if (getLeftYAxis() > .1 || getLeftYAxis() < -.1) {
-                Climber.manualClimbBack(-getLeftYAxis());
+//                Climber.back.set(-getLeftYAxis());
+                speedStraight = Climber.retractBackLeg(-getLeftYAxis());
             } else {
-                Climber.manualClimbBack(0.0);
+                Climber.back.set(0.0);
             }
 
             if (Climber.getBackEncPosition() > Climber.backHab3Height / 2) {
@@ -124,30 +120,29 @@ public class DriverControls extends PS4Controller {
                 camIsMain = false;
             }
 
-            cameraSelector.setDouble(camIsMain ? 0 : 1);
+//            cameraSelector.setDouble(camIsMain ? 0 : 1);
 
             //Climber Controls
             //extend
-            if (!getXButton()) {
-                climberOverride = getCircleButton(); //was right bumper
-                if (climberOverride) {
-                    Climber.manualClimbFront(-getRightTriggerAxis());
-                    Climber.manualClimbBack(-getLeftTriggerAxis());
-                } else {
-                    Climber.stop();
-                }
-            }
+//            if (!getXButton()) {
+//                climberOverride = getCircleButton(); //was right bumper
+//                if (climberOverride) {
+//                    Climber.front.set(-getRightTriggerAxis());
+//                    Climber.back.set(-getLeftTriggerAxis());
+//                } else {
+//                    Climber.stop();
+//                }
+//            }
 
-
-            //retract
-            if (Math.abs(getRightYAxis()) > 0.1) {
-                Climber.retractClimber(getRightTriggerAxis());
-                climberRetract = true;
-            } else {
-                if (climberRetract) {
-                    Climber.stop();
-                }
-            }
+//            //retract
+//            if (Math.abs(getRightYAxis()) > 0.1) {
+//                Climber.retractBackLeg(getRightTriggerAxis());
+//                climberRetract = true;
+//            } else {
+//                if (climberRetract) {
+//                    Climber.stop();
+//                }
+//            }
         }
 
         Drivetrain.drive(speedStraight, speedRight, speedLeft);
