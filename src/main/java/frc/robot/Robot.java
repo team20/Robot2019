@@ -55,12 +55,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.auto.AutoModes;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.Arduino;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LineSensor;
+import frc.robot.subsystems.*;
 import frc.robot.utils.PrettyPrint;
 
 import static frc.robot.subsystems.Arduino.Colors.Green;
@@ -84,6 +79,7 @@ public class Robot extends TimedRobot {
     private boolean inEndOfMatch;
 
     private double startTime;
+    private double timeStamp;   //for LED color
 
     @Override
     public void robotInit() {
@@ -91,6 +87,7 @@ public class Robot extends TimedRobot {
 
         autoSet = false;
         inEndOfMatch = false;
+        timeStamp = Timer.getFPGATimestamp();
 
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
         Arduino.setPattern(1);
@@ -106,10 +103,7 @@ public class Robot extends TimedRobot {
         if (inEndOfMatch)
             Arduino.setPattern(3);
         else
-            // TODO
-            //the line below has not been fully tested yet (it is for showing the height of the elevator on the LEDs when it is moving)
-            //Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
-            Arduino.setPattern(2);
+            Arduino.setPattern(Elevator.doneMoving() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
 
         //set diagnostic part of LEDs
         if (Intake.isCargoPresent())
@@ -123,11 +117,20 @@ public class Robot extends TimedRobot {
         else
             Arduino.setDiagnosticPattern(null, 0);
 
-//        PrettyPrint.put("Elev Amps", Elevator.getCurrent());
-//        PrettyPrint.put("Elev Temp", Elevator.getTemperature());
-//        PrettyPrint.put("Elev Pos", Elevator.getPosition());
-//        PrettyPrint.put("Arm Amps", Arm.getPosition());
-//        PrettyPrint.put("Arm Pos", Arm.getPosition());
+        // TODO not this??
+        var matchType = DriverStation.getInstance().getMatchType();
+        switch (matchType) {
+            case Practice:
+            case Qualification:
+            case Elimination:
+                break;
+            case None:
+            default:
+                if (Timer.getFPGATimestamp() - timeStamp > .08) {
+                    Arduino.writeData[0] = (byte) ((Arduino.writeData[0] + 1) % 3);
+                    timeStamp = Timer.getFPGATimestamp();
+                }
+        }
 
         PrettyPrint.print();
     }
@@ -137,14 +140,18 @@ public class Robot extends TimedRobot {
         Arm.setPosition(STARTING_CONFIG);
         Elevator.setPosition(ELEVATOR_FLOOR);
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
+        timeStamp = Timer.getFPGATimestamp();
     }
 
 
     @Override
     public void autonomousPeriodic() {
-        PrettyPrint.put("Amps", Elevator.getCurrent());
-        PrettyPrint.put("Vel", Elevator.getVelocity());
-        PrettyPrint.put("Temp", Elevator.getTemperature());
+//        PrettyPrint.put("Temp", Elevator.getTemperature());
+        PrettyPrint.put("Step", Climber.getStepNum());
+        PrettyPrint.put("back", Climber.getBackEncPosition());
+        PrettyPrint.put("front", Climber.getFrontEncPosition());
+        PrettyPrint.put("drivetrain", Drivetrain.getEncoderPosition());
+        PrettyPrint.put("drive vel", Drivetrain.getEncoderVelocity());
 
         DriverControls.driverControls();
         OperatorControls.operatorControls();
@@ -161,6 +168,7 @@ public class Robot extends TimedRobot {
         if (Timer.getFPGATimestamp() - startTime >= 135 - 40) {
             inEndOfMatch = true;
         }
+
         DriverControls.driverControls();
         OperatorControls.operatorControls();
     }

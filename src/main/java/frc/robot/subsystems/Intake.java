@@ -35,7 +35,7 @@ public class Intake {
      */
     public static void spitCargo() {
         if (Elevator.aboveStageThreshold()) {
-            runCargoMotor(0.7);
+            runCargoMotor(0.5);
         } else {
             runCargoMotor(1.0);
         }
