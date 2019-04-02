@@ -90,6 +90,7 @@ void PixyCam::updateServos() {
 }
 
 void PixyCam::updateXValue() {
-  //maps from servo value to servo angle (precision of 2 degrees)
-  xValue = map(panValue, 0, 1000, 75, 0);
+//  //maps from servo value to servo angle (precision of 2 degrees)
+//  xValue = map(panValue, 0, 1000, 75, 0);
+  xValue = avgX;
 }
