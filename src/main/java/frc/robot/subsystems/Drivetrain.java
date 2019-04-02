@@ -31,6 +31,16 @@ public class Drivetrain {
 
         frontLeft.setSelectedSensorPosition(0);
         frontRight.setSelectedSensorPosition(0);
+
+        frontLeft.setSensorPhase(false);
+        frontRight.setSensorPhase(false);
+    }
+
+    /**
+     * makes the drive train move in arcade drive
+     */
+    public static void drive(double speed) {
+        drive(speed, 0.0, 0.0);
     }
 
     /**
@@ -86,5 +96,10 @@ public class Drivetrain {
 
     public static double getEncoderVelocity() {
         return (frontLeft.getSelectedSensorVelocity() + frontRight.getSelectedSensorVelocity()) / 2.0;
+    }
+
+    public static void resetEncoders() {
+        frontLeft.setSelectedSensorPosition(0);
+        frontRight.setSelectedSensorPosition(0);
     }
 }

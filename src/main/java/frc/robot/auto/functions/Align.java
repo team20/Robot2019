@@ -101,7 +101,7 @@ public class Align extends RobotFunction<Boolean> {
 
     @Override
     public void stop() {
-        Drivetrain.drive(0, 0, 0);
+        Drivetrain.drive(0);
 //        anglePid.reset();
 //        speedPid.reset();
         // linePid.reset();

@@ -26,7 +26,7 @@ public class Arduino {
     //I2C port to use with Arduino
     private static final int address;
     //data to be written to Arduino
-    private static byte[] writeData;
+    public static byte[] writeData;
     //data read from Arduino
     private static byte[] readData;
     //does the camera see an object?
