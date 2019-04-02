@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.I2C.Port;
 
 public class LineSensor {
     public static final PIDController linePid;
-    public static final PIDSource pidSource;
-    public static final PIDOutput pidOutput;
+    private static final PIDSource pidSource;
+    private static final PIDOutput pidOutput;
     // separate thread for data collection and calculations
     private static final Notifier thread;
     // I2C communication protocol
