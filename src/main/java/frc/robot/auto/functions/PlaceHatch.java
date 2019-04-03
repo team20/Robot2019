@@ -1,12 +1,12 @@
 package frc.robot.auto.functions;
 
 import frc.robot.auto.setup.RobotFunction;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Elevator;
 
 /**
  * Opens the hatch grabbing mechanism
  */
-public class PlaceHatch extends RobotFunction<Void> {
+public class PlaceHatch extends RobotFunction {
     /**
      * Initializes all needed variables
      */
@@ -14,7 +14,8 @@ public class PlaceHatch extends RobotFunction<Void> {
     }
 
     @Override
-    public void collectInputs(Void... values) {
+    public void init() {
+        Elevator.dropHatch();
     }
 
     /**
@@ -22,7 +23,6 @@ public class PlaceHatch extends RobotFunction<Void> {
      */
     @Override
     public void run() {
-        Intake.openHatch();
     }
 
     @Override

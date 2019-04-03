@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motion.MotionProfileStatus;
 import com.ctre.phoenix.motion.SetValueMotionProfile;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -96,6 +97,18 @@ public class Drivetrain {
 
     public static double getEncoderVelocity() {
         return (frontLeft.getSelectedSensorVelocity() + frontRight.getSelectedSensorVelocity()) / 2.0;
+    }
+
+    public static MotionProfileStatus getLeftProfileStatus() {
+        MotionProfileStatus status = new MotionProfileStatus();
+        Drivetrain.frontLeft.getMotionProfileStatus(status);
+        return status;
+    }
+
+    public static MotionProfileStatus getRightProfileStatus() {
+        MotionProfileStatus status = new MotionProfileStatus();
+        Drivetrain.frontRight.getMotionProfileStatus(status);
+        return status;
     }
 
     public static void resetEncoders() {

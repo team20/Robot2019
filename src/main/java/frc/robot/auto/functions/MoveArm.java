@@ -3,38 +3,33 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Arm;
 
-import java.util.InputMismatchException;
-
 /**
  * Moves the arm to a desired position in rotations
- * <p>{@code values[0]} is the position in rotations</p>
  */
-public class MoveArm extends RobotFunction<Double> {
-
+public class MoveArm extends RobotFunction {
     private double position;
 
     /**
      * Initializes all needed variables
      */
-    public MoveArm() {
-        position = 0;
+    public MoveArm(double position) {
+        this.position = position;
     }
 
-    /**
-     * Stores the desired position of the arm
-     */
-    @Override
-    public void collectInputs(Double... values) {
-        if (values.length != 1) throw new InputMismatchException("MoveArm requires ONE input");
-        position = values[0];
+    public MoveArm(Arm.Position position) {
+        this.position = position.value;
     }
 
     /**
      * Sets the arm to the desired set position
      */
     @Override
-    public void run() {
+    public void init() {
         Arm.setPosition(position);
+    }
+
+    @Override
+    public void run() {
     }
 
     /**

@@ -7,6 +7,24 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.auto.AutoModes;
+import frc.robot.controls.DriverControls;
+import frc.robot.controls.OperatorControls;
+import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LineSensor;
+import frc.robot.utils.PrettyPrint;
+
+import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
+import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
+
 /**
  * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNOdoc:cO0;.   .kMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * MMMMMMMMMMMMMMMMMMMMMMMMWXOxocl0WX:     ':.    .xMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
@@ -47,28 +65,6 @@ package frc.robot;
  * MMMMMMMMMMMN0O00KXXNNWWWMMMMWX0kdl:,''',;:::;;''...            ,oOKKKKXXKKKKKKKKOkdllclloxkxl:::cccccld0WMMMMMMMMMMMMMMM
  * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWWXK0kxolc:;,''.....        .:ldxxkkOOkkxdollllloxOKNWMMMMMWNXKKKXNWMMMMMMMMMMMMMMMMMM
  * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWNXKK0Okkxxddddool:,'.......'',:lx0NWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
- */
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.auto.AutoModes;
-import frc.robot.controls.DriverControls;
-import frc.robot.controls.OperatorControls;
-import frc.robot.subsystems.*;
-import frc.robot.utils.PrettyPrint;
-
-import static frc.robot.subsystems.Arduino.Colors.Green;
-import static frc.robot.subsystems.Arduino.Colors.Orange;
-import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
-
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.gradle file in the
- * project.
  */
 public class Robot extends TimedRobot {
     private AutoModes auto;

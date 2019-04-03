@@ -4,24 +4,18 @@ import frc.robot.auto.setup.RobotFunction;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 
-import java.util.InputMismatchException;
-
 /**
  * Allows for manual control of robot as a {@code RobotFunction}
- * <p>if {@code values[0]} is true, this function's {@code isFinished} never returns true</p>
  */
-public class TeleopControls extends RobotFunction<Boolean> {
+public class TeleopControls extends RobotFunction {
     private boolean isFullyTeleop;
 
-    /**
-     * @param values one boolean; whether or not the teleop control lasts for the rest of auto
-     */
-    @Override
-    public void collectInputs(Boolean... values) {
-        if (values.length != 1) throw new InputMismatchException("TeleopControls requires ONE boolean");
+    public TeleopControls(boolean isFullyTeleop) {
+        this.isFullyTeleop = isFullyTeleop;
+    }
 
-        isFullyTeleop = values[0];
-        super.isParallel = false; //Don't run Teleop in parallel
+    @Override
+    public void init() {
     }
 
     @Override

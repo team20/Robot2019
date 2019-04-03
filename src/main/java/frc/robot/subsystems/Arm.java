@@ -24,7 +24,7 @@ public class Arm {
         DROP_AND_COLLECT_HATCH(-40.0),
         CARGO_SHIP_ANGLE(-51.14);
 
-        double value;
+        public double value;
 
         Position(double position) {
             value = position;
