@@ -79,6 +79,10 @@ public class Intake {
         return !cargoSensor.get();
     }
 
+    public static boolean cargoNotPresent() {
+        return cargoSensor.get();
+    }
+
     /**
      * Returns if the hatch is closed
      */
