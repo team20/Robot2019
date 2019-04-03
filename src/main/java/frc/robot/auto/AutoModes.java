@@ -42,7 +42,7 @@ public class AutoModes {
      * Autonomous: crosses the HAB line
      */
     public void crossLine() {
-        rocketScript.addFunction(new DriveTime(), 0.5, 2.0);
+        rocketScript.addFunction(new DriveTime(0.5, 2.0));
     }
 
     /**
@@ -51,14 +51,14 @@ public class AutoModes {
      * @param skip true if turning towards alignment tape should be skipped
      */
     public void align(boolean skip) {
-        rocketScript.addFunction(new Align(), skip);
+        rocketScript.addFunction(new Align(skip));
     }
 
     /**
      * No auto - just driver and operator controls the whole time
      */
     public void fullyTeleop() {
-        rocketScript.addFunction(new TeleopControls(), true);
+        rocketScript.addFunction(new TeleopControls(true));
     }
 
     /**

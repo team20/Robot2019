@@ -6,19 +6,16 @@ import frc.robot.subsystems.Intake;
 /**
  * Outtakes the cargo from the intake
  */
-public class RunCargo extends RobotFunction<Void> {
+public class CollectCargo extends RobotFunction {
 
     /**
      * Initializes all needed variables
      */
-    public RunCargo() {
+    public CollectCargo() {
     }
 
-    /**
-     * Stores the desired speed of the cargo collector
-     */
     @Override
-    public void collectInputs(Void... values) {
+    public void init() {
     }
 
     /**
@@ -39,6 +36,6 @@ public class RunCargo extends RobotFunction<Void> {
      */
     @Override
     public boolean isFinished() {
-        return true;
+        return Intake.isCargoPresent();
     }
 }
