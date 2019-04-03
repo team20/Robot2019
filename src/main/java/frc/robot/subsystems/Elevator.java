@@ -176,7 +176,7 @@ public class Elevator {
         ELEVATOR_COLLECT_CARGO(6.8),
         ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
 
-        double value;
+        public double value;
 
         Position(double position) {
             value = position;

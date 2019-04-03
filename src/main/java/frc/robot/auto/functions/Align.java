@@ -4,13 +4,11 @@ import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.PrettyPrint;
 
-import java.util.InputMismatchException;
-
 /**
  * Align to vision target
  * <p>if {@code values[0]} is true, {@code Align} skips the turn to target phase</p>
  */
-public class Align extends RobotFunction<Boolean> {
+public class Align extends RobotFunction {
     private int
             step,
             prevStep;
@@ -19,21 +17,15 @@ public class Align extends RobotFunction<Boolean> {
             autoChanged,
             finished;
 
-    public Align() {
-        step = 0;
+    public Align(boolean skipTurningToTarget) {
+        step = skipTurningToTarget ? 1 : 0;
         prevStep = -1;
         autoChanged = true;
         finished = false;
     }
 
-    /**
-     * whether or not to skip turning towards the target
-     */
     @Override
-    public void collectInputs(Boolean... values) {
-        if (values.length != 1) throw new InputMismatchException("Align requires ONE value");
-
-        step = values[0] ? 1 : 0;
+    public void init() {
     }
 
     @Override

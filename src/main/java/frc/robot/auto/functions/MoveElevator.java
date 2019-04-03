@@ -3,30 +3,27 @@ package frc.robot.auto.functions;
 import frc.robot.auto.setup.RobotFunction;
 import frc.robot.subsystems.Elevator;
 
-import java.util.InputMismatchException;
-
 /**
  * Moves the elevator to a position
  * <p>{@code values[0]} is the position of the elevator in ticks</p>
  */
-public class MoveElevator extends RobotFunction<Integer> {
-    private int position;
+public class MoveElevator extends RobotFunction {
+    private double position;
 
     /**
      * Initializes all needed variables
      */
-    public MoveElevator() {
-        position = 0;
+    public MoveElevator(int position) {
+        this.position = position;
     }
 
-    /**
-     * Stores the desired position of the elevator
-     */
-    @Override
-    public void collectInputs(Integer... values) {
-        if (values.length != 1) throw new InputMismatchException("MoveElevator requires ONE input");
+    public MoveElevator(Elevator.Position position) {
+        this.position = position.value;
+    }
 
-        position = values[0];
+    @Override
+    public void init() {
+        Elevator.setPosition(position);
     }
 
     /**
@@ -34,7 +31,6 @@ public class MoveElevator extends RobotFunction<Integer> {
      */
     @Override
     public void run() {
-        Elevator.setPosition(position);
     }
 
     /**
@@ -50,6 +46,5 @@ public class MoveElevator extends RobotFunction<Integer> {
      */
     @Override
     public void stop() {
-        Elevator.stop();
     }
 }

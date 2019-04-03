@@ -8,7 +8,7 @@ import frc.robot.utils.PrettyPrint;
 import java.util.ArrayList;
 
 public class RocketScript {
-    private ArrayList<RobotFunction<?>> auto;
+    private ArrayList<RobotFunction> auto;
     private int autoSteps;
     private boolean lastCommand;
 
@@ -19,29 +19,23 @@ public class RocketScript {
         auto = new ArrayList<>();
         autoSteps = 0;
         lastCommand = false;
-
-//        PrettyPrint.put("script size", auto::size);
     }
 
     /**
      * Adds a subsequent function to the ArrayList
      * the use of {@code values} depends on the function
      */
-    @SafeVarargs
-    final public <T> void addFunction(RobotFunction<T> fxn, T... values) {
+    final public void addFunction(RobotFunction fxn) {
         auto.add(fxn);
-        fxn.collectInputs(values);
     }
 
     /**
      * Adds a function to run parallel to the one added before to the ArrayList,
      * the use of {@code values} depends on the function
      */
-    @SafeVarargs
-    final public <T> void addInParallel(RobotFunction<T> fxn, T... values) {
+    final public void addInParallel(RobotFunction fxn) {
         auto.add(fxn);
         fxn.isParallel = true;
-        fxn.collectInputs(values);
     }
 
     /**
@@ -50,11 +44,11 @@ public class RocketScript {
      * <p>If the driver presses the override auto button, a {@code TeleopControls} function is inserted
      * at the beginning of the RocketScript</p>
      */
+    //TODO check should be Function.isFinished() || Function.isParallel maybe
     public void run() {
         if (DriverControls.isOverridingAuto() || OperatorControls.isOverridingAuto()) {
             if (!(auto.get(0) instanceof TeleopControls)) {
-                TeleopControls fxn = new TeleopControls();
-                fxn.collectInputs(false);
+                TeleopControls fxn = new TeleopControls(false);
                 auto.add(0, fxn);
             }
         }
@@ -63,9 +57,9 @@ public class RocketScript {
             lastCommand = true;
 
         if (autoSteps < auto.size()) {
-            auto.get(autoSteps).run();
+            run(auto.get(autoSteps));
             if (!lastCommand && auto.get(autoSteps + 1).isParallel) {
-                auto.get(autoSteps + 1).run();
+                run(auto.get(autoSteps + 1));
             }
             if (!lastCommand && auto.get(autoSteps + 1).isParallel && auto.get(autoSteps).isFinished() && auto.get(autoSteps + 1).isFinished()) {
                 auto.get(autoSteps).stop();
@@ -80,5 +74,10 @@ public class RocketScript {
             }
             PrettyPrint.put("auto step num", autoSteps);
         }
+    }
+
+    private void run(RobotFunction fxn) {
+        if (!fxn.isInitialized) fxn.init();
+        fxn.run();
     }
 }

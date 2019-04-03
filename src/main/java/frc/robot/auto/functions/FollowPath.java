@@ -1,6 +1,5 @@
 package frc.robot.auto.functions;
 
-import com.ctre.phoenix.motion.MotionProfileStatus;
 import com.ctre.phoenix.motion.TrajectoryPoint;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
@@ -14,39 +13,31 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.InputMismatchException;
 
 /**
  * Follows a motion profiling path saved in a csv
  * <p>{@code values[0]} is the filepath to the spline to be ran</p>
  */
-public class FollowPath extends RobotFunction<String> {
-    private final int minPoints = 5;
-    private final int msPerPoint = 10;
-    private final double kP = 0.5;
-    private final double kI = 0.0;
-    private final double kD = 0.0;
-    private final double kF = 0.0;
+public class FollowPath extends RobotFunction {
+    private static final int minPoints = 5;
+    private static final int msPerPoint = 10;
+    private static final double kP = 0.5;
+    private static final double kI = 0.0;
+    private static final double kD = 0.0;
+    private static final double kF = 0.0;
 
     private boolean started;
 
-    public FollowPath() {
-        started = false;
-    }
-
     /**
-     * pushes motion profile points into the drivetrain motors
-     *
-     * @param values the filepath to the spline to be ran
+     * @param filepath to spline, "_left.csv" or "_right.csv" is appended to it
      */
-    @Override
-    public void collectInputs(String... values) {
-        if (values.length != 1) throw new InputMismatchException("FollowPath requires ONE filepath");
+    public FollowPath(String filepath) {
+        started = false;
 
-        for (TrajectoryPoint point : fromFile(values[0] + "left.csv"))
+        for (TrajectoryPoint point : fromFile(filepath + "_left.csv"))
             Drivetrain.frontLeft.pushMotionProfileTrajectory(point);
 
-        for (TrajectoryPoint point : fromFile(values[0] + "right.csv"))
+        for (TrajectoryPoint point : fromFile(filepath + "_right.csv"))
             Drivetrain.frontRight.pushMotionProfileTrajectory(point);
 
         //push points three times as fast as robot's loop runs
@@ -54,7 +45,10 @@ public class FollowPath extends RobotFunction<String> {
             Drivetrain.frontLeft.processMotionProfileBuffer();
             Drivetrain.frontRight.processMotionProfileBuffer();
         }).startPeriodic(msPerPoint / 3000.0);
+    }
 
+    @Override
+    public void init() {
         configTalons();
     }
 
@@ -69,7 +63,8 @@ public class FollowPath extends RobotFunction<String> {
     @Override
     public void run() {
         // ensure that buffer is sufficiently filled
-        started |= getLeftStatus().btmBufferCnt >= minPoints && getRightStatus().btmBufferCnt >= minPoints;
+        started |= Drivetrain.getLeftProfileStatus().btmBufferCnt >= minPoints &&
+                Drivetrain.getRightProfileStatus().btmBufferCnt >= minPoints;
 
         Drivetrain.motionProfile(started);
 
@@ -82,18 +77,6 @@ public class FollowPath extends RobotFunction<String> {
         return Drivetrain.frontLeft.getMotionProfileTopLevelBufferCount() == 0 &&
                 Drivetrain.frontRight.getMotionProfileTopLevelBufferCount() == 0 &&
                 started;
-    }
-
-    public MotionProfileStatus getLeftStatus() {
-        MotionProfileStatus status = new MotionProfileStatus();
-        Drivetrain.frontLeft.getMotionProfileStatus(status);
-        return status;
-    }
-
-    public MotionProfileStatus getRightStatus() {
-        MotionProfileStatus status = new MotionProfileStatus();
-        Drivetrain.frontRight.getMotionProfileStatus(status);
-        return status;
     }
 
     private TrajectoryPoint[] fromFile(String filePath) {
