@@ -21,6 +21,8 @@ public class LineSensor {
     private static final int lineSeenThreshold = 30;    //TODO: needs to be changed
     // number of line sensor modules being used
     private static final int numModules = 2;
+    // should the right/left value be reversed?
+    private static final boolean reversed = false;
 
     // the line sensor's I2C address is hard-coded into the board as 9 and cannot be
     // changed
@@ -111,17 +113,20 @@ public class LineSensor {
             }
     }
 
-    /**
-     * calculates right-left value based off of sensor values using method described
-     * in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about
-     * halfway down the page)
-     */
+    //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about halfway down the page)
     public static void calculateLinePosition() {
         weightedTotal = 0;
         total = 0;
-        for (int i = 0; i < sensorData.length; i++) {
-            weightedTotal += sensorData[i] * i * 100;
-            total += sensorData[i];
+        if (!reversed) {
+            for (int i = 0; i < sensorData.length; i++) {
+                weightedTotal += sensorData[i] * i * 100;
+                total += sensorData[i];
+            }
+        } else {
+            for (int i = sensorData.length - 1; i >= 0; i--) {
+                weightedTotal += sensorData[i] * i * 100;
+                total += sensorData[i];
+            }
         }
         if (total != 0)
             linePosition = weightedTotal / total - maxValue;
