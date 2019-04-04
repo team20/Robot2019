@@ -132,7 +132,7 @@ public class Robot extends TimedRobot {
                 }
         }
 
-        PrettyPrint.print();
+        // PrettyPrint.print();
     }
 
     @Override
