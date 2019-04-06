@@ -85,18 +85,19 @@ public class DriverControls extends PS4Controller {
                                 setRumble(0);
                         } else if (getRumble() != 1)
                             setRumble(1);
-                    } else {
-                        //Pixy camera
-                        if (!Arduino.pixyPid.isEnabled())
-                            Arduino.pixyPid.enable();
-                        if (Arduino.isObjInView()) {
-                            speedRight -= Arduino.getTurnSpeed();
-                            speedLeft += Arduino.getTurnSpeed();
-                            if (getRumble() != 0)
-                                setRumble(0);
-                        } else if (getRumble() != 1)
-                            setRumble(1);
-                    }
+                    } 
+                    // else {
+                    //     //Pixy camera
+                    //     if (!Arduino.pixyPid.isEnabled())
+                    //         Arduino.pixyPid.enable();
+                    //     if (Arduino.isObjInView()) {
+                    //         speedRight -= Arduino.getTurnSpeed();
+                    //         speedLeft += Arduino.getTurnSpeed();
+                    //         if (getRumble() != 0)
+                    //             setRumble(0);
+                    //     } else if (getRumble() != 1)
+                    //         setRumble(1);
+                    // }
                 } else {
                     if (getRumble() != 0)
                         setRumble(0);
