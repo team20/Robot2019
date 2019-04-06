@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class Arduino {
     public static final PIDController pixyPid;
-    public static final PIDSource pidSource;
-    public static final PIDOutput pidOutput;
+    private static final PIDSource pidSource;
+    private static final PIDOutput pidOutput;
     //separate thread for data collection and calculations
     private final static Notifier thread;
     //I2C communication protocol
@@ -31,18 +31,18 @@ public class Arduino {
     private static byte[] readData;
     //does the camera see an object?
     private static boolean isObjInView;
-//    //distance in inches from distance sensor
-//    private static int distance;
+	// //distance in inches from distance sensor
+	// private static int distance;
     //x-value of coordinates of point to be turned towards
     private static int xValue;
     //speed to turn
     private static double turnSpeed;
     //change in turnSpeed
     private static double dTurnSpeed;
-    //speed to drive
-    private static double driveSpeed;
-    //change in driveSpeed
-    private static double dDriveSpeed;
+    // //speed to drive
+    // private static double driveSpeed;
+    // //change in driveSpeed
+    // private static double dDriveSpeed;
     // //useful variables from [Robot.java]
     // private static int auto;
     // private static double setPoint;

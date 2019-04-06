@@ -72,9 +72,35 @@ public class DriverControls extends PS4Controller {
             }
 
             if (!climberOverride) {
-                //line sensor
-                if (!getTriButton() || !LineSensor.isLineSeen()) {
-                    setRumble(0);
+                //auto alignment
+                if (getTriButton()) {
+                    if (LineSensor.isLineSeen()) {
+                        //line sensor
+                        if (!LineSensor.linePid.isEnabled())
+                            LineSensor.linePid.enable();
+                        if (!LineSensor.isBroken()) {
+                            speedRight -= LineSensor.getTurnSpeed();
+                            speedLeft += LineSensor.getTurnSpeed();
+                            if (getRumble() != 0)
+                                setRumble(0);
+                        } else if (getRumble() != 1)
+                            setRumble(1);
+                    } 
+                    // else {
+                    //     //Pixy camera
+                    //     if (!Arduino.pixyPid.isEnabled())
+                    //         Arduino.pixyPid.enable();
+                    //     if (Arduino.isObjInView()) {
+                    //         speedRight -= Arduino.getTurnSpeed();
+                    //         speedLeft += Arduino.getTurnSpeed();
+                    //         if (getRumble() != 0)
+                    //             setRumble(0);
+                    //     } else if (getRumble() != 1)
+                    //         setRumble(1);
+                    // }
+                } else {
+                    if (getRumble() != 0)
+                        setRumble(0);
                     if (LineSensor.linePid.isEnabled())
                         LineSensor.linePid.reset();
                     if (Elevator.aboveStageThreshold()) {
@@ -102,14 +128,6 @@ public class DriverControls extends PS4Controller {
                             Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
                         }
                     }
-                } else {
-                    if (!LineSensor.linePid.isEnabled())
-                        LineSensor.linePid.enable();
-                    if (!LineSensor.isBroken()) {
-                        speedRight -= LineSensor.getTurnSpeed();
-                        speedLeft += LineSensor.getTurnSpeed();
-                    } else
-                        setRumble(1);
                 }
             }
 
