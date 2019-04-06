@@ -113,16 +113,26 @@ void LEDStrip::allOff() {
 }
 
 void LEDStrip::robotReady() {
+//  if (!robotOn) {
+//    for (int i = 0; i < 256; i ++) {
+//      for (byte j = 0; j < strip.numPixels(); j ++)
+//        strip.setPixelColor(j, strip.Color(0, 0, i));
+//      strip.show();
+//      delay(10);
+//    }
+//    for (int i = 255; i >= 0; i --) {
+//      for (byte j = 0; j < strip.numPixels(); j ++)
+//        strip.setPixelColor(j, strip.Color(0, 0, i));
+//      strip.show();
+//      delay(10);
+//    }
+//    robotOn = true;
+//  }
+
   if (!robotOn) {
-    for (int i = 0; i < 256; i ++) {
+    for (int i = 0; i < 360; i ++) {
       for (byte j = 0; j < strip.numPixels(); j ++)
-        strip.setPixelColor(j, strip.Color(0, 0, i));
-      strip.show();
-      delay(10);
-    }
-    for (int i = 255; i >= 0; i --) {
-      for (byte j = 0; j < strip.numPixels(); j ++)
-        strip.setPixelColor(j, strip.Color(0, 0, i));
+        strip.setPixelColor(j, strip.Color(0, 0, (-0.5 * cos(i * PI / 180) + 0.5) * 255));
       strip.show();
       delay(10);
     }
