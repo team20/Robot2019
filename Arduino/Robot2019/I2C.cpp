@@ -51,5 +51,5 @@ byte I2C::getPixyCamState() {
 void I2C::setWriteData(bool objInView, byte xValue) {
   writeData[0] = objInView ? 1 : 0;
   writeData[1] = xValue;
-//  writeData[2] = distance;
+  //  writeData[2] = distance;
 }

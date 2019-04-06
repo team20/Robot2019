@@ -15,7 +15,7 @@ class I2C {
     static byte getDiagnosticPattern();
     static byte getPixyCamState();
     static bool getLineFollowerState();
-//    static bool getUltrasonicState();
+    //    static bool getUltrasonicState();
     static void setWriteData(bool objInView, byte angle);
 
   private:

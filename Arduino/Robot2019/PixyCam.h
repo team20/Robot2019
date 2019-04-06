@@ -11,7 +11,7 @@ class PixyCam {
     static void refresh(byte state);
     static bool getObjInView();
     static byte getXValue();
-  
+
   private:
     //Pixy2 object
     static Pixy2 pixy;

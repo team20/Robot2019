@@ -113,21 +113,21 @@ void LEDStrip::allOff() {
 }
 
 void LEDStrip::robotReady() {
-//  if (!robotOn) {
-//    for (int i = 0; i < 256; i ++) {
-//      for (byte j = 0; j < strip.numPixels(); j ++)
-//        strip.setPixelColor(j, strip.Color(0, 0, i));
-//      strip.show();
-//      delay(10);
-//    }
-//    for (int i = 255; i >= 0; i --) {
-//      for (byte j = 0; j < strip.numPixels(); j ++)
-//        strip.setPixelColor(j, strip.Color(0, 0, i));
-//      strip.show();
-//      delay(10);
-//    }
-//    robotOn = true;
-//  }
+  //  if (!robotOn) {
+  //    for (int i = 0; i < 256; i ++) {
+  //      for (byte j = 0; j < strip.numPixels(); j ++)
+  //        strip.setPixelColor(j, strip.Color(0, 0, i));
+  //      strip.show();
+  //      delay(10);
+  //    }
+  //    for (int i = 255; i >= 0; i --) {
+  //      for (byte j = 0; j < strip.numPixels(); j ++)
+  //        strip.setPixelColor(j, strip.Color(0, 0, i));
+  //      strip.show();
+  //      delay(10);
+  //    }
+  //    robotOn = true;
+  //  }
 
   if (!robotOn) {
     for (int i = 0; i < 360; i ++) {
@@ -167,17 +167,17 @@ void LEDStrip::chasing() {
 //}
 
 void LEDStrip::greenFlowing() {
-//  if (millis() - mainTimeStamp >= 15) {
-//    mainTimeStamp = millis();
-//    if (counter < strip.numPixels() * 2 + 1) {
-//      if (counter < strip.numPixels())
-//        strip.setPixelColor(counter, green);
-//      else
-//        strip.setPixelColor(strip.numPixels() - (counter - strip.numPixels()), off);
-//      counter ++;
-//    } else
-//      counter = 0;
-//  }
+  //  if (millis() - mainTimeStamp >= 15) {
+  //    mainTimeStamp = millis();
+  //    if (counter < strip.numPixels() * 2 + 1) {
+  //      if (counter < strip.numPixels())
+  //        strip.setPixelColor(counter, green);
+  //      else
+  //        strip.setPixelColor(strip.numPixels() - (counter - strip.numPixels()), off);
+  //      counter ++;
+  //    } else
+  //      counter = 0;
+  //  }
 
   if (millis() - mainTimeStamp >= 1) {
     mainTimeStamp = millis();
