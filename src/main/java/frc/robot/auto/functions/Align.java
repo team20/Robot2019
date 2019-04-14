@@ -5,7 +5,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.PrettyPrint;
 
 /**
- * Align to vision target
+ * Align to vision target (do not use)
  * <p>if {@code values[0]} is true, {@code Align} skips the turn to target phase</p>
  */
 public class Align extends RobotFunction {

@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
                     timeStamp = Timer.getFPGATimestamp();
                 }
         }
-
+        
         PrettyPrint.print();
     }
 

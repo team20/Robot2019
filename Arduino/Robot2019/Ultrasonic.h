@@ -14,7 +14,7 @@
 //    static const byte trigPin;
 //    //pin that response will be read from
 //    static const byte echoPin;
-//    
+//
 //    //time between trigger and echo
 //    static int duration;
 //    //distance in centimeters

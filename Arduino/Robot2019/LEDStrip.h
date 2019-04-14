@@ -24,7 +24,7 @@ class LEDStrip {
     static const uint32_t blue;
     static const uint32_t purple;
     static const uint32_t white;
-    
+
     //global counter to immitate for loops with if statements
     static int counter;
     //for keeping things timed correctly
@@ -40,7 +40,7 @@ class LEDStrip {
     static bool robotOn;
     //for blinking diagnostic LEDs
     static bool diagnosticOn;
-    
+
     //one function for each pattern
     //all LEDs off
     static void allOff();

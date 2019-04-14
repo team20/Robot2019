@@ -3,6 +3,7 @@
 Adafruit_NeoPixel LEDStrip::strip;
 
 const byte LEDStrip::pixelSpacing = 5;
+//order for RGB values is RBG
 const uint32_t LEDStrip::off = strip.Color(0, 0, 0);
 const uint32_t LEDStrip::red = strip.Color(255, 0, 0);
 const uint32_t LEDStrip::orange = strip.Color(255, 0, 31);
@@ -112,16 +113,26 @@ void LEDStrip::allOff() {
 }
 
 void LEDStrip::robotReady() {
+  //  if (!robotOn) {
+  //    for (int i = 0; i < 256; i ++) {
+  //      for (byte j = 0; j < strip.numPixels(); j ++)
+  //        strip.setPixelColor(j, strip.Color(0, 0, i));
+  //      strip.show();
+  //      delay(10);
+  //    }
+  //    for (int i = 255; i >= 0; i --) {
+  //      for (byte j = 0; j < strip.numPixels(); j ++)
+  //        strip.setPixelColor(j, strip.Color(0, 0, i));
+  //      strip.show();
+  //      delay(10);
+  //    }
+  //    robotOn = true;
+  //  }
+
   if (!robotOn) {
-    for (int i = 0; i < 256; i ++) {
+    for (int i = 0; i < 360; i ++) {
       for (byte j = 0; j < strip.numPixels(); j ++)
-        strip.setPixelColor(j, strip.Color(0, 0, i));
-      strip.show();
-      delay(10);
-    }
-    for (int i = 255; i >= 0; i --) {
-      for (byte j = 0; j < strip.numPixels(); j ++)
-        strip.setPixelColor(j, strip.Color(0, 0, i));
+        strip.setPixelColor(j, strip.Color(0, 0, (-0.5 * cos(i * PI / 180) + 0.5) * 255));
       strip.show();
       delay(10);
     }
@@ -156,13 +167,23 @@ void LEDStrip::chasing() {
 //}
 
 void LEDStrip::greenFlowing() {
-  if (millis() - mainTimeStamp >= 15) {
+  //  if (millis() - mainTimeStamp >= 15) {
+  //    mainTimeStamp = millis();
+  //    if (counter < strip.numPixels() * 2 + 1) {
+  //      if (counter < strip.numPixels())
+  //        strip.setPixelColor(counter, green);
+  //      else
+  //        strip.setPixelColor(strip.numPixels() - (counter - strip.numPixels()), off);
+  //      counter ++;
+  //    } else
+  //      counter = 0;
+  //  }
+
+  if (millis() - mainTimeStamp >= 1) {
     mainTimeStamp = millis();
-    if (counter < strip.numPixels() * 2 + 1) {
-      if (counter < strip.numPixels())
-        strip.setPixelColor(counter, green);
-      else
-        strip.setPixelColor(strip.numPixels() - (counter - strip.numPixels()), off);
+    if (counter < 360) {
+      strip.setPixelColor((-0.5 * cos(counter * PI / 180) + 0.5) * strip.numPixels(), green);
+      strip.setPixelColor((-0.5 * cos(counter * PI / 180) + 0.5) * strip.numPixels() + 1, off);
       counter ++;
     } else
       counter = 0;
