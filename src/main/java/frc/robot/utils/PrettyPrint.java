@@ -1,7 +1,9 @@
 package frc.robot.utils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.lang.Math.min;
@@ -125,7 +127,9 @@ public class PrettyPrint {
     public static void print() {
         if (values.isEmpty() && tempMessages.isEmpty() && errors.isEmpty() && tempValues.isEmpty()) return;
 
-        for (String errorMessage : errors) {
+        // are iterator loops for thread safety
+        for (Iterator<String> iterator = errors.iterator(); iterator.hasNext(); ) {
+            String errorMessage = iterator.next();
             for (int i = 0; i < 70; i++) System.out.print("-");
             System.out.println();
             System.out.println();
@@ -138,9 +142,21 @@ public class PrettyPrint {
         count = 0;
 
         System.out.print("|");
-        values.forEach((str, valSup) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(valSup.get())));
-        tempValues.forEach((str, val) -> System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(val)));
-        for (String message : tempMessages) {
+        // are iterator loops for thread safety
+        for (Iterator<Map.Entry<String, Supplier<Object>>> iterator = values.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, Supplier<Object>> entry = iterator.next();
+            String key = entry.getKey();
+            Supplier<Object> valSup = entry.getValue();
+            System.out.printf(" %s = %-" + messageLength + "s |", key, shortened(valSup.get()));
+        }
+        for (Iterator<Map.Entry<String, Object>> iterator = tempValues.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, Object> entry = iterator.next();
+            String str = entry.getKey();
+            Object val = entry.getValue();
+            System.out.printf(" %s = %-" + messageLength + "s |", str, shortened(val));
+        }
+        for (Iterator<String> iterator = tempMessages.iterator(); iterator.hasNext(); ) {
+            String message = iterator.next();
             System.out.printf(" %s |", message);
         }
         System.out.println();

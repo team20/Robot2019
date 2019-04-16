@@ -1,13 +1,23 @@
 package frc.robot.auto.setup;
 
+import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 public abstract class RobotFunction {
     /**
      * whether or not this function is to be ran in parallel with other functions
      */
-    protected boolean isParallel = false;
-    protected boolean isInitialized = false;
+    boolean isParallel = false;
+
+    /**
+     * if this function's init function has been called
+     */
+    boolean isInitialized = false;
+
+    /**
+     * all functions that must be completed before this runs
+     */
+    ArrayList<RobotFunction> prerequisiteFunctions = new ArrayList<>();
 
     /**
      * done once when the function is first ran
@@ -38,6 +48,7 @@ public abstract class RobotFunction {
     public static RobotFunctionBuilder doOnce(Runnable action) {
         var builder = new RobotFunctionBuilder();
         builder.onStart(action);
+        builder.doneWhen(() -> true);
         return builder;
     }
 
@@ -46,6 +57,7 @@ public abstract class RobotFunction {
         private Runnable action;
         private BooleanSupplier doneCondition;
         private Runnable stopAction;
+        private ArrayList<RobotFunction> prereqFunctions;
 
         public RobotFunction build() {
             return new RobotFunction() {

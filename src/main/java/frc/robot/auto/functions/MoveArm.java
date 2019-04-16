@@ -37,7 +37,7 @@ public class MoveArm extends RobotFunction {
      */
     @Override
     public boolean isFinished() {
-        return Arm.doneMoving();
+        return Arm.atSetPosition();
     }
 
     /**

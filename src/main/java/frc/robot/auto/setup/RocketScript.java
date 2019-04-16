@@ -3,7 +3,6 @@ package frc.robot.auto.setup;
 import frc.robot.auto.functions.TeleopControls;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
-import frc.robot.utils.PrettyPrint;
 
 import java.util.ArrayList;
 
@@ -19,6 +18,7 @@ public class RocketScript {
         auto = new ArrayList<>();
         autoSteps = 0;
         lastCommand = false;
+//        PrettyPrint.put("AutoSteps", () -> autoSteps);
     }
 
     /**
@@ -72,11 +72,14 @@ public class RocketScript {
                 auto.get(autoSteps).stop();
                 autoSteps++;
             }
-            PrettyPrint.put("auto step num", autoSteps);
         }
     }
 
     private void run(RobotFunction fxn) {
+        if (!fxn.prerequisiteFunctions.isEmpty()) {
+            fxn.prerequisiteFunctions.removeIf(RobotFunction::isFinished);
+            return;
+        }
         if (!fxn.isInitialized) fxn.init();
         fxn.run();
     }

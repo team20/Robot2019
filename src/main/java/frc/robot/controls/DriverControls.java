@@ -3,13 +3,22 @@ package frc.robot.controls;
 import frc.robot.subsystems.*;
 
 public class DriverControls extends PS4Controller {
-    private static DriverControls singletonInstance = new DriverControls(0, 2);
+
+    public static DriverControls singletonInstance = new DriverControls(0, 2);
 
     private double speedStraight, speedLeft, speedRight;
-    private boolean climberOverride, climberRetract, climbingMode;
-    //    private NetworkTableEntry cameraSelector;
-    private boolean camIsMain;
+    private static boolean climberOverride, climberRetract, climbingMode;
     private boolean climbingLevelThree = true;
+
+    static {
+
+        climbingMode = false;
+    }
+
+
+    //private boolean testBool = cameraSwitch.getBoolean(true);//default true for front camera
+
+    private boolean prevRightBumper = false;
 
     public static void driverControls() {
         singletonInstance.controls();
@@ -29,6 +38,10 @@ public class DriverControls extends PS4Controller {
      * Runs the driver controls
      */
     private void controls() {
+        speedStraight = 0;
+        speedLeft = 0;
+        speedRight = 0;
+        boolean rightBumper = getRightBumperButton();
         if (getButtonDRight()) climbingMode = true;
         if (getButtonDLeft()) climbingMode = false;
 
@@ -54,14 +67,18 @@ public class DriverControls extends PS4Controller {
                 Climber.front.set(0.0);
             }
             if (getLeftYAxis() > .1 || getLeftYAxis() < -.1) {
-//                Climber.back.set(-getLeftYAxis());
-                speedStraight = Climber.retractBackLeg(-getLeftYAxis());
+                speedStraight = Climber.retractBackLeg(getLeftYAxis());
             } else {
                 Climber.back.set(0.0);
             }
 
             if (Climber.getBackEncPosition() > Climber.backHab3Height / 2) {
                 speedStraight = Math.min(speedStraight, 0.5);
+            }
+
+            if (rightBumper && !prevRightBumper) {
+                Climber.stepNumL3++;
+                Climber.stepNumL2++;
             }
         } else {
             //Drivetrain Controls
@@ -73,19 +90,17 @@ public class DriverControls extends PS4Controller {
 
             if (!climberOverride) {
                 //auto alignment
-                if (getTriButton()) {
-                    if (LineSensor.isLineSeen()) {
-                        //line sensor
-                        if (!LineSensor.linePid.isEnabled())
-                            LineSensor.linePid.enable();
-                        if (!LineSensor.isBroken()) {
-                            speedRight -= LineSensor.getTurnSpeed();
-                            speedLeft += LineSensor.getTurnSpeed();
-                            if (getRumble() != 0)
-                                setRumble(0);
-                        } else if (getRumble() != 1)
-                            setRumble(1);
-                    } 
+                if (getTriButton() && LineSensor.isLineSeen()) {
+                    //line sensor
+                    if (!LineSensor.linePid.isEnabled())
+                        LineSensor.linePid.enable();
+                    if (!LineSensor.isBroken()) {
+                        speedRight = -LineSensor.getTurnSpeed();
+                        speedLeft = LineSensor.getTurnSpeed();
+                        if (getRumble() != 0)
+                            setRumble(0);
+                    } else if (getRumble() != 1)
+                        setRumble(1);
                     // else {
                     //     //Pixy camera
                     //     if (!Arduino.pixyPid.isEnabled())
@@ -101,17 +116,19 @@ public class DriverControls extends PS4Controller {
                 } else {
                     if (getRumble() != 0)
                         setRumble(0);
-                    if (LineSensor.linePid.isEnabled())
+                    if (LineSensor.linePid.isEnabled()) {
                         LineSensor.linePid.reset();
+                        LineSensor.setTurnSpeed(0);
+                    }
                     if (Elevator.aboveStageThreshold()) {
                         if (getSquareButton()) {
-                            speedLeft = getLeftTriggerAxis() * 0.25;
-                            speedRight = getRightTriggerAxis() * 0.25;
+                            speedLeft = getLeftTriggerAxis() * 0.4;
+                            speedRight = getRightTriggerAxis() * 0.4;
                             Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
                             Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
                         } else {
-                            speedLeft = getLeftTriggerAxis() * 0.4;
-                            speedRight = getRightTriggerAxis() * 0.4;
+                            speedLeft = getLeftTriggerAxis() * 0.5;
+                            speedRight = getRightTriggerAxis() * 0.5;
                             Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
                             Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
                         }
@@ -131,14 +148,20 @@ public class DriverControls extends PS4Controller {
                 }
             }
 
-            //Camera Controls
-            if (getRightYAxis() < -.2) {
-                camIsMain = true;
-            } else if (getRightYAxis() > .2) {
-                camIsMain = false;
+
+//            PrettyPrint.put("Cam Bool",cameraSwitch.getBoolean(true));
+
+
+            if (!getButtonDDown() && !getXButton()) {
+                Climber.stop();
             }
 
-//            cameraSelector.setDouble(camIsMain ? 0 : 1);
+            //Intake Controls
+            if (getRightBumperButton()) {
+                Intake.spitCargo();
+            } else {
+                Intake.stopCargoRollers();
+            }
 
             //Climber Controls
             //extend
@@ -167,27 +190,18 @@ public class DriverControls extends PS4Controller {
 
         // Auto Climb
         if (getXButton()) {
-            Climber.climbLevelThree(1.0);
+            Climber.climbLevelThree();
+            climbingMode = true;
         }
 
         if (getButtonDDown()) {
             Climber.climbLevelTwo();
+            climbingMode = true;
         }
 
         if (getTrackpadButton() && getShareButton()) {
-            Climber.setStepNum(0);
-        }
-
-        //Intake Controls
-        if (getRightBumperButton()) {
-            Intake.spitCargo();
-        } else {
-            Intake.stopCargoRollers();
-        }
-        if (getLeftBumperButton()) {
-            Elevator.dropHatch();
-        } else {
-            Elevator.setHatchDrop = false;
+            Climber.stepNumL3 = 0;
+            Climber.stepNumL2 = 0;
         }
 
         if (getOptionsButton()) {
@@ -197,6 +211,7 @@ public class DriverControls extends PS4Controller {
         if (getShareButton()) {
             Drivetrain.setBrakeMode(false);
         }
+        prevRightBumper = rightBumper;
     }
 
     public static boolean isOverridingAuto() {

@@ -33,7 +33,7 @@ public class Drivetrain {
         frontLeft.setSelectedSensorPosition(0);
         frontRight.setSelectedSensorPosition(0);
 
-        frontLeft.setSensorPhase(false);
+        frontLeft.setSensorPhase(true);
         frontRight.setSensorPhase(false);
     }
 
@@ -78,7 +78,8 @@ public class Drivetrain {
      */
     public static void setBrakeMode(boolean isBraking) {
         if (isBraking) {
-            Climber.setStepNum(0);
+            Climber.stepNumL3 = 0;
+            Climber.stepNumL2 = 0;
             frontLeft.setNeutralMode(NeutralMode.Brake);
             frontRight.setNeutralMode(NeutralMode.Brake);
             backLeft.setNeutralMode(NeutralMode.Brake);

@@ -1,7 +1,6 @@
 package frc.robot.auto.functions;
 
 import frc.robot.auto.setup.RobotFunction;
-import frc.robot.subsystems.Elevator;
 
 /**
  * Opens the hatch grabbing mechanism
@@ -15,7 +14,7 @@ public class PlaceHatch extends RobotFunction {
 
     @Override
     public void init() {
-        Elevator.dropHatch();
+//        Elevator.dropHatch();
     }
 
     /**

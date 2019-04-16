@@ -1,11 +1,6 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.I2C.Port;
 
 public class LineSensor {
@@ -19,11 +14,11 @@ public class LineSensor {
     private static final I2C sensorWire;
 
     // threshold for whether lineSeen is true or not
-    private static final int lineSeenThreshold = 400;
+    private static final int lineSeenThreshold = 80;
     // number of line sensor modules being used
     private static final int numModules = 2;
-    // // should the right/left value be reversed?
-    // private static final boolean reversed = false;
+    // should the right/left value be reversed?
+    private static final boolean reversed = true;
 
     // the line sensor's I2C address is hard-coded into the board as 9 and cannot be changed
     private static final byte multiplexAddress;
@@ -68,8 +63,11 @@ public class LineSensor {
 
         maxValue = 800 * numModules - 100;
 
-        linePid = new PIDController(0.001, 0.0, 0.0, LineSensor.pidSource, LineSensor.pidOutput);
-        linePid.setInputRange(maxValue, 0);
+        if (!reversed)
+            linePid = new PIDController(0.001, 0.0, 0.0, LineSensor.pidSource, LineSensor.pidOutput);
+        else
+            linePid = new PIDController(-0.001, 0.0, -0.0, LineSensor.pidSource, LineSensor.pidOutput);
+        linePid.setInputRange(0, maxValue);
         linePid.setOutputRange(-1, 1);
         linePid.setContinuous(false);
         linePid.setSetpoint(maxValue / 2);
@@ -96,9 +94,18 @@ public class LineSensor {
             sensorWire.readOnly(rawSensorData[i], rawSensorData[i].length);
         }
         //make data easier to use by putting it all in one array and getting rid of useless values
+//        if (!reversed) {
         for (int i = 0; i < numModules; i++)
             for (int j = 0; j < 8; j++)
                 sensorData[sensorData.length * i / numModules + j] = rawSensorData[i][j * 2];
+        sensorData[9] -= 10;
+//        } else {
+//            for (int i = 0; i < numModules; i++)
+//                for (int j = 0; j < 8; j++)
+//                    sensorData[sensorData.length - 1 - sensorData.length * i / numModules + j] = rawSensorData[i][j * 2];
+//            sensorData[6] -= 10;
+//        }
+
     }
 
     //calculates right-left value based off of sensor values using method described in [readLine] method here: https://www.pololu.com/docs/0J19/all (it's about halfway down the page)
@@ -111,6 +118,9 @@ public class LineSensor {
         }
         if (total != 0)
             linePosition = weightedTotal / total;
+//        for (int i = sensorData.length - 1; i >= 0; i --)
+//            System.out.print(sensorData[i] + "\t");
+//        System.out.println("| " + total + " | " + linePosition);
     }
 
     public static int getTotal() {
@@ -122,7 +132,7 @@ public class LineSensor {
     }
 
     public static boolean isBroken() {
-        return total == 0;
+        return total <= 0;
     }
 
     public static int getLinePosition() {
@@ -133,11 +143,15 @@ public class LineSensor {
         return turnSpeed;
     }
 
+    public static void setTurnSpeed(double value) {
+        turnSpeed = value;
+    }
+
     /**
      * start thread running
      */
     public static void startThread() {
-        thread.startPeriodic(0.05);
+        thread.startPeriodic(0.1);
     }
 
     /**

@@ -1,9 +1,7 @@
 package frc.robot.auto.functions;
 
 import frc.robot.auto.setup.RobotFunction;
-import frc.robot.subsystems.Elevator;
 
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_COLLECT_HATCH;
 
 /**
  * Closes hatch grabbing mechanism
@@ -18,7 +16,7 @@ public class CollectHatch extends RobotFunction {
 
     @Override
     public void init() {
-        Elevator.setPosition(ELEVATOR_COLLECT_HATCH);
+//        Elevator.setPosition(ELEVATOR_COLLECT_HATCH);
     }
 
     /**

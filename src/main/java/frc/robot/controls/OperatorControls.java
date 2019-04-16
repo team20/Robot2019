@@ -4,22 +4,8 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 
-import static frc.robot.subsystems.Arm.Position.ARM_COLLECT_CARGO;
-import static frc.robot.subsystems.Arm.Position.ARM_FLOOR;
-import static frc.robot.subsystems.Arm.Position.CARGO_SHIP_ANGLE;
-import static frc.robot.subsystems.Arm.Position.CARGO_SHOOT;
-import static frc.robot.subsystems.Arm.Position.PLACING;
-import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.CARGO_LEVEL_TWO;
-import static frc.robot.subsystems.Elevator.Position.CARGO_SHIP;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_COLLECT_CARGO;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_COLLECT_HATCH;
-import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_ONE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_THREE;
-import static frc.robot.subsystems.Elevator.Position.HATCH_LEVEL_TWO;
+import static frc.robot.subsystems.Arm.Position.*;
+import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls extends PS4Controller {
     private boolean elevatorOverridden, armOverridden;
@@ -48,11 +34,11 @@ public class OperatorControls extends PS4Controller {
         // override
         if (getRightStickButton()) {
             double speed = getRightYAxis();
-            Elevator.moveSpeed(-speed / 2);
+            Elevator.moveSpeed(-speed);//divide by 2 normal override
             elevatorOverridden = true;
         } else {
             if (elevatorOverridden) {
-                Elevator.stop();
+                Elevator.stop(); // was changed if bad change it back
                 elevatorOverridden = false;
             }
         }
@@ -100,15 +86,17 @@ public class OperatorControls extends PS4Controller {
             }
         }
         // positions
-        if (getLeftYAxis() < -0.5) {
-            Arm.setPosition(CARGO_SHOOT);
-        } else if (getLeftYAxis() > 0.5) {
-            Arm.setPosition(ARM_FLOOR);
-        } else if (Math.abs(getLeftXAxis()) > 0.5) {
-            Arm.setPosition(PLACING);
-        } else if (getSquareButton()) {
-            Arm.setPosition(STARTING_CONFIG);
-            Elevator.setPosition(ELEVATOR_FLOOR);
+        if (!armOverridden) {
+            if (getLeftYAxis() < -0.5) {
+                Arm.setPosition(CARGO_SHOOT);
+            } else if (getLeftYAxis() > 0.5) {
+                Arm.setPosition(ARM_FLOOR);
+            } else if (Math.abs(getLeftXAxis()) > 0.5) {
+                Arm.setPosition(PLACING);
+            } else if (getSquareButton()) {
+                Arm.setPosition(STARTING_CONFIG);
+                Elevator.setPosition(ELEVATOR_FLOOR);
+            }
         }
         // encoder reset
         if (getOptionsButton()) {
@@ -119,22 +107,19 @@ public class OperatorControls extends PS4Controller {
         // cargo
         if (getXButton()) {
             Intake.intakeMode();
-        }
-        if (getTriButton()) {
+        } else if (getCircleButton()) {
+            Intake.collectHatch();
+        } else if (getTriButton()) {
             Intake.outtakeCargo();
-        }
-        if (getCircleButton()) {
-            Intake.stopCargoRollers();
-        }
-        if (getRightTriggerAxis() > 0.5) {
+        } else if (getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
         }
         // hatch
-        if (getLeftBumperButton()) {
-            Elevator.placeHatch();
-        } else {
-            Elevator.setHatchPlace = false;
-        }
+//        if (getLeftBumperButton()) {
+//            Elevator.placeHatch();
+//        } else {
+//            Elevator.setHatchPlace = false;
+//        }
         if (getRightBumperButton()) {
             Elevator.setPosition(ELEVATOR_FLOOR);
             Arm.setPosition(PLACING);

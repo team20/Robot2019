@@ -38,7 +38,7 @@ public class MoveElevator extends RobotFunction {
      */
     @Override
     public boolean isFinished() {
-        return Elevator.doneMoving();
+        return Elevator.atSetPosition();
     }
 
     /**

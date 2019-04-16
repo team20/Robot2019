@@ -15,28 +15,13 @@ public class Arm {
 
     private static final double DEADBAND = 0.3;
 
-    public enum Position {
-        ARM_FLOOR(-41.38),
-        CARGO_SHOOT(-28.9),
-        PLACING(-9.5),
-        STARTING_CONFIG(-4.0),
-        ARM_COLLECT_CARGO(-49.3),
-        DROP_AND_COLLECT_HATCH(-40.0),
-        CARGO_SHIP_ANGLE(-51.14);
-
-        public double value;
-
-        Position(double position) {
-            value = position;
-        }
-    }
-
     /*
      * Initializes all necessary objects and variables
      */
     static {
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
+        armMotor.enableVoltageCompensation(12.0);
         pidController = armMotor.getPIDController();
         armEncoder = new CANEncoder(armMotor);
 
@@ -53,6 +38,13 @@ public class Arm {
         pidController.setI(0.0);
         pidController.setD(2.0);
         pidController.setOutputRange(-1.0, 1.0);
+    }
+
+    /**
+     * @return true if the arm is within deadband of its set value
+     */
+    public static boolean atSetPosition() {
+        return Math.abs(armEncoder.getPosition() - setPosition) > DEADBAND;
     }
 
     /**
@@ -82,15 +74,18 @@ public class Arm {
         setPosition(position.value);
     }
 
-    /**
-     * @return true if the arm is within deadband of its set value
-     */
-    public static boolean doneMoving() {
-        if (Math.abs(armEncoder.getPosition() - prevPosition) > DEADBAND) {
-            prevPosition = armEncoder.getPosition();
-            return true;
-        } else {
-            return false;
+    public enum Position {
+        ARM_FLOOR(-41.38), //Straight Vertical- Cargo L1, L2
+        CARGO_SHOOT(-26.0), //28.9 Orig - L3 Cargo
+        PLACING(-9.0), //Vertical - Hatches
+        STARTING_CONFIG(-4.0), //Defense Position
+        ARM_COLLECT_CARGO(-50.0), //Collection
+        CARGO_SHIP_ANGLE(-51.14); //Cargo Ship
+
+        public double value;
+
+        Position(double position) {
+            value = position;
         }
     }
 
