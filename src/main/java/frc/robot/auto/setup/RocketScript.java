@@ -44,7 +44,6 @@ public class RocketScript {
      * <p>If the driver presses the override auto button, a {@code TeleopControls} function is inserted
      * at the beginning of the RocketScript</p>
      */
-    //TODO check should be Function.isFinished() || Function.isParallel maybe
     public void run() {
         if (DriverControls.isOverridingAuto() || OperatorControls.isOverridingAuto()) {
             if (!(auto.get(0) instanceof TeleopControls)) {

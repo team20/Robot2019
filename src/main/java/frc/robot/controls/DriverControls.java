@@ -124,25 +124,25 @@ public class DriverControls extends PS4Controller {
                         if (getSquareButton()) {
                             speedLeft = getLeftTriggerAxis() * 0.4;
                             speedRight = getRightTriggerAxis() * 0.4;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
+                            Drivetrain.frontRight.configOpenloopRamp(0.4);
                         } else {
                             speedLeft = getLeftTriggerAxis() * 0.5;
                             speedRight = getRightTriggerAxis() * 0.5;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.55); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.55); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
+                            Drivetrain.frontRight.configOpenloopRamp(0.4);
                         }
                     } else {
                         if (getSquareButton()) {
                             speedLeft = getLeftTriggerAxis() * 0.6;
                             speedRight = getRightTriggerAxis() * 0.6;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.15); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.05);
+                            Drivetrain.frontRight.configOpenloopRamp(0.05);
                         } else {
                             speedLeft = getLeftTriggerAxis() * 0.75;
                             speedRight = getRightTriggerAxis() * 0.75;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.15); //shh don't tell victor
-                            Drivetrain.frontRight.configOpenloopRamp(0.15); //shh don't tell victor
+                            Drivetrain.frontLeft.configOpenloopRamp(0.05);
+                            Drivetrain.frontRight.configOpenloopRamp(0.05);
                         }
                     }
                 }
@@ -218,7 +218,6 @@ public class DriverControls extends PS4Controller {
         return singletonInstance.anythingPressed();
     }
 
-    // TODO this button
     public static boolean isStoppingAutoControl() {
         return singletonInstance.getTrackpadButton();
     }

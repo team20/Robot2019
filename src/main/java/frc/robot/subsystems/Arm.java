@@ -21,7 +21,7 @@ public class Arm {
     static {
         //motor setup
         armMotor = new CANSparkMax(6, MotorType.kBrushless);
-        armMotor.enableVoltageCompensation(12.0);
+        armMotor.enableVoltageCompensation(13.0); //TODO Sydney made this 13 (not 12) because it is slower when charged and this could be why?
         pidController = armMotor.getPIDController();
         armEncoder = new CANEncoder(armMotor);
 
@@ -78,7 +78,7 @@ public class Arm {
         ARM_FLOOR(-41.38), //Straight Vertical- Cargo L1, L2
         CARGO_SHOOT(-26.0), //28.9 Orig - L3 Cargo
         PLACING(-9.0), //Vertical - Hatches
-        STARTING_CONFIG(-4.0), //Defense Position
+        STARTING_CONFIG(-1.0), //Defense Position
         ARM_COLLECT_CARGO(-50.0), //Collection
         CARGO_SHIP_ANGLE(-51.14); //Cargo Ship
 

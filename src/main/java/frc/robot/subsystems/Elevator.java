@@ -29,7 +29,7 @@ public class Elevator {
 
     private static final double avagadrosVelocity = 6.02E23;
 
-    public static boolean setHatchDrop, setHatchPlace, overriding;
+    public static boolean setHatchDrop, setHatchPlace, overriding; //TODO do we actually use all of these?
 
     /**
      * Initializes the elevator motor, sets PID values, and zeros the elevator
@@ -44,13 +44,13 @@ public class Elevator {
         elevator.getPIDController().setSmartMotionMaxVelocity(avagadrosVelocity, 0);
         elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
         elevator.getPIDController().setSmartMotionMinOutputVelocity(0.01, 0);
-        elevator.enableVoltageCompensation(12.00);
+        elevator.enableVoltageCompensation(13.00); //TODO Sydney made this 13 (not 12) because it is slower when charged and I think this is why? - battery always starts above 12v
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
 
         elevator.setSmartCurrentLimit(60);
 
-        elevator.getPIDController().setP(0.000_05); // was 0.000_18
+        elevator.getPIDController().setP(0.000_08); // was 0.000_18 // was .000_05
         elevator.getPIDController().setI(5E-9);   // was 5.0E-9, then it was 1E-8
         elevator.getPIDController().setIZone(2);
         elevator.getPIDController().setD(0.000_00); // was 0.001
@@ -71,6 +71,13 @@ public class Elevator {
     }
 
     /**
+     * @return the position of the elevator
+     */
+    public static double getPosition() {
+        return elevatorEncoder.getPosition()/* - zeroPosition*/; // removed to try to fix problem switch back if manual override does a bad
+    }
+
+    /**
      * @return true if the elevator is within deadband of its set value
      */
     public static boolean atSetPosition() {
@@ -84,13 +91,6 @@ public class Elevator {
         setPosition(getPosition()); // if this is bad change it back
 //        setPosition = elevatorEncoder.getPosition();
 //        setPosition(setPosition);
-    }
-
-    /**
-     * @return the position of the elevator
-     */
-    public static double getPosition() {
-        return elevatorEncoder.getPosition()/* - zeroPosition*/; // removed to try to fix problem switch back if manual override does a bad
     }
 
     /**
@@ -116,16 +116,16 @@ public class Elevator {
         if (targetPosition < getPosition())  // down
             if (getPosition() - targetPosition < 25)  // down medium
                 if (getPosition() - targetPosition < 4)  // down short
-                    elevator.getPIDController().setSmartMotionMaxAccel(60_000, 0);
+                    elevator.getPIDController().setSmartMotionMaxAccel(60_000, 0); //60_000
                 else
-                    elevator.getPIDController().setSmartMotionMaxAccel(100_000, 0);
+                    elevator.getPIDController().setSmartMotionMaxAccel(100_000, 0); //100_000
             else  // down big
-                elevator.getPIDController().setSmartMotionMaxAccel(130_000, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(130_000, 0); //130_000
         else  // up
             if (targetPosition - getPosition() < 25)  // up medium
-                elevator.getPIDController().setSmartMotionMaxAccel(200_000, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(400_000, 0); //200_000
             else  // up high
-                elevator.getPIDController().setSmartMotionMaxAccel(400_000, 0); // should probs be way smaller
+                elevator.getPIDController().setSmartMotionMaxAccel(800_000, 0); // should probs be way smaller, 400_000
 
         if (!setHatchPlace) { //TODO this makes it so that placing works after the elevator zeros - Sydney (I'm an idiot)
             setPosition = targetPosition + zeroPosition;
@@ -143,13 +143,6 @@ public class Elevator {
     }
 
     /**
-     * @return true if the elevator is above the stationary stage
-     */
-    public static boolean aboveStageThreshold() {
-        return elevatorEncoder.getPosition() > STAGE_THRESHOLD + zeroPosition;
-    }
-
-    /**
      * Sets the elevator to the entered position
      *
      * @param position desired elevator position
@@ -160,6 +153,13 @@ public class Elevator {
 //        } else {
         setPosition(position.value);
 //        }
+    }
+
+    /**
+     * @return true if the elevator is above the stationary stage
+     */
+    public static boolean aboveStageThreshold() {
+        return elevatorEncoder.getPosition() > STAGE_THRESHOLD + zeroPosition;
     }
 
     /**
@@ -181,7 +181,7 @@ public class Elevator {
 //        else
 //            setPosition(setPosition);
     }
-
+    //TODO actually delete this stuff?
 //    /**
 //     * Sets the elevator lower by the hatch offset to drop the hatch panel
 //     */
@@ -223,23 +223,23 @@ public class Elevator {
     }
 
     /**
-     * Zeros the elevator if Hal Sensor is triggered, must be ran in robotPeriodic
-     */
-    public static void checkHalSensor() {
-        if (!halSensor.get()) {
-            zeroPosition = elevatorEncoder.getPosition() - 9.6; //10.4 programmers 4/13, it was hitting the depo?
-            setPosition = setPosition + zeroPosition;
-            limitPosition();
-        }
-    }
-
-    /**
      * Prevents the user from going past the maximum value of the elevator
      */
     private static void limitPosition() {
         setPosition = Math.min(setPosition, MAX_POSITION + zeroPosition);
         setPosition = Math.max(setPosition, zeroPosition);
         elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
+    }
+
+    /**
+     * Zeros the elevator if Hal Sensor is triggered, must be ran in robotPeriodic
+     */
+    public static void checkHalSensor() {
+        if (!halSensor.get()) {
+            zeroPosition = elevatorEncoder.getPosition() - 8.6; //9.6
+            setPosition = setPosition + zeroPosition;
+            limitPosition();
+        }
     }
 
     /**
@@ -254,9 +254,9 @@ public class Elevator {
         CARGO_LEVEL_TWO(39.0),
         CARGO_LEVEL_THREE(47.0),
         CARGO_SHIP(33.0),
-        ELEVATOR_COLLECT_CARGO(7.7),
+        ELEVATOR_COLLECT_CARGO(7.7), //7.7
         //        ELEVATOR_COLLECT_HATCH(HATCH_DROP_OFFSET + HATCH_PLACE_OFFSET);
-        ELEVATOR_COLLECT_HATCH(0.5);
+        ELEVATOR_COLLECT_HATCH(0.5); //???Do we need this? TODO possibly remove?
         public double value;
 
         Position(double position) {

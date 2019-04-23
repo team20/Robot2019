@@ -143,7 +143,6 @@ public class OperatorControls extends PS4Controller {
         return singletonInstance.anythingPressed();
     }
 
-    // TODO determine this button
     public static boolean isStoppingAutoControl() {
         return singletonInstance.getTrackpadButton();
     }

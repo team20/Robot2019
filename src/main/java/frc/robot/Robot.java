@@ -70,8 +70,8 @@ public class Robot extends TimedRobot {
     private NetworkTable rootTable = ntinst.getTable(""); //was static
     private NetworkTable piTable = rootTable.getSubTable("/PiSwitch");
     private NetworkTableEntry cameraSwitch = piTable.getEntry("camera");
+    private NetworkTableEntry usbCam = ntinst.getEntry("USB");
     private boolean camIsMain;
-
 
 //    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
@@ -114,15 +114,15 @@ public class Robot extends TimedRobot {
             Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 1);
 //        else if (Intake.intakeRunning())
 //            Arduino.setDiagnosticPattern(Arduino.Colors.Orange, 2);
-        else if (LineSensor.isBroken())
-            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
+//        else if (LineSensor.isBroken())
+//            Arduino.setDiagnosticPattern(Arduino.Colors.Red, 2);
         else if (LineSensor.isLineSeen())
             Arduino.setDiagnosticPattern(Arduino.Colors.Green, 1);
         else
             Arduino.setDiagnosticPattern(null, 0);
 
 //        Elevator.checkHalSensor();
-        Elevator.setBrake();
+//        Elevator.setBrake();
         PrettyPrint.print();
 
         //Camera Controls
@@ -134,7 +134,6 @@ public class Robot extends TimedRobot {
 
 //            cameraSelector.setDefaultBoolean("camera", camIsMain);//Want to control camera later
         cameraSwitch.setBoolean(camIsMain);
-
     }
 
     @Override

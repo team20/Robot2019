@@ -32,7 +32,6 @@ public class TeleopControls extends RobotFunction {
     public boolean isFinished() {
         if (isFullyTeleop) return false;
 
-        // TODO should the operator have this control?
         return DriverControls.isStoppingAutoControl() || OperatorControls.isStoppingAutoControl();
     }
 }
