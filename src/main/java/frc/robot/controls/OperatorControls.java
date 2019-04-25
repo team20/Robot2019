@@ -113,8 +113,10 @@ public class OperatorControls extends PS4Controller {
             Intake.outtakeCargo();
         } else if (getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
+        } /*else {
+            Intake.stopCargoRollers();
         }
-        // hatch
+*/        // hatch
 //        if (getLeftBumperButton()) {
 //            Elevator.placeHatch();
 //        } else {

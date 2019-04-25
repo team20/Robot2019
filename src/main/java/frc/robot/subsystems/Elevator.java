@@ -50,14 +50,14 @@ public class Elevator {
 
         elevator.setSmartCurrentLimit(60);
 
-        elevator.getPIDController().setP(0.000_08); // was 0.000_18 // was .000_05
-        elevator.getPIDController().setI(5E-9);   // was 5.0E-9, then it was 1E-8
+        elevator.getPIDController().setP(0.000_12); // was 0.000_18 // was .000_05
+        elevator.getPIDController().setI(0.0);   // was 5.0E-9, then it was 1E-8
         elevator.getPIDController().setIZone(2);
         elevator.getPIDController().setD(0.000_00); // was 0.001
         elevator.getPIDController().setFF(0.0);
 
         elevatorEncoder = new CANEncoder(elevator);
-        halSensor = new DigitalInput(2);
+        halSensor = new DigitalInput(3);
 
         elevator.setEncPosition(0);
         setPosition = elevatorEncoder.getPosition();
@@ -116,16 +116,16 @@ public class Elevator {
         if (targetPosition < getPosition())  // down
             if (getPosition() - targetPosition < 25)  // down medium
                 if (getPosition() - targetPosition < 4)  // down short
-                    elevator.getPIDController().setSmartMotionMaxAccel(60_000, 0); //60_000
+                    elevator.getPIDController().setSmartMotionMaxAccel(20_000, 0);
                 else
-                    elevator.getPIDController().setSmartMotionMaxAccel(100_000, 0); //100_000
+                    elevator.getPIDController().setSmartMotionMaxAccel(20_000, 0);
             else  // down big
-                elevator.getPIDController().setSmartMotionMaxAccel(130_000, 0); //130_000
+                elevator.getPIDController().setSmartMotionMaxAccel(30_000, 0);
         else  // up
             if (targetPosition - getPosition() < 25)  // up medium
-                elevator.getPIDController().setSmartMotionMaxAccel(400_000, 0); //200_000
+                elevator.getPIDController().setSmartMotionMaxAccel(150_000, 0); // 400_000, 0);
             else  // up high
-                elevator.getPIDController().setSmartMotionMaxAccel(800_000, 0); // should probs be way smaller, 400_000
+                elevator.getPIDController().setSmartMotionMaxAccel(150_000, 0); // 400_000, 0);
 
         if (!setHatchPlace) { //TODO this makes it so that placing works after the elevator zeros - Sydney (I'm an idiot)
             setPosition = targetPosition + zeroPosition;
@@ -175,35 +175,6 @@ public class Elevator {
         setPosition(setPosition);
     }
 
-    public static void setBrake() {
-        if (Math.abs(elevatorEncoder.getPosition() - setPosition) < DEADBAND && setPosition >= 8)
-            elevator.set(0.035);
-//        else
-//            setPosition(setPosition);
-    }
-    //TODO actually delete this stuff?
-//    /**
-//     * Sets the elevator lower by the hatch offset to drop the hatch panel
-//     */
-//    public static void dropHatch() {
-//        if (!setHatchDrop) {
-//            setPosition -= HATCH_DROP_OFFSET;
-//            setPosition(setPosition);
-//            setHatchDrop = true;
-//        }
-//    }
-
-//    /**
-//     * Sets the elevator lower by the hatch offset to drop the hatch panel
-//     */
-//    public static void placeHatch() {
-//        if (!setHatchPlace) {
-//            setPosition -= HATCH_PLACE_OFFSET;
-//            setPosition(setPosition);
-//            setHatchPlace = true;
-//        }
-//    }
-
     /**
      * Prevents the user from going past the maximum value of the elevator
      */
@@ -247,7 +218,7 @@ public class Elevator {
      */
     public enum Position {
         ELEVATOR_FLOOR(0.0),
-        HATCH_LEVEL_ONE(3.0),
+        HATCH_LEVEL_ONE(0.0),
         HATCH_LEVEL_TWO(23.5),
         HATCH_LEVEL_THREE(45.3),
         CARGO_LEVEL_ONE(17.0),

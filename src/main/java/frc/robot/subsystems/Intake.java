@@ -80,20 +80,18 @@ public class Intake {
         return cargoSensor.get();
     }
 
-
     /**
      * Runs the cargo intake until the digital sensor is tripped
      *
-     * @return true if a cargo is in the intake
      */
-    public static boolean intakeMode() {
-        if (cargoSensor.get()) {
+    public static void intakeMode() {
+//        if (cargoNotPresent()) {
             collectCargo();
-            return false;
-        } else {
-            stopCargoRollers();
-            return true;
-        }
+//            //return false;
+//        } else {
+//            stopCargoRollers();
+//            //return true;
+//        }
     }
 
     /**

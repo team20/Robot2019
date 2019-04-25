@@ -34,10 +34,25 @@ public class Arm {
         armMotor.setSmartCurrentLimit(40);
 
         //sends corresponding values to the pid controller object
-        pidController.setP(0.08);
+        pidController.setP(0.07); // was .08
         pidController.setI(0.0);
         pidController.setD(2.0);
         pidController.setOutputRange(-1.0, 1.0);
+    }
+
+    public enum Position {
+        ARM_FLOOR(-41.38), //Straight Vertical- Cargo L1, L2
+        CARGO_SHOOT(-26.0), //28.9 Orig - L3 Cargo
+        PLACING(-9.0), //Vertical - Hatches
+        STARTING_CONFIG(-1.0), //Defense Position
+        ARM_COLLECT_CARGO(-50.0), //Collection
+        CARGO_SHIP_ANGLE(-51.14); //Cargo Ship
+
+        public double value;
+
+        Position(double position) {
+            value = position;
+        }
     }
 
     /**
@@ -72,21 +87,6 @@ public class Arm {
      */
     public static void setPosition(Position position) {
         setPosition(position.value);
-    }
-
-    public enum Position {
-        ARM_FLOOR(-41.38), //Straight Vertical- Cargo L1, L2
-        CARGO_SHOOT(-26.0), //28.9 Orig - L3 Cargo
-        PLACING(-9.0), //Vertical - Hatches
-        STARTING_CONFIG(-1.0), //Defense Position
-        ARM_COLLECT_CARGO(-50.0), //Collection
-        CARGO_SHIP_ANGLE(-51.14); //Cargo Ship
-
-        public double value;
-
-        Position(double position) {
-            value = position;
-        }
     }
 
     /**
