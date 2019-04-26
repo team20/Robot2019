@@ -15,6 +15,7 @@ public class Elevator {
     private static double setPosition, prevPosition, zeroPosition;
     private static double prevVelocity, currentVelocity;
     private static double currentAcceleration;
+    private static final double gravityFF = 0.032 * 12;
 
     private static final double STAGE_THRESHOLD = 30.0;
     public static final double MAX_POSITION = 47.5;
@@ -28,6 +29,7 @@ public class Elevator {
 //    private static final double lowAccel = 3000; // was 7000
 
     private static final double avagadrosVelocity = 6.02E23;
+    private static boolean goingDown;
 
     public static boolean setHatchDrop, setHatchPlace, overriding; //TODO do we actually use all of these?
 
@@ -41,19 +43,19 @@ public class Elevator {
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
         elevator.getPIDController().setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
         elevator.getPIDController().setSmartMotionMaxAccel(30000, 0);
-        elevator.getPIDController().setSmartMotionMaxVelocity(avagadrosVelocity, 0);
+        elevator.getPIDController().setSmartMotionMaxVelocity(7000, 0); // avagadro
         elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
         elevator.getPIDController().setSmartMotionMinOutputVelocity(0.01, 0);
 //        elevator.enableVoltageCompensation(13.00); //TODO Sydney made this 13 (not 12) because it is slower when charged and I think this is why? - battery always starts above 12v
 
-        elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
+        elevator.getPIDController().setReference(0, ControlType.kSmartMotion, 0, 0);
 
         elevator.setSmartCurrentLimit(60);
 
-        elevator.getPIDController().setP(0.000_11); // was 0.000_18 // was .000_05
-        elevator.getPIDController().setI(5.0E-9);   // was 5.0E-9, then it was 1E-8
+        elevator.getPIDController().setP(0.000_3); // was .000_05 // 0.000_11
+        elevator.getPIDController().setI(0.0);   // was 5.0E-9
         elevator.getPIDController().setIZone(2);
-        elevator.getPIDController().setD(0.003_0); // was 0.001
+        elevator.getPIDController().setD(0.0); // was 0.003
         elevator.getPIDController().setFF(0.0);
 
         elevatorEncoder = new CANEncoder(elevator);
@@ -68,6 +70,42 @@ public class Elevator {
         setHatchDrop = false;
         setHatchPlace = false;
         overriding = false;
+    }
+
+    /**
+     * Sets the elevator to the entered value
+     *
+     * @param targetPosition: desired elevator value
+     */
+    public static void setPosition(double targetPosition) {
+        if (targetPosition <= getPosition()) { // down
+            goingDown = true;
+            if (getPosition() - targetPosition < 25)  // down medium
+                if (getPosition() - targetPosition < 4)  // down short
+                    elevator.getPIDController().setSmartMotionMaxAccel(9_000, 0);
+                else
+                    elevator.getPIDController().setSmartMotionMaxAccel(9_000, 0);
+            else  // down big
+                elevator.getPIDController().setSmartMotionMaxAccel(9_000, 0);
+        } else  // up
+            if (targetPosition - getPosition() < 25)  // up medium
+                elevator.getPIDController().setSmartMotionMaxAccel(40_000, 0); // 400_000, 0);
+            else  // up high
+                elevator.getPIDController().setSmartMotionMaxAccel(40_000, 0); // 400_000, 0);
+
+        if (!setHatchPlace) { //TODO this makes it so that placing works after the elevator zeros - Sydney (I'm an idiot)
+            setPosition = targetPosition + zeroPosition;
+        } else {
+            setPosition = targetPosition;
+        }
+
+        if (!overriding) {
+            limitPosition();
+        } else {
+            limitPositionOverride();
+        }
+        setHatchDrop = false;
+        setHatchPlace = false;
     }
 
     /**
@@ -108,38 +146,11 @@ public class Elevator {
     }
 
     /**
-     * Sets the elevator to the entered value
-     *
-     * @param targetPosition: desired elevator value
+     * Prevents the user from going past the maximum value of the elevator
      */
-    public static void setPosition(double targetPosition) {
-        if (targetPosition < getPosition())  // down
-            if (getPosition() - targetPosition < 25)  // down medium
-                if (getPosition() - targetPosition < 4)  // down short -- TODO what is the point of this if???
-                    elevator.getPIDController().setSmartMotionMaxAccel(20_000, 0);
-                else
-                    elevator.getPIDController().setSmartMotionMaxAccel(20_000, 0);
-            else  // down big
-                elevator.getPIDController().setSmartMotionMaxAccel(30_000, 0);
-        else  // up
-            if (targetPosition - getPosition() < 25)  // up medium
-                elevator.getPIDController().setSmartMotionMaxAccel(850_000, 0); // 400_000, 0);
-            else  // up high
-                elevator.getPIDController().setSmartMotionMaxAccel(850_000, 0); // 400_000, 0);
-
-        if (!setHatchPlace) { //TODO this makes it so that placing works after the elevator zeros - Sydney (I'm an idiot)
-            setPosition = targetPosition + zeroPosition;
-        } else {
-            setPosition = targetPosition;
-        }
-
-        if (!overriding) {
-            limitPosition();
-        } else {
-            limitPositionOverride();
-        }
-        setHatchDrop = false;
-        setHatchPlace = false;
+    private static void limitPositionOverride() {
+        setPosition = Math.min(setPosition, MAX_POSITION + zeroPosition);
+        elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion, 0, gravityFF);
     }
 
     /**
@@ -178,9 +189,14 @@ public class Elevator {
     /**
      * Prevents the user from going past the maximum value of the elevator
      */
-    private static void limitPositionOverride() {
+    private static void limitPosition() {
         setPosition = Math.min(setPosition, MAX_POSITION + zeroPosition);
-        elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
+        setPosition = Math.max(setPosition, zeroPosition);
+        if (goingDown) {
+            elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
+        } else {
+            elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion, 0, gravityFF);
+        }
     }
 
     /**
@@ -194,12 +210,11 @@ public class Elevator {
     }
 
     /**
-     * Prevents the user from going past the maximum value of the elevator
+     * @return belt speed in inches per second
      */
-    private static void limitPosition() {
-        setPosition = Math.min(setPosition, MAX_POSITION + zeroPosition);
-        setPosition = Math.max(setPosition, zeroPosition);
-        elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
+    public static double getBeltVelocity() {
+        final double kNeoToBelt = 16.213 / 60 /*min to sec*/ / 25.4 /*mm to inch*/;
+        return kNeoToBelt * elevatorEncoder.getVelocity();
     }
 
     /**
@@ -211,6 +226,12 @@ public class Elevator {
             setPosition = setPosition + zeroPosition;
             limitPosition();
         }
+    }
+
+    public static double getVelocity() {
+        prevVelocity = currentVelocity;
+        currentVelocity = elevatorEncoder.getVelocity();
+        return currentVelocity;
     }
 
     /**
@@ -233,13 +254,6 @@ public class Elevator {
         Position(double position) {
             value = position;
         }
-    }
-
-    public static double getVelocity() {
-        prevVelocity = currentVelocity;
-        currentVelocity = elevatorEncoder.getVelocity();
-//        if (currentVelocity > elevator.getPIDController().getSmartMotionMaxVelocity(0) * .9) PrettyPrint.once("ABOVE 90%");
-        return currentVelocity;
     }
 
     public static double getAcceleration() {

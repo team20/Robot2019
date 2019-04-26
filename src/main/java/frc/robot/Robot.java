@@ -11,6 +11,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.auto.AutoModes;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
@@ -63,12 +65,7 @@ import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
  */
 public class Robot extends TimedRobot {
     private AutoModes auto;
-//    private NetworkTableInstance ntinst = NetworkTableInstance.getDefault(); // added
-//    private NetworkTable rootTable = ntinst.getTable(""); //was static
-//    private NetworkTable piTable = rootTable.getSubTable("/PiSwitch");
-//    private NetworkTableEntry cameraSwitch = piTable.getEntry("camera");
-//    private NetworkTableEntry usbCam = ntinst.getEntry("USB");
-//    private ShuffleboardTab camTab = Shuffleboard.getTab("cams");
+    private ShuffleboardTab elevatorStuff = Shuffleboard.getTab("Test");
 //    private VideoSource frontCam, backCam;
 //    private boolean frontCamMain, prevFrontCamMain;
 
@@ -95,27 +92,6 @@ public class Robot extends TimedRobot {
         Arduino.setDiagnosticPattern(null, 0);
         Drivetrain.setBrakeMode(false);
         Elevator.elevator.setIdleMode(IdleMode.kBrake);
-
-//        VideoSource[] videoSources = VideoSource.enumerateSources();
-//
-//        System.out.println("------------------------------------");
-//        System.out.println(Arrays.toString(videoSources));
-//        System.out.println(
-//                Arrays.stream(videoSources)
-//                        .map(VideoSource::getName)
-//                        .collect(joining())
-//        );
-//        System.out.println("------------------------------------");
-
-//        frontCam = Arrays.stream(videoSources).filter(vs -> vs.getName().equals("rPi Camera 0")).findFirst().orElseThrow(); // TODO cam names
-//        backCam = Arrays.stream(videoSources).filter(vs -> vs.getName().equals("USB")).findFirst().orElseThrow(); // TODO cam names
-
-//        camTab.add(
-//                Arrays.stream(videoSources)
-//                        .filter(vs -> vs.getName().equals("TODO"))
-//                        .findFirst()
-//                        .orElseThrow(IllegalArgumentException::new)
-//        );
     }
 
     @Override
@@ -205,7 +181,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
-
     }
 
     @Override
@@ -229,7 +204,8 @@ public class Robot extends TimedRobot {
     private void initLog() {
         PrettyPrint.removeAll();
         PrettyPrint.put("Elev Temp", Elevator::getTemperature);
-        PrettyPrint.put("Elev Temp", Intake.intakeMotor::getMotorOutputVoltage);
+        PrettyPrint.put("Elev RPM", Elevator::getVelocity);
+//        PrettyPrint.put("Intake volt", Intake.intakeMotor::getMotorOutputVoltage);
 //        PrettyPrint.put("Step", () -> Climber.stepNumL3);
 //        PrettyPrint.put("DT", Drivetrain::getEncoderPosition);
 //        PrettyPrint.put("Vel", Drivetrain::getEncoderVelocity);
