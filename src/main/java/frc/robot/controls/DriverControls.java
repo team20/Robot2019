@@ -160,7 +160,7 @@ public class DriverControls extends PS4Controller {
             //Intake Controls
             if (getRightBumperButton()) {
                 Intake.spitCargo();
-            } else {
+            } else if (!OperatorControls.intakeing) {
                 Intake.stopCargoRollers();
             }
         }

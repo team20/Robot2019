@@ -8,7 +8,7 @@ import static frc.robot.subsystems.Arm.Position.*;
 import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls extends PS4Controller {
-    private boolean elevatorOverridden, armOverridden;
+    public static boolean elevatorOverridden, armOverridden, intakeing;
 
     private static OperatorControls singletonInstance = new OperatorControls(1, 3);
 
@@ -107,16 +107,24 @@ public class OperatorControls extends PS4Controller {
         // cargo
         if (getXButton()) {
             Intake.intakeMode();
+            intakeing = true;
         } else if (getCircleButton()) {
             Intake.collectHatch();
+            intakeing = true;
         } else if (getTriButton()) {
             Intake.outtakeCargo();
+            intakeing = true;
         } else if (getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
-        } /*else {
+            intakeing = true;
+        } else {
+            intakeing = false;
+        }
+            /*else {
             Intake.stopCargoRollers();
         }
-*/        // hatch
+*/
+        // hatch
 //        if (getLeftBumperButton()) {
 //            Elevator.placeHatch();
 //        } else {

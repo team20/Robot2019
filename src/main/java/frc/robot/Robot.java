@@ -8,26 +8,17 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax.IdleMode;
-import edu.wpi.cscore.VideoSource;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.auto.AutoModes;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
 import frc.robot.subsystems.*;
 import frc.robot.utils.PrettyPrint;
 
-import java.util.Arrays;
-
 import static frc.robot.subsystems.Arm.Position.STARTING_CONFIG;
 import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
-import static java.util.stream.Collectors.joining;
 
 /**
  * MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNOdoc:cO0;.   .kMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
@@ -72,14 +63,14 @@ import static java.util.stream.Collectors.joining;
  */
 public class Robot extends TimedRobot {
     private AutoModes auto;
-    private NetworkTableInstance ntinst = NetworkTableInstance.getDefault(); // added
-    private NetworkTable rootTable = ntinst.getTable(""); //was static
-    private NetworkTable piTable = rootTable.getSubTable("/PiSwitch");
-    private NetworkTableEntry cameraSwitch = piTable.getEntry("camera");
-    private NetworkTableEntry usbCam = ntinst.getEntry("USB");
-    private ShuffleboardTab camTab = Shuffleboard.getTab("cams");
-    private VideoSource frontCam, backCam;
-    private boolean frontCamMain, prevFrontCamMain;
+//    private NetworkTableInstance ntinst = NetworkTableInstance.getDefault(); // added
+//    private NetworkTable rootTable = ntinst.getTable(""); //was static
+//    private NetworkTable piTable = rootTable.getSubTable("/PiSwitch");
+//    private NetworkTableEntry cameraSwitch = piTable.getEntry("camera");
+//    private NetworkTableEntry usbCam = ntinst.getEntry("USB");
+//    private ShuffleboardTab camTab = Shuffleboard.getTab("cams");
+//    private VideoSource frontCam, backCam;
+//    private boolean frontCamMain, prevFrontCamMain;
 
 //    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
@@ -105,16 +96,16 @@ public class Robot extends TimedRobot {
         Drivetrain.setBrakeMode(false);
         Elevator.elevator.setIdleMode(IdleMode.kBrake);
 
-        VideoSource[] videoSources = VideoSource.enumerateSources();
-
-        System.out.println("------------------------------------");
-        System.out.println(Arrays.toString(videoSources));
-        System.out.println(
-                Arrays.stream(videoSources)
-                        .map(VideoSource::getName)
-                        .collect(joining())
-        );
-        System.out.println("------------------------------------");
+//        VideoSource[] videoSources = VideoSource.enumerateSources();
+//
+//        System.out.println("------------------------------------");
+//        System.out.println(Arrays.toString(videoSources));
+//        System.out.println(
+//                Arrays.stream(videoSources)
+//                        .map(VideoSource::getName)
+//                        .collect(joining())
+//        );
+//        System.out.println("------------------------------------");
 
 //        frontCam = Arrays.stream(videoSources).filter(vs -> vs.getName().equals("rPi Camera 0")).findFirst().orElseThrow(); // TODO cam names
 //        backCam = Arrays.stream(videoSources).filter(vs -> vs.getName().equals("USB")).findFirst().orElseThrow(); // TODO cam names
@@ -152,15 +143,15 @@ public class Robot extends TimedRobot {
         PrettyPrint.print();
 
         //Camera Controls
-        prevFrontCamMain = frontCamMain;
-        if (DriverControls.singletonInstance.getRightYAxis() < -.2) {
-            frontCamMain = true;
-        } else if (DriverControls.singletonInstance.getRightYAxis() > .2) {
-            frontCamMain = false;
-        }
+//        prevFrontCamMain = frontCamMain;
+//        if (DriverControls.singletonInstance.getRightYAxis() < -.2) {
+//            frontCamMain = true;
+//        } else if (DriverControls.singletonInstance.getRightYAxis() > .2) {
+//            frontCamMain = false;
+//        }
 
 //            cameraSelector.setDefaultBoolean("camera", frontCamMain);//Want to control camera later
-        cameraSwitch.setBoolean(frontCamMain);
+//        cameraSwitch.setBoolean(frontCamMain);
 
         // TODO
 //        if (frontCamMain != prevFrontCamMain) { // has changed
@@ -225,6 +216,7 @@ public class Robot extends TimedRobot {
         Climber.back.setIdleMode(IdleMode.kBrake);
         inEndOfMatch = false;
         PrettyPrint.removeAll();
+        PrettyPrint.put("Elev Temp", Elevator::getTemperature);
     }
 
     @Override
@@ -237,13 +229,14 @@ public class Robot extends TimedRobot {
     private void initLog() {
         PrettyPrint.removeAll();
         PrettyPrint.put("Elev Temp", Elevator::getTemperature);
-        PrettyPrint.put("Step", () -> Climber.stepNumL3);
+        PrettyPrint.put("Elev Temp", Intake.intakeMotor::getMotorOutputVoltage);
+//        PrettyPrint.put("Step", () -> Climber.stepNumL3);
 //        PrettyPrint.put("DT", Drivetrain::getEncoderPosition);
 //        PrettyPrint.put("Vel", Drivetrain::getEncoderVelocity);
-        PrettyPrint.put("Front", Climber::getFrontEncPosition);
-        PrettyPrint.put("Back", Climber::getBackEncPosition);
-        PrettyPrint.put("IR", () -> !Climber.backIRSensor.get());
-        PrettyPrint.put("CargoSensor", Intake::isCargoPresent);
+//        PrettyPrint.put("Front", Climber::getFrontEncPosition);
+//        PrettyPrint.put("Back", Climber::getBackEncPosition);
+//        PrettyPrint.put("IR", () -> !Climber.backIRSensor.get());
+//        PrettyPrint.put("CargoSensor", Intake::isCargoPresent);
 //        PrettyPrint.put("elev position", Elevator::getPosition);
 //        PrettyPrint.put("hal sensor", Elevator.halSensor::get);
 //        PrettyPrint.put("total", LineSensor::getTotal);

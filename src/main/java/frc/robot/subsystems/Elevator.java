@@ -44,16 +44,16 @@ public class Elevator {
         elevator.getPIDController().setSmartMotionMaxVelocity(avagadrosVelocity, 0);
         elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
         elevator.getPIDController().setSmartMotionMinOutputVelocity(0.01, 0);
-        elevator.enableVoltageCompensation(13.00); //TODO Sydney made this 13 (not 12) because it is slower when charged and I think this is why? - battery always starts above 12v
+//        elevator.enableVoltageCompensation(13.00); //TODO Sydney made this 13 (not 12) because it is slower when charged and I think this is why? - battery always starts above 12v
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion);
 
         elevator.setSmartCurrentLimit(60);
 
-        elevator.getPIDController().setP(0.000_12); // was 0.000_18 // was .000_05
-        elevator.getPIDController().setI(0.0);   // was 5.0E-9, then it was 1E-8
+        elevator.getPIDController().setP(0.000_11); // was 0.000_18 // was .000_05
+        elevator.getPIDController().setI(5.0E-9);   // was 5.0E-9, then it was 1E-8
         elevator.getPIDController().setIZone(2);
-        elevator.getPIDController().setD(0.000_00); // was 0.001
+        elevator.getPIDController().setD(0.003_0); // was 0.001
         elevator.getPIDController().setFF(0.0);
 
         elevatorEncoder = new CANEncoder(elevator);
@@ -115,7 +115,7 @@ public class Elevator {
     public static void setPosition(double targetPosition) {
         if (targetPosition < getPosition())  // down
             if (getPosition() - targetPosition < 25)  // down medium
-                if (getPosition() - targetPosition < 4)  // down short
+                if (getPosition() - targetPosition < 4)  // down short -- TODO what is the point of this if???
                     elevator.getPIDController().setSmartMotionMaxAccel(20_000, 0);
                 else
                     elevator.getPIDController().setSmartMotionMaxAccel(20_000, 0);
@@ -123,9 +123,9 @@ public class Elevator {
                 elevator.getPIDController().setSmartMotionMaxAccel(30_000, 0);
         else  // up
             if (targetPosition - getPosition() < 25)  // up medium
-                elevator.getPIDController().setSmartMotionMaxAccel(150_000, 0); // 400_000, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(850_000, 0); // 400_000, 0);
             else  // up high
-                elevator.getPIDController().setSmartMotionMaxAccel(150_000, 0); // 400_000, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(850_000, 0); // 400_000, 0);
 
         if (!setHatchPlace) { //TODO this makes it so that placing works after the elevator zeros - Sydney (I'm an idiot)
             setPosition = targetPosition + zeroPosition;
