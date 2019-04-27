@@ -141,12 +141,19 @@ public class OperatorControls extends PS4Controller {
             Arm.setPosition(ARM_COLLECT_CARGO);
         }
 
+//        if (Elevator.getSetPosition() == 0 &&
+//                Math.abs(Elevator.getVelocity()) < 1 &&
+//                Elevator.getSetPosition() < Elevator.getPosition() - 2) {
+//            setRumble(1.0);
+//        } else {
+//            setRumble(0.0);
+//        }
+
         // Controller Vibrations
-        if (Intake.intakeRunning()) {
-            setRumble(1.0);
-        } else {
-            setRumble(0.0);
-        }
+//        if (Intake.intakeRunning()) {
+//            setRumble(1.0);
+//        } else {
+//        }
     }
 
     public static boolean isOverridingAuto() {

@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
 
 //        Elevator.checkHalSensor();
 //        Elevator.setBrake();
-        PrettyPrint.print();
+//        PrettyPrint.print();
 
         //Camera Controls
 //        prevFrontCamMain = frontCamMain;
@@ -143,7 +143,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         initLog();
-        Elevator.elevator.setIdleMode(IdleMode.kBrake);
+//        Elevator.elevator.setIdleMode(IdleMode.kBrake);
         Arm.setPosition(STARTING_CONFIG);
         Elevator.setPosition(ELEVATOR_FLOOR);
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
@@ -181,6 +181,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+//        Elevator.elevator.set(Elevator.gravityFF / 12);
     }
 
     @Override
@@ -205,6 +206,7 @@ public class Robot extends TimedRobot {
         PrettyPrint.removeAll();
         PrettyPrint.put("Elev Temp", Elevator::getTemperature);
         PrettyPrint.put("Elev RPM", Elevator::getVelocity);
+        PrettyPrint.put("Elev B", Elevator.elevator::getIdleMode);
 //        PrettyPrint.put("Intake volt", Intake.intakeMotor::getMotorOutputVoltage);
 //        PrettyPrint.put("Step", () -> Climber.stepNumL3);
 //        PrettyPrint.put("DT", Drivetrain::getEncoderPosition);

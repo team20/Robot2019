@@ -15,7 +15,7 @@ public class Elevator {
     private static double setPosition, prevPosition, zeroPosition;
     private static double prevVelocity, currentVelocity;
     private static double currentAcceleration;
-    private static final double gravityFF = 0.032 * 12;
+    public static final double gravityFF = 0.05 * 12; // .375
 
     private static final double STAGE_THRESHOLD = 30.0;
     public static final double MAX_POSITION = 47.5;
@@ -43,16 +43,17 @@ public class Elevator {
         elevator.getPIDController().setOutputRange(-1.0, 1.0);
         elevator.getPIDController().setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
         elevator.getPIDController().setSmartMotionMaxAccel(30000, 0);
-        elevator.getPIDController().setSmartMotionMaxVelocity(7000, 0); // avagadro
+        elevator.getPIDController().setSmartMotionMaxVelocity(5000, 0); // avagadro
         elevator.getPIDController().setSmartMotionAllowedClosedLoopError(0.2, 0);
         elevator.getPIDController().setSmartMotionMinOutputVelocity(0.01, 0);
+        elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
 //        elevator.enableVoltageCompensation(13.00); //TODO Sydney made this 13 (not 12) because it is slower when charged and I think this is why? - battery always starts above 12v
 
         elevator.getPIDController().setReference(0, ControlType.kSmartMotion, 0, 0);
 
         elevator.setSmartCurrentLimit(60);
 
-        elevator.getPIDController().setP(0.000_3); // was .000_05 // 0.000_11
+        elevator.getPIDController().setP(0.000_4); // was .000_05 // 0.000_11
         elevator.getPIDController().setI(0.0);   // was 5.0E-9
         elevator.getPIDController().setIZone(2);
         elevator.getPIDController().setD(0.0); // was 0.003
@@ -82,16 +83,18 @@ public class Elevator {
             goingDown = true;
             if (getPosition() - targetPosition < 25)  // down medium
                 if (getPosition() - targetPosition < 4)  // down short
-                    elevator.getPIDController().setSmartMotionMaxAccel(9_000, 0);
+                    elevator.getPIDController().setSmartMotionMaxAccel(7_500, 0);
                 else
-                    elevator.getPIDController().setSmartMotionMaxAccel(9_000, 0);
+                    elevator.getPIDController().setSmartMotionMaxAccel(7_500, 0);
             else  // down big
-                elevator.getPIDController().setSmartMotionMaxAccel(9_000, 0);
-        } else  // up
+                elevator.getPIDController().setSmartMotionMaxAccel(6_500, 0);
+        } else { // up
+            goingDown = false;
             if (targetPosition - getPosition() < 25)  // up medium
-                elevator.getPIDController().setSmartMotionMaxAccel(40_000, 0); // 400_000, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(16_000, 0); // 400_000, 0);
             else  // up high
-                elevator.getPIDController().setSmartMotionMaxAccel(40_000, 0); // 400_000, 0);
+                elevator.getPIDController().setSmartMotionMaxAccel(16_000, 0); // 400_000, 0);
+        }
 
         if (!setHatchPlace) { //TODO this makes it so that placing works after the elevator zeros - Sydney (I'm an idiot)
             setPosition = targetPosition + zeroPosition;
@@ -195,7 +198,7 @@ public class Elevator {
         if (goingDown) {
             elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion);
         } else {
-            elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion, 0, gravityFF);
+            elevator.getPIDController().setReference(setPosition, ControlType.kSmartMotion, 0, gravityFF * 2);
         }
     }
 
