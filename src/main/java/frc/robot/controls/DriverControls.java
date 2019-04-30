@@ -149,10 +149,6 @@ public class DriverControls extends PS4Controller {
                 }
             }
 
-
-//            PrettyPrint.put("Cam Bool",cameraSwitch.getBoolean(true));
-
-
             if (!getButtonDDown() && !getXButton()) {
                 Climber.stop();
             }

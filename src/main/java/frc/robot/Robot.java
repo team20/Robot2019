@@ -66,10 +66,6 @@ import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
 public class Robot extends TimedRobot {
     private AutoModes auto;
     private ShuffleboardTab elevatorStuff = Shuffleboard.getTab("Test");
-//    private VideoSource frontCam, backCam;
-//    private boolean frontCamMain, prevFrontCamMain;
-
-//    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
 
     private boolean autoSet;
     private boolean inEndOfMatch;
