@@ -68,6 +68,7 @@ public class DriverControls extends PS4Controller {
             }
             if (getLeftYAxis() > .1 || getLeftYAxis() < -.1) {
                 speedStraight = Climber.retractBackLeg(getLeftYAxis());
+//                Climber.back.set(-getLeftYAxis());
             } else {
                 Climber.back.set(0.0);
             }
@@ -124,33 +125,29 @@ public class DriverControls extends PS4Controller {
                         if (getSquareButton()) {
                             speedLeft = getLeftTriggerAxis() * 0.4;
                             speedRight = getRightTriggerAxis() * 0.4;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
-                            Drivetrain.frontRight.configOpenloopRamp(0.4);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.45);
+                            Drivetrain.frontRight.configOpenloopRamp(0.45);
                         } else {
                             speedLeft = getLeftTriggerAxis() * 0.5;
                             speedRight = getRightTriggerAxis() * 0.5;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.4);
-                            Drivetrain.frontRight.configOpenloopRamp(0.4);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.45);
+                            Drivetrain.frontRight.configOpenloopRamp(0.45);
                         }
                     } else {
                         if (getSquareButton()) {
                             speedLeft = getLeftTriggerAxis() * 0.6;
                             speedRight = getRightTriggerAxis() * 0.6;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.05);
-                            Drivetrain.frontRight.configOpenloopRamp(0.05);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.1);
+                            Drivetrain.frontRight.configOpenloopRamp(0.1);
                         } else {
                             speedLeft = getLeftTriggerAxis() * 0.75;
                             speedRight = getRightTriggerAxis() * 0.75;
-                            Drivetrain.frontLeft.configOpenloopRamp(0.05);
-                            Drivetrain.frontRight.configOpenloopRamp(0.05);
+                            Drivetrain.frontLeft.configOpenloopRamp(0.1);
+                            Drivetrain.frontRight.configOpenloopRamp(0.1);
                         }
                     }
                 }
             }
-
-
-//            PrettyPrint.put("Cam Bool",cameraSwitch.getBoolean(true));
-
 
             if (!getButtonDDown() && !getXButton()) {
                 Climber.stop();
@@ -159,31 +156,9 @@ public class DriverControls extends PS4Controller {
             //Intake Controls
             if (getRightBumperButton()) {
                 Intake.spitCargo();
-            } else {
+            } else if (!OperatorControls.intakeing) {
                 Intake.stopCargoRollers();
             }
-
-            //Climber Controls
-            //extend
-//            if (!getXButton()) {
-//                climberOverride = getCircleButton(); //was right bumper
-//                if (climberOverride) {
-//                    Climber.front.set(-getRightTriggerAxis());
-//                    Climber.back.set(-getLeftTriggerAxis());
-//                } else {
-//                    Climber.stop();
-//                }
-//            }
-
-//            //retract
-//            if (Math.abs(getRightYAxis()) > 0.1) {
-//                Climber.retractBackLeg(getRightTriggerAxis());
-//                climberRetract = true;
-//            } else {
-//                if (climberRetract) {
-//                    Climber.stop();
-//                }
-//            }
         }
 
         Drivetrain.drive(speedStraight, speedRight, speedLeft);

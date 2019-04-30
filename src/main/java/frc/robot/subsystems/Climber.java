@@ -41,13 +41,19 @@ public class Climber {
         front.setEncPosition(0);
         back.setEncPosition(0);
 
-        backIRSensor = new DigitalInput(3);
+        backIRSensor = new DigitalInput(2);
     }
 
     /**
      * Climb with gyro assistance
      */
     public static void climbLevelThree() {
+        if (firstTime) {
+            firstTime = false;
+            front.setEncPosition(0);
+            back.setEncPosition(0);
+            Drivetrain.resetEncoders();
+        }
         switch (stepNumL3) {
             case 0:     //climbing straight up
                 if (getBackEncPosition() > backHab3Height) {
@@ -68,7 +74,7 @@ public class Climber {
                 break;
             case 2: // retract front legs
                 Drivetrain.resetEncoders();
-                if (getFrontEncPosition() <= 4) {
+                if (getFrontEncPosition() <= 3) {
                     stepNumL3 = 3;
                 }
 
@@ -76,22 +82,18 @@ public class Climber {
                 back.set(holdSpeed);
                 front.set(-1.0);
                 break;
-            case 3: // drive forwards:
+            case 3: // drive forwards and retract back a bit
                 if (!backIRSensor.get()) {
                     stepNumL3 = 4;
                 }
 
-                Drivetrain.drive(0.25);
-                back.set(-0.20);
+                Drivetrain.drive(0.20);
+                back.set(-0.35);
                 break;
             case 4: // retract back:
                 double driveSpeed = retractBackLeg(0.70);
                 Drivetrain.drive(driveSpeed);
                 break;
-//            case 2:
-//                front.set(holdSpeed);
-//                back.set(holdSpeed);
-//                break;
         }
     }
 
@@ -179,7 +181,7 @@ public class Climber {
     public static double retractBackLeg(double speed) {
         if (backEnc.getPosition() > 15.0) {
             back.set(-speed);
-            return backIRSensor.get() ? 0.15 : 0.0; // drive forwards until robot is flat
+            return backIRSensor.get() ? 0.065 /*.15*/ : 0.0; // drive forwards until robot is flat
         } else {
             return .3;
         }

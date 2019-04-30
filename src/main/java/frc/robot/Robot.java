@@ -8,12 +8,11 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax.IdleMode;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.auto.AutoModes;
 import frc.robot.controls.DriverControls;
 import frc.robot.controls.OperatorControls;
@@ -66,14 +65,7 @@ import static frc.robot.subsystems.Elevator.Position.ELEVATOR_FLOOR;
  */
 public class Robot extends TimedRobot {
     private AutoModes auto;
-    private NetworkTableInstance ntinst = NetworkTableInstance.getDefault(); // added
-    private NetworkTable rootTable = ntinst.getTable(""); //was static
-    private NetworkTable piTable = rootTable.getSubTable("/PiSwitch");
-    private NetworkTableEntry cameraSwitch = piTable.getEntry("camera");
-    private NetworkTableEntry usbCam = ntinst.getEntry("USB");
-    private boolean camIsMain;
-
-//    public static AHRS gyro = new AHRS(SerialPort.Port.kMXP); // DO NOT MOVE
+    private ShuffleboardTab elevatorStuff = Shuffleboard.getTab("Test");
 
     private boolean autoSet;
     private boolean inEndOfMatch;
@@ -103,11 +95,8 @@ public class Robot extends TimedRobot {
         //set pattern of LEDs
         if (inEndOfMatch)
             Arduino.setPattern(3);
-        else //TODO: Sydney commented this out because it makes the LEDs not do the regular match thing and that makes Sydney sad (also Victor and Ian) :(
-//            Arduino.setPattern(Elevator.atSetPosition() ? 2 : (int) ((Elevator.getPosition() / Elevator.MAX_POSITION) * 15.0 + 4));
-            Arduino.setPattern(2); //TODO: Sydney wanted it to be alliance colors again - pretty sure that's right
-        //
-//            Arduino.setPattern(1);
+        else
+            Arduino.setPattern(2);
 
         //set diagnostic part of LEDs
         if (Intake.isCargoPresent())
@@ -123,23 +112,34 @@ public class Robot extends TimedRobot {
 
 //        Elevator.checkHalSensor();
 //        Elevator.setBrake();
-        PrettyPrint.print();
+//        PrettyPrint.print();
 
         //Camera Controls
-        if (DriverControls.singletonInstance.getRightYAxis() < -.2) {
-            camIsMain = true;
-        } else if (DriverControls.singletonInstance.getRightYAxis() > .2) {
-            camIsMain = false;
-        }
+//        prevFrontCamMain = frontCamMain;
+//        if (DriverControls.singletonInstance.getRightYAxis() < -.2) {
+//            frontCamMain = true;
+//        } else if (DriverControls.singletonInstance.getRightYAxis() > .2) {
+//            frontCamMain = false;
+//        }
 
-//            cameraSelector.setDefaultBoolean("camera", camIsMain);//Want to control camera later
-        cameraSwitch.setBoolean(camIsMain);
+//            cameraSelector.setDefaultBoolean("camera", frontCamMain);//Want to control camera later
+//        cameraSwitch.setBoolean(frontCamMain);
+
+        // TODO
+//        if (frontCamMain != prevFrontCamMain) { // has changed
+//            camTab.getComponents().clear();
+//            if (frontCamMain) {
+//                camTab.add(frontCam);
+//            } else {
+//                camTab.add(backCam);
+//            }
+//        }
     }
 
     @Override
     public void autonomousInit() {
         initLog();
-        Elevator.elevator.setIdleMode(IdleMode.kBrake);
+//        Elevator.elevator.setIdleMode(IdleMode.kBrake);
         Arm.setPosition(STARTING_CONFIG);
         Elevator.setPosition(ELEVATOR_FLOOR);
         Arduino.setAllianceColor(DriverStation.getInstance().getAlliance());
@@ -177,7 +177,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
-
+//        Elevator.elevator.set(Elevator.gravityFF / 12);
     }
 
     @Override
@@ -188,6 +188,7 @@ public class Robot extends TimedRobot {
         Climber.back.setIdleMode(IdleMode.kBrake);
         inEndOfMatch = false;
         PrettyPrint.removeAll();
+        PrettyPrint.put("Elev Temp", Elevator::getTemperature);
     }
 
     @Override
@@ -200,11 +201,16 @@ public class Robot extends TimedRobot {
     private void initLog() {
         PrettyPrint.removeAll();
         PrettyPrint.put("Elev Temp", Elevator::getTemperature);
+        PrettyPrint.put("Elev RPM", Elevator::getVelocity);
+        PrettyPrint.put("Elev B", Elevator.elevator::getIdleMode);
+//        PrettyPrint.put("Intake volt", Intake.intakeMotor::getMotorOutputVoltage);
 //        PrettyPrint.put("Step", () -> Climber.stepNumL3);
-        PrettyPrint.put("DT", Drivetrain::getEncoderPosition);
+//        PrettyPrint.put("DT", Drivetrain::getEncoderPosition);
 //        PrettyPrint.put("Vel", Drivetrain::getEncoderVelocity);
 //        PrettyPrint.put("Front", Climber::getFrontEncPosition);
 //        PrettyPrint.put("Back", Climber::getBackEncPosition);
+//        PrettyPrint.put("IR", () -> !Climber.backIRSensor.get());
+//        PrettyPrint.put("CargoSensor", Intake::isCargoPresent);
 //        PrettyPrint.put("elev position", Elevator::getPosition);
 //        PrettyPrint.put("hal sensor", Elevator.halSensor::get);
 //        PrettyPrint.put("total", LineSensor::getTotal);

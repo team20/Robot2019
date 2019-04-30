@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Intake {
-    private static final VictorSPX intakeMotor;
+    public static final VictorSPX intakeMotor;
     private static final DigitalInput cargoSensor;
     private static boolean intakeRunning;
 
@@ -80,20 +80,19 @@ public class Intake {
         return cargoSensor.get();
     }
 
-
     /**
      * Runs the cargo intake until the digital sensor is tripped
      *
-     * @return true if a cargo is in the intake
      */
-    public static boolean intakeMode() {
-        if (cargoSensor.get()) {
+    public static void intakeMode() {
+//        if (cargoNotPresent()) {
             collectCargo();
-            return false;
-        } else {
-            stopCargoRollers();
-            return true;
-        }
+//            //return false;
+//        } else {
+//            stopCargoRollers();
+//            //return true;
+//        }
+//    }
     }
 
     /**
@@ -102,7 +101,7 @@ public class Intake {
      * @param speed = speed of the cargo motor (-1.0 to 1.0)
      */
     private static void runCargoMotor(double speed) {
-        intakeMotor.set(ControlMode.PercentOutput, speed);
+        intakeMotor.set(ControlMode.PercentOutput, speed * 7.0 / 5.0);
         intakeRunning = true;
     }
 

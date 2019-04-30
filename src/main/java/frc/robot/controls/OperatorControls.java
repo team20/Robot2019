@@ -8,7 +8,7 @@ import static frc.robot.subsystems.Arm.Position.*;
 import static frc.robot.subsystems.Elevator.Position.*;
 
 public class OperatorControls extends PS4Controller {
-    private boolean elevatorOverridden, armOverridden;
+    public static boolean elevatorOverridden, armOverridden, intakeing;
 
     private static OperatorControls singletonInstance = new OperatorControls(1, 3);
 
@@ -107,13 +107,23 @@ public class OperatorControls extends PS4Controller {
         // cargo
         if (getXButton()) {
             Intake.intakeMode();
+            intakeing = true;
         } else if (getCircleButton()) {
             Intake.collectHatch();
+            intakeing = true;
         } else if (getTriButton()) {
             Intake.outtakeCargo();
+            intakeing = true;
         } else if (getRightTriggerAxis() > 0.5) {
             Intake.spitCargo();
+            intakeing = true;
+        } else {
+            intakeing = false;
         }
+            /*else {
+            Intake.stopCargoRollers();
+        }
+*/
         // hatch
 //        if (getLeftBumperButton()) {
 //            Elevator.placeHatch();
@@ -131,12 +141,19 @@ public class OperatorControls extends PS4Controller {
             Arm.setPosition(ARM_COLLECT_CARGO);
         }
 
+//        if (Elevator.getSetPosition() == 0 &&
+//                Math.abs(Elevator.getVelocity()) < 1 &&
+//                Elevator.getSetPosition() < Elevator.getPosition() - 2) {
+//            setRumble(1.0);
+//        } else {
+//            setRumble(0.0);
+//        }
+
         // Controller Vibrations
-        if (Intake.intakeRunning()) {
-            setRumble(1.0);
-        } else {
-            setRumble(0.0);
-        }
+//        if (Intake.intakeRunning()) {
+//            setRumble(1.0);
+//        } else {
+//        }
     }
 
     public static boolean isOverridingAuto() {
